@@ -6,10 +6,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 
 public class PreBeanCreationListener implements ApplicationListener<ApplicationStartingEvent> {
-    @Override
-    public void onApplicationEvent(@NonNull ApplicationStartingEvent event) {
-        System.out.println("Initializing JavaFX runtime");
+	@Override
+	public void onApplicationEvent(@NonNull ApplicationStartingEvent event) {
+		System.out.println("Initializing JavaFX runtime");
 
-        Platform.startup(() -> System.out.println("JavaFX runtime initialized."));
-    }
+		Platform.startup(() -> System.out.println("JavaFX runtime initialized."));
+	}
 }

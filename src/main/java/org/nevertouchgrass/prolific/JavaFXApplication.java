@@ -15,28 +15,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class JavaFXApplication implements ApplicationRunner {
 
-    private final Stage primaryStage;
+	private final Stage primaryStage;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Autowired
-    public JavaFXApplication(Stage primaryStage, ApplicationEventPublisher applicationEventPublisher) {
-        this.primaryStage = primaryStage;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
+	@Autowired
+	public JavaFXApplication(Stage primaryStage, ApplicationEventPublisher applicationEventPublisher) {
+		this.primaryStage = primaryStage;
+		this.applicationEventPublisher = applicationEventPublisher;
+	}
 
-    @Override
-    public void run(ApplicationArguments args) {
-        Platform.runLater(() -> {
-            primaryStage.initStyle(StageStyle.UNDECORATED);
+	@Override
+	public void run(ApplicationArguments args) {
+		Platform.runLater(() -> {
+			primaryStage.initStyle(StageStyle.UNDECORATED);
 
-            VBox root = new VBox();
-            root.getChildren().addAll(new VBox());
+			VBox root = new VBox();
+			root.getChildren().addAll(new VBox());
 
-            Scene scene = new Scene(root, 1980, 1080);
-            primaryStage.setScene(scene);
-            applicationEventPublisher.publishEvent(new JavaFxStartEvent(this));
-            primaryStage.show();
-        });
-    }
+			Scene scene = new Scene(root, 1980, 1080);
+			primaryStage.setScene(scene);
+			applicationEventPublisher.publishEvent(new JavaFxStartEvent(this));
+			primaryStage.show();
+		});
+	}
 }

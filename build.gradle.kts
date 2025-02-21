@@ -5,6 +5,7 @@ plugins {
     id("org.beryx.jlink") version "2.25.0"
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.diffplug.spotless") version "6.22.0"
 }
 
 group = "org.nevertouchgrass"
@@ -12,6 +13,13 @@ version = "0.0.1"
 
 application {
     mainClass.set("org.nevertouchgrass.prolific.ProlificApplication")
+}
+
+spotless {
+    java {
+        eclipse()
+
+    }
 }
 
 javafx {
@@ -43,7 +51,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.nevertouchgrass:SpringFX:0.0.7")
+    implementation("com.github.ikvict07:SpringFX:0.0.12")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -60,4 +68,8 @@ jlink {
     launcher {
         name = "app"
     }
+}
+
+tasks.named("check") {
+    dependsOn("spotlessApply")
 }

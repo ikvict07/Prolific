@@ -6,11 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ProlificApplication {
-
-    public static void main(String[] args) {
-        var app = new SpringApplication(ProlificApplication.class);
-        app.addListeners(new PreBeanCreationListener());
-        app.run(args);
-    }
-
+	public static void main(String[] args) {
+		var app = new SpringApplication(ProlificApplication.class);
+		app.addListeners(new PreBeanCreationListener());
+		app.run(args);
+	}
 }
