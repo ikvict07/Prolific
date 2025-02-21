@@ -18,7 +18,6 @@ application {
 spotless {
     java {
         eclipse()
-
     }
 }
 
@@ -51,7 +50,6 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("com.github.ikvict07:SpringFX:0.0.12")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

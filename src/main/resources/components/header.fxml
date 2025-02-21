@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="header" fx:id="header" prefHeight="40.0" prefWidth="1280.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController">
+
+    <!-- Left section with controls -->
+    <HBox id="gradientBox" fx:id="leftSection" alignment="CENTER_LEFT" layoutX="1.0" prefWidth="358.0" spacing="10.0" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0">
+        <children>
+            <Circle fx:id="closeButton" fill="transparent" onMouseClicked="#handleClose" radius="5.5" stroke="#5A5D6B" />
+            <Circle fx:id="minimizeButton" fill="transparent" onMouseClicked="#handleMinimize" radius="5.5" stroke="#5A5D6B" />
+            <Circle fx:id="maximizeButton" fill="transparent" onMouseClicked="#handleMaximize" radius="5.5" stroke="#5A5D6B" />
+            <fx:include source="../icons/fxml/folder.fxml" />
+            <fx:include source="../icons/fxml/settings.fxml" />
+        </children>
+        <padding>
+            <Insets left="10.0" />
+        </padding>
+    </HBox>
+
+    <!-- Center section with title -->
+    <Text fx:id="titleText" fill="#ebecf0" strokeType="OUTSIDE" strokeWidth="0.0" text="Projects Manager" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="684.61376953125" AnchorPane.topAnchor="10.0" />
+
+    <!-- Right section as an empty Region -->
+    <Region fx:id="rightSection" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" />
+</AnchorPane>
