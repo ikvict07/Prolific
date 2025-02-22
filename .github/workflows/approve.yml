@@ -20,8 +20,14 @@ jobs:
             exit 0
           fi
 
+      - name: Get Pull Request Number
+        if: env.APPROVE_ALLOWED == 'true'
+        run: |
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+
       - name: Approve Pull Request
         if: env.APPROVE_ALLOWED == 'true'
-        run: gh pr review --approve "$GITHUB_REF"
+        run: gh pr review --approve "$PR_NUMBER"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
