@@ -1,0 +1,32 @@
+name: Auto Approve for Specific Users
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set approval environment variable
+        run: |
+          if [ "$GITHUB_ACTOR" = "petukhoudzmitry" ]; then
+            echo "User $GITHUB_ACTOR is allowed to auto-approve."
+            echo "APPROVE_ALLOWED=true" >> $GITHUB_ENV
+          else
+            echo "User $GITHUB_ACTOR is NOT allowed to auto-approve."
+            exit 0
+          fi
+
+      - name: Get Pull Request Number
+        if: env.APPROVE_ALLOWED == 'true'
+        run: echo "PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+
+      - name: Approve pull request
+        if: env.APPROVE_ALLOWED == 'true'
+        run: gh pr review --approve "$PR_NUMBER"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
