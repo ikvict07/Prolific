@@ -30,4 +30,4 @@ jobs:
         if: env.APPROVE_ALLOWED == 'true'
         run: gh pr review --approve "$PR_NUMBER"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
