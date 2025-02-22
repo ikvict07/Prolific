@@ -1,0 +1,27 @@
+name: Auto Merge for Specific Users
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if user is allowed to bypass rules
+        env:
+          ALLOWED_USERS: "petukhoudzmitry"
+        run: |
+          if echo "$ALLOWED_USERS" | grep -w "$GITHUB_ACTOR"; then
+            echo "User $GITHUB_ACTOR is allowed to auto-merge."
+            echo "MERGE_ALLOWED=true" >> $GITHUB_ENV
+          else
+            echo "User $GITHUB_ACTOR is NOT allowed to auto-merge."
+            exit 0
+          fi
+
+      - name: Enable GitHub auto-merge
+        if: env.MERGE_ALLOWED == 'true'
+        run: gh pr merge --auto --squash "$GITHUB_REF"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
