@@ -1,0 +1,27 @@
+name: Auto Approve for Specific Users
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if user is allowed to bypass rules
+        env:
+          ALLOWED_USERS: "petukhoudzmitry"
+        run: |
+          if echo "$ALLOWED_USERS" | grep -w "$GITHUB_ACTOR"; then
+            echo "User $GITHUB_ACTOR is allowed to auto-approve."
+            echo "APPROVE_ALLOWED=true" >> $GITHUB_ENV
+          else
+            echo "User $GITHUB_ACTOR is NOT allowed to auto-approve."
+            exit 0
+          fi
+
+      - name: Approve Pull Request
+        if: env.APPROVE_ALLOWED == 'true'
+        run: gh pr review --approve "$GITHUB_REF"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
