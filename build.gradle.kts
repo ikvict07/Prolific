@@ -15,21 +15,8 @@ application {
     mainClass.set("org.nevertouchgrass.prolific.ProlificApplication")
 }
 
-spotless {
-    java {
-        eclipse()
-    }
-}
-
-javafx {
-    version = "21"
-    modules = listOf("javafx.controls", "javafx.fxml")
-}
-
 repositories {
     mavenCentral()
-    maven { url = uri("https://jitpack.io") }
-    mavenLocal()
 }
 
 java {
@@ -38,36 +25,11 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
-jlink {
-    imageZip.set(file("${layout.buildDirectory}/distributions/app-${javafx.platform.classifier}.zip"))
-    options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
-    launcher {
-        name = "app"
-    }
-}
-
-tasks.named("check") {
-    dependsOn("spotlessApply")
+    implementation(libs.bundles.spring)
+    implementation(libs.oshiCore)
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    testImplementation(libs.bundles.testing)
+    testRuntimeOnly(libs.junitJupiter)
 }

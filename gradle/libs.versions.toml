@@ -1,0 +1,20 @@
+[versions]
+oshi = "6.6.6"
+springBoot = "3.4.3"
+
+[libraries]
+springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
+springBoot = { module = "org.springframework.boot:spring-boot-starter" }
+springBootTest = { module = "org.springframework.boot:spring-boot-starter-test" }
+oshiCore = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
+lombok = { module = "org.projectlombok:lombok" }
+junitJupiter = { module = "org.junit.platform:junit-platform-launcher" }
+[bundles]
+spring = [
+    "springBootParent",
+    "springBoot",
+]
+testing = [
+    "springBootTest",
+    "junitJupiter",
+]
