@@ -1,10 +1,10 @@
 plugins {
     java
     id("application")
-    id("org.springframework.boot") version "3.4.3"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("org.openjfx.javafxplugin") version "0.0.13"
-    id("org.beryx.jlink") version "2.25.0"
+    alias(libs.plugins.springBoot)
+    alias(libs.plugins.springDependencyManagement)
+    alias(libs.plugins.javaFx)
+    alias(libs.plugins.jlink)
 }
 
 group = "org.nevertouchgrass"
