@@ -2,9 +2,12 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
+import org.nevertouchgrass.prolific.annotation.Constraints;
+import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 
@@ -19,6 +22,10 @@ public class MainScreenController {
 	@FXML
 	public AnchorPane mainScreen;
 
+	@FXML
+	@ConstraintsIgnoreElementSize(top = 0.20, left = 0.05, right = 0.5)
+	public ScrollPane projectsPanel;
+
 
 	@Initialize
 	public void init() {
@@ -31,5 +38,7 @@ public class MainScreenController {
 		};
 		scene.widthProperty().addListener(block1);
 		scene.heightProperty().addListener(block2);
+		mainScreen.setPrefWidth(scene.getWidth());
+		mainScreen.setPrefHeight(scene.getHeight());
 	}
 }

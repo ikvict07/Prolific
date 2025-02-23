@@ -24,32 +24,6 @@ public class AnchorPaneConstraintsService {
 	public void init() {
 		System.out.println("AnchorPaneConstraintsService initialized.");
 	}
-
-	public void setAnchorConstraints(Node node, double top, double right, double bottom, double left) {
-		if (node == null) {
-			return;
-		}
-		if (scene == null) {
-			return;
-		}
-		Runnable block1 = () -> {
-			AnchorPane.setRightAnchor(node, scene.getWidth() * right - node.getBoundsInLocal().getWidth() / 2);
-			AnchorPane.setLeftAnchor(node, scene.getWidth() * left - node.getBoundsInLocal().getWidth() / 2);
-		};
-		Runnable block2 = () -> {
-			AnchorPane.setTopAnchor(node, scene.getHeight() * top - node.getBoundsInLocal().getHeight() / 2);
-			AnchorPane.setBottomAnchor(node, scene.getHeight() * bottom - node.getBoundsInLocal().getHeight() / 2);
-		};
-		scene.widthProperty().addListener((observable, oldValue, newValue) -> {
-			block1.run();
-		});
-		scene.heightProperty().addListener((observable, oldValue, newValue) -> {
-			block2.run();
-		});
-		block1.run();
-		block2.run();
-	}
-
 	public void setAnchorConstraintsLeft(Node node, double left) {
 		if (node == null) {
 			return;
@@ -78,8 +52,14 @@ public class AnchorPaneConstraintsService {
 		if (node == null) {
 			return;
 		}
-		Runnable block = () -> AnchorPane.setTopAnchor(node,
-				scene.getHeight() * top - node.getBoundsInLocal().getHeight() / 2);
+		Runnable block = () -> {
+			System.out.println("Setting top anchor for " + node);
+			System.out.println("Scene height: " + scene.getHeight());
+			System.out.println("Top: " + top);
+			System.out.println("Node bounds: " + node.getBoundsInLocal());
+			AnchorPane.setTopAnchor(node,
+					scene.getHeight() * top - node.getBoundsInLocal().getHeight() / 2);
+		};
 		scene.heightProperty().addListener((observable, oldValue, newValue) -> {
 			block.run();
 		});
@@ -98,34 +78,42 @@ public class AnchorPaneConstraintsService {
 		block.run();
 	}
 
-	public void setAnchorConstraintsSides(Node node, double right, double left) {
+
+	public void setAnchorConstraintsIgnoreElementSizeLeft(Node node, double left) {
 		if (node == null) {
 			return;
 		}
-		if (scene == null) {
-			return;
-		}
-		Runnable block = () -> {
-			AnchorPane.setRightAnchor(node, scene.getWidth() * right - node.getBoundsInLocal().getWidth() / 2);
-			AnchorPane.setLeftAnchor(node, scene.getWidth() * left - node.getBoundsInLocal().getWidth() / 2);
-		};
+		Runnable block = () -> AnchorPane.setLeftAnchor(node, scene.getWidth() * left);
 		scene.widthProperty().addListener((observable, oldValue, newValue) -> {
 			block.run();
 		});
 		block.run();
 	}
-
-	public void setAnchorConstraintsTopBottom(Node node, double top, double bottom) {
+	public void setAnchorConstraintsIgnoreElementSizeRight(Node node, double right) {
 		if (node == null) {
 			return;
 		}
-		if (scene == null) {
+		Runnable block = () -> AnchorPane.setRightAnchor(node, scene.getWidth() * right);
+		scene.widthProperty().addListener((observable, oldValue, newValue) -> {
+			block.run();
+		});
+		block.run();
+	}
+	public void setAnchorConstraintsIgnoreElementSizeTop(Node node, double top) {
+		if (node == null) {
 			return;
 		}
-		Runnable block = () -> {
-			AnchorPane.setTopAnchor(node, scene.getHeight() * top - node.getBoundsInLocal().getHeight() / 2);
-			AnchorPane.setBottomAnchor(node, scene.getHeight() * bottom - node.getBoundsInLocal().getHeight() / 2);
-		};
+		Runnable block = () -> AnchorPane.setTopAnchor(node, scene.getHeight() * top);
+		scene.heightProperty().addListener((observable, oldValue, newValue) -> {
+			block.run();
+		});
+		block.run();
+	}
+	public void setAnchorConstraintsIgnoreElementSizeBottom(Node node, double bottom) {
+		if (node == null) {
+			return;
+		}
+		Runnable block = () -> AnchorPane.setBottomAnchor(node, scene.getHeight() * bottom);
 		scene.heightProperty().addListener((observable, oldValue, newValue) -> {
 			block.run();
 		});
