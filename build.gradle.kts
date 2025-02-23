@@ -51,7 +51,7 @@ tasks {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
         jvmArgs("-Xshare:off")
     }
-    
+}
 
 javafx {
     version = "21"
