@@ -1,0 +1,28 @@
+[versions]
+oshi = "6.6.6"
+springBoot = "3.4.3"
+springDependencyManagement = "1.1.7"
+javaFx = "0.0.13"
+jlink = "2.25.0"
+
+[libraries]
+springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
+springBoot = { module = "org.springframework.boot:spring-boot-starter" }
+springBootTest = { module = "org.springframework.boot:spring-boot-starter-test" }
+oshiCore = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
+lombok = { module = "org.projectlombok:lombok" }
+junitJupiter = { module = "org.junit.platform:junit-platform-launcher" }
+[bundles]
+spring = [
+    "springBootParent",
+    "springBoot",
+]
+testing = [
+    "springBootTest",
+    "junitJupiter",
+]
+[plugins]
+springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
+springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+javaFx = { id = "org.openjfx.javafxplugin", version.ref = "javaFx" }
+jlink = { id = "org.beryx.jlink", version.ref = "jlink" }

@@ -1,11 +1,10 @@
 plugins {
     java
     id("application")
-    id("org.openjfx.javafxplugin") version "0.0.13"
-    id("org.beryx.jlink") version "2.25.0"
-    id("org.springframework.boot") version "3.4.3"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("com.diffplug.spotless") version "6.22.0"
+    alias(libs.plugins.springBoot)
+    alias(libs.plugins.springDependencyManagement)
+    alias(libs.plugins.javaFx)
+    alias(libs.plugins.jlink)
 }
 
 group = "org.nevertouchgrass"
@@ -15,21 +14,8 @@ application {
     mainClass.set("org.nevertouchgrass.prolific.ProlificApplication")
 }
 
-spotless {
-    java {
-        eclipse()
-    }
-}
-
-javafx {
-    version = "21"
-    modules = listOf("javafx.controls", "javafx.fxml")
-}
-
 repositories {
     mavenCentral()
-    maven { url = uri("https://jitpack.io") }
-    mavenLocal()
 }
 
 java {
@@ -37,6 +23,7 @@ java {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
 
 configurations {
     compileOnly {
@@ -47,11 +34,12 @@ configurations {
 val mockitoAgent = configurations.create("mockitoAgent")
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation(libs.bundles.spring)
+    implementation(libs.oshiCore)
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    testImplementation(libs.bundles.testing)
+    testRuntimeOnly(libs.junitJupiter)
     implementation("org.apache.logging.log4j:log4j-api:2.24.3")
 
     testImplementation("org.mockito:mockito-core:5.14.0")
@@ -63,12 +51,12 @@ tasks {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
         jvmArgs("-Xshare:off")
     }
-}
+    
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+javafx {
+    version = "21"
+    modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics")
 }
-
 jlink {
     imageZip.set(file("${layout.buildDirectory}/distributions/app-${javafx.platform.classifier}.zip"))
     options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
@@ -77,6 +65,3 @@ jlink {
     }
 }
 
-tasks.named("check") {
-    dependsOn("spotlessApply")
-}
