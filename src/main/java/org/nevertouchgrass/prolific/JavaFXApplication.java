@@ -45,7 +45,6 @@ public class JavaFXApplication implements ApplicationRunner {
 
 			Scene scene = new Scene(root, 1980, 1080);
 			primaryStage.setScene(scene);
-			headerController.setStage();
 			applicationEventPublisher.publishEvent(new StageInitializeEvent("primaryStage"));
 			primaryStage.show();
 		});
