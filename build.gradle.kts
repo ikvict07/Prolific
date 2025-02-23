@@ -24,6 +24,15 @@ java {
     }
 }
 
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+val mockitoAgent = configurations.create("mockitoAgent")
+
 dependencies {
     implementation(libs.bundles.spring)
     implementation(libs.oshiCore)
@@ -31,7 +40,18 @@ dependencies {
     annotationProcessor(libs.lombok)
     testImplementation(libs.bundles.testing)
     testRuntimeOnly(libs.junitJupiter)
+    implementation("org.apache.logging.log4j:log4j-api:2.24.3")
+
+    testImplementation("org.mockito:mockito-core:5.14.0")
+    mockitoAgent("org.mockito:mockito-core:5.14.0") { isTransitive = false }
 }
+
+tasks {
+    test {
+        jvmArgs("-javaagent:${mockitoAgent.asPath}")
+        jvmArgs("-Xshare:off")
+    }
+    
 
 javafx {
     version = "21"
