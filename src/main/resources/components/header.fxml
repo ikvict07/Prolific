@@ -16,7 +16,7 @@
             <Circle fx:id="minimizeButton" fill="transparent" onMouseClicked="#handleMinimize" radius="5.5" stroke="#5A5D6B" />
             <Circle fx:id="maximizeButton" fill="transparent" onMouseClicked="#handleMaximize" radius="5.5" stroke="#5A5D6B" />
             <fx:include source="../icons/fxml/folder.fxml" />
-            <fx:include source="../icons/fxml/settings.fxml" />
+            <fx:include fx:id="settingsButton" source="../icons/fxml/settings.fxml" />
         </children>
         <padding>
             <Insets left="10.0" />
