@@ -40,19 +40,19 @@ dependencies {
     annotationProcessor(libs.lombok)
     testImplementation(libs.bundles.testing)
     testRuntimeOnly(libs.junitJupiter)
-    implementation("org.apache.logging.log4j:log4j-api:2.24.3")
-
-    testImplementation("org.mockito:mockito-core:5.14.0")
-    mockitoAgent("org.mockito:mockito-core:5.14.0") { isTransitive = false }
+    implementation(libs.log4j)
+    implementation(libs.jacksonXml)
+    mockitoAgent(libs.mockito) { isTransitive = false }
 }
 
 tasks {
     test {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
         jvmArgs("-Xshare:off")
+        useJUnitPlatform()
     }
-    
 
+}
 javafx {
     version = "21"
     modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics")

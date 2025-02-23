@@ -1,0 +1,71 @@
+package org.nevertouchgrass.prolific.service;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.model.ProjectTypeModel;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
+
+@Service
+public class ProjectResolver {
+    private final List<ProjectTypeModel> projectTypeModels;
+
+    public ProjectResolver(@NonNull XmlProjectScannerConfigLoaderService configLoaderService) {
+        this.projectTypeModels = configLoaderService.loadProjectTypes();
+    }
+
+    @SneakyThrows
+    public Project resolveProject(Path path) {
+        for (var projectTypeModel : projectTypeModels) {
+            Visitor visitor = new Visitor(projectTypeModels);
+            Files.walkFileTree(path, visitor);
+            if (visitor.getProject().getType() != null) {
+                Project project = visitor.getProject();
+                project.setPath(path.toAbsolutePath().normalize().toString());
+                project.setTitle(path.getFileName().toString());
+                return project;
+            }
+        }
+        throw new IllegalStateException("Project type not found for path: " + path);
+    }
+
+}
+
+@Getter
+class Visitor extends SimpleFileVisitor<Path> {
+    private final List<ProjectTypeModel> projectTypeModels;
+
+    Visitor(List<ProjectTypeModel> projectTypeModels) {
+        this.projectTypeModels = projectTypeModels;
+    }
+
+    private Project project = new Project();
+
+    @Override
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        for (ProjectTypeModel projectTypeModel : projectTypeModels) {
+            List<String> identifiers = projectTypeModel.getIdentifiers();
+            for (String identifier : identifiers) {
+                if (file.getFileName().toString().contains(identifier)) {
+                    project.setType(projectTypeModel.getName());
+                    return FileVisitResult.TERMINATE;
+                }
+            }
+        }
+        return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        return FileVisitResult.CONTINUE;
+    }
+}

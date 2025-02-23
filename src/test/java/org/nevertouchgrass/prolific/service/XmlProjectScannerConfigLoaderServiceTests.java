@@ -11,8 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-@SpringBootTest
-@ContextConfiguration(classes = TestConfiguration.class)
+@SpringBootTest(classes = TestConfiguration.class)
 public class XmlProjectScannerConfigLoaderServiceTests {
 
 	@Autowired
