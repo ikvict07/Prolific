@@ -8,6 +8,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
@@ -27,7 +28,7 @@ public class HeaderController {
     private double x, y;
 
     @FXML
-    public SVGPath settingsButton;
+    public HBox settingsButton;
     @FXML
     public HBox gradientBox;
     @FXML
