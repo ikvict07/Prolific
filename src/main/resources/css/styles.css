@@ -4,11 +4,10 @@
 }
 
 #gradientBox {
-    -fx-background-color:
-            linear-gradient(from 0% 0% to 100% 0%,
-            #344C7D00 0%,
-            #344C7D 50%,
-            #344C7D00 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 0%,
+    #344C7D00 0%,
+    #344C7D 50%,
+    #344C7D00 100%);
     -fx-pref-height: 40px;
 }
 
@@ -28,4 +27,51 @@
 
 #mainBG {
     -fx-background-color: #1E1F22;
+}
+
+.defaultText {
+    -fx-text-fill: #DFE1E5;
+    -fx-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 12px;
+}
+
+.defaultClickableText {
+    -fx-text-fill: #DFE1E5;
+    -fx-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.defaultClickableText:hover {
+    -fx-text-fill: #B4B8BF;
+}
+
+.popup {
+    -fx-background-color: rgba(45, 45, 48, 0.85);
+    -fx-pref-width: 80px;
+    -fx-background-radius: 6px;
+
+}
+
+.button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 12px;
+
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 1;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #3466B8;
 }

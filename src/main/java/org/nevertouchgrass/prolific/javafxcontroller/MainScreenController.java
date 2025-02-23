@@ -12,5 +12,5 @@ public class MainScreenController {
 	private Stage stage;
 
 	@FXML
-	private AnchorPane headerComponent;
+	public AnchorPane headerComponent;
 }

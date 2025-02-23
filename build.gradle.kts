@@ -1,11 +1,10 @@
 plugins {
     java
     id("application")
-    id("org.openjfx.javafxplugin") version "0.0.13"
-    id("org.beryx.jlink") version "2.25.0"
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
-    id("com.diffplug.spotless") version "6.22.0"
+    id("org.openjfx.javafxplugin") version "0.0.13"
+    id("org.beryx.jlink") version "2.25.0"
 }
 
 group = "org.nevertouchgrass"
@@ -33,3 +32,16 @@ dependencies {
     testImplementation(libs.bundles.testing)
     testRuntimeOnly(libs.junitJupiter)
 }
+
+javafx {
+    version = "21"
+    modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics")
+}
+jlink {
+    imageZip.set(file("${layout.buildDirectory}/distributions/app-${javafx.platform.classifier}.zip"))
+    options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
+    launcher {
+        name = "app"
+    }
+}
+

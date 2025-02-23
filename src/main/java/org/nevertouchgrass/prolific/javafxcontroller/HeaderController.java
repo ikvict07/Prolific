@@ -2,20 +2,27 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
 import org.nevertouchgrass.prolific.annotation.Constraints;
+import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @AnchorPaneController
 @StageComponent("primaryStage")
 public class HeaderController {
+    @FXML
+    SVGPath settingsButton;
     @FXML
     public HBox gradientBox;
     @FXML
@@ -37,13 +44,17 @@ public class HeaderController {
     @FXML
     private Circle closeButton;
 
+    @Autowired
+    private Popup settingsPopup;
+
     private double xOffset = 0;
     private double yOffset = 0;
     private Stage stage;
     private double minWidth = 1280;
     private double minHeight = 720;
 
-    public void setStage() {
+    @Initialize
+    public void init() {
         closeButton.setOnMouseClicked(this::handleClose);
         minimizeButton.setOnMouseClicked(this::handleMinimize);
         maximizeButton.setOnMouseClicked(this::handleMaximize);
@@ -60,6 +71,7 @@ public class HeaderController {
 
         stage.getScene().setOnMouseMoved(this::resizeCursor);
         stage.getScene().setOnMouseDragged(this::resizeWindow);
+        dropdownForSettings();
     }
 
     private void resizeCursor(MouseEvent event) {
@@ -158,5 +170,16 @@ public class HeaderController {
                 stage.setMaximized(true);
             }
         }
+    }
+
+
+    private void dropdownForSettings() {
+        settingsButton.setOnMouseClicked(event -> {
+                    Bounds bounds = settingsButton.localToScreen(settingsButton.getBoundsInLocal());
+                    settingsPopup.setX(bounds.getMinX());
+                    settingsPopup.setY(bounds.getMaxY() + 5);
+                    settingsPopup.show(stage);
+                }
+        );
     }
 }
