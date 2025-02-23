@@ -25,7 +25,7 @@
     -fx-pref-height: 40px;
 }
 
-#mainBG {
+.mainBG {
     -fx-background-color: #1E1F22;
 }
 
