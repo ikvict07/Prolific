@@ -2,20 +2,25 @@ package org.nevertouchgrass.prolific.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
+import org.nevertouchgrass.prolific.config.TestConfiguration;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
+@SpringBootTest
+@ContextConfiguration(classes = TestConfiguration.class)
 public class XmlProjectScannerConfigLoaderServiceTests {
 
-	private final XmlProjectScannerConfigLoaderService xmlProjectScannerConfigLoaderService = new XmlProjectScannerConfigLoaderService();
+	@Autowired
+	private XmlProjectScannerConfigLoaderService xmlProjectScannerConfigLoaderService;
 
-	@ParameterizedTest
+	@Test
 	@DisplayName("Test load project scanner plugins config")
-	@ValueSource(strings = {"src/test/resources/plugin/plugins.xml"})
-	public void givenPath_whenScanConfig_thenReturnProjectTypeModels(String path) {
+	public void givenPath_whenScanConfig_thenReturnProjectTypeModels() {
 		// Given
 		var expected = List.of(new ProjectTypeModel("Gradle", List.of("build.gradle", "build.gradle.kts", ".gradle")),
 				new ProjectTypeModel("Maven", List.of("pom.xml")),
@@ -24,7 +29,7 @@ public class XmlProjectScannerConfigLoaderServiceTests {
 				new ProjectTypeModel("Python", List.of("requirements.txt", "pyproject.toml", "setup.py", ".venv")));
 
 		// When
-		var actual = xmlProjectScannerConfigLoaderService.loadProjectTypes(path);
+		var actual = xmlProjectScannerConfigLoaderService.loadProjectTypes();
 
 		// Then
 		Assertions.assertNotNull(actual, "Actual is null");

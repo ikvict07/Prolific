@@ -1,12 +1,10 @@
 package org.nevertouchgrass.prolific.service;
 
-import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.*;
+import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.stereotype.Service;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -14,19 +12,29 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.*;
 
 @Service
 public class XmlProjectScannerConfigLoaderService {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public List<ProjectTypeModel> loadProjectTypes(@NonNull String path) {
+	private final PluginConfigProvider pluginConfigProvider;
+
+	public XmlProjectScannerConfigLoaderService(PluginConfigProvider pluginConfigProvider) {
+		this.pluginConfigProvider = pluginConfigProvider;
+	}
+
+	public List<ProjectTypeModel> loadProjectTypes() {
+		Path path = pluginConfigProvider.getPluginConfigPath();
 		List<ProjectTypeModel> projectTypeModels = new ArrayList<>();
 
 		try {
-			File file = new File(path);
+			File file = path.toFile();
 			if (!file.exists()) {
 				throw new RuntimeException("Plugin configuration file does not exist " + path);
 			}
