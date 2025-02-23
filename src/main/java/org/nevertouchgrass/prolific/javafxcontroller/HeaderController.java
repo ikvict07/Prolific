@@ -3,6 +3,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -11,6 +12,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
 import org.nevertouchgrass.prolific.annotation.Constraints;
@@ -21,8 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AnchorPaneController
 @StageComponent("primaryStage")
 public class HeaderController {
+
+    private boolean maximized = false;
+    private double x, y;
+
     @FXML
-    SVGPath settingsButton;
+    public SVGPath settingsButton;
     @FXML
     public HBox gradientBox;
     @FXML
@@ -163,15 +169,27 @@ public class HeaderController {
     }
 
     public void handleMaximize(MouseEvent mouseEvent) {
-        if (stage != null) {
-            if (stage.isMaximized()) {
-                stage.setIconified(false);
-            } else {
-                stage.setMaximized(true);
-            }
+        if (maximized) {
+            stage.setWidth(1980);
+            stage.setHeight(1080);
+            stage.setX(x);
+            stage.setY(y);
+            maximized = false;
+        } else {
+            x = stage.getX();
+            y = stage.getY();
+
+            Screen screen = Screen.getPrimary();
+            Rectangle2D bounds = screen.getVisualBounds();
+
+            stage.setX(bounds.getMinX());
+            stage.setY(bounds.getMinY());
+            stage.setWidth(bounds.getWidth());
+            stage.setHeight(bounds.getHeight());
+
+            maximized = true;
         }
     }
-
 
     private void dropdownForSettings() {
         settingsButton.setOnMouseClicked(event -> {

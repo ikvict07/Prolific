@@ -1,9 +1,11 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
+import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 
 @AnchorPaneController
@@ -13,4 +15,21 @@ public class MainScreenController {
 
 	@FXML
 	public AnchorPane headerComponent;
+
+	@FXML
+	public AnchorPane mainScreen;
+
+
+	@Initialize
+	public void init() {
+		var scene = stage.getScene();
+		ChangeListener<Number> block1 = (observable, oldValue, newValue) -> {
+			mainScreen.setPrefWidth(newValue.doubleValue());
+		};
+		ChangeListener<Number> block2 = (observable, oldValue, newValue) -> {
+			mainScreen.setPrefHeight(newValue.doubleValue());
+		};
+		scene.widthProperty().addListener(block1);
+		scene.heightProperty().addListener(block2);
+	}
 }
