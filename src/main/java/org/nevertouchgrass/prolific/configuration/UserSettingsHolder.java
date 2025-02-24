@@ -11,6 +11,8 @@ public class UserSettingsHolder {
     private String baseScanDirectory;
 
     public void load(UserSettingsHolder userSettingsHolder) {
-        this.baseScanDirectory = userSettingsHolder.getBaseScanDirectory();
+        if (userSettingsHolder.getBaseScanDirectory() != null) {
+            this.baseScanDirectory = userSettingsHolder.getBaseScanDirectory().replace("#{osUser}", System.getProperty("user.name"));
+        }
     }
 }

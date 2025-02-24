@@ -1,6 +1,8 @@
 package org.nevertouchgrass.prolific.config;
 
 import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
+import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
+import org.nevertouchgrass.prolific.service.PathService;
 import org.nevertouchgrass.prolific.service.ProjectScannerService;
 import org.nevertouchgrass.prolific.service.XmlProjectScannerConfigLoaderService;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +19,8 @@ public class TestConfiguration {
 	}
 
 	@Bean
-	public PluginConfigProvider pluginConfigProvider() {
-		PluginConfigProvider pluginConfigProvider = new PluginConfigProvider();
+	public PluginConfigProvider pluginConfigProvider(SpringFXConfigurationProperties springFXConfigurationProperties, PathService pathService) {
+		PluginConfigProvider pluginConfigProvider = new PluginConfigProvider(springFXConfigurationProperties, pathService);
 		pluginConfigProvider.setPluginConfigPath(Path.of("src/test/resources/plugin/plugins.xml"));
 		return pluginConfigProvider;
 	}
