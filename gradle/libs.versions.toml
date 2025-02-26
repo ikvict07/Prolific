@@ -6,7 +6,8 @@ javaFx = "0.0.13"
 jlink = "2.25.0"
 log4j = "2.24.3"
 mockito = "5.14.0"
-jackon = "2.13.0"
+jackson = "2.13.0"
+jscksonTypes = "2.18.2"
 [libraries]
 springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
 springBoot = { module = "org.springframework.boot:spring-boot-starter" }
@@ -16,7 +17,8 @@ lombok = { module = "org.projectlombok:lombok" }
 junitJupiter = { module = "org.junit.platform:junit-platform-launcher" }
 log4j = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-jacksonXml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackon" }
+jacksonXml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
+jacksonTypes = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jscksonTypes" }
 [bundles]
 spring = [
     "springBootParent",

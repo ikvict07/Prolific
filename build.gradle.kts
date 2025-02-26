@@ -42,6 +42,7 @@ dependencies {
     testRuntimeOnly(libs.junitJupiter)
     implementation(libs.log4j)
     implementation(libs.jacksonXml)
+    implementation(libs.jacksonTypes)
     mockitoAgent(libs.mockito) { isTransitive = false }
 }
 
