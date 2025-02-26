@@ -99,6 +99,7 @@ public class ProjectScannerService {
         }
 
         @Override
+        @NonNull
         public FileVisitResult visitFileFailed(Path file, IOException exc) {
             return FileVisitResult.SKIP_SUBTREE;
         }
