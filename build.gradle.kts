@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.springDependencyManagement)
     alias(libs.plugins.javaFx)
     alias(libs.plugins.jlink)
+    id("maven-publish")
 }
 
 group = "org.nevertouchgrass"
@@ -15,6 +16,7 @@ application {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -65,3 +67,9 @@ jlink {
     }
 }
 
+tasks.register<Exec> ("runLinux") {
+    dependsOn(tasks.bootJar)
+    workingDir = rootDir
+    environment("GDK_BACKEND", "x11")
+    commandLine("java", "-Dprism.order=sw", "-jar", "build/libs/Prolific-0.0.1.jar")
+}
