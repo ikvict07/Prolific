@@ -23,13 +23,14 @@ public class MainScreenController {
 	@Initialize
 	public void init() {
 		var scene = stage.getScene();
+
 		ChangeListener<Number> block1 = (observable, oldValue, newValue) -> {
 			mainScreen.setPrefWidth(newValue.doubleValue());
 		};
 		ChangeListener<Number> block2 = (observable, oldValue, newValue) -> {
 			mainScreen.setPrefHeight(newValue.doubleValue());
 		};
-		scene.widthProperty().addListener(block1);
-		scene.heightProperty().addListener(block2);
+		stage.widthProperty().addListener(block1);
+		stage.heightProperty().addListener(block2);
 	}
 }
