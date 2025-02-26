@@ -8,9 +8,11 @@ import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
@@ -26,7 +28,7 @@ public class ProjectResolver {
     @SneakyThrows
     public Project resolveProject(Path path) {
         for (var projectTypeModel : projectTypeModels) {
-            Visitor visitor = new Visitor(projectTypeModels);
+            Visitor visitor = new Visitor(projectTypeModel);
             Files.walkFileTree(path, visitor);
             if (visitor.getProject().getType() != null) {
                 Project project = visitor.getProject();
@@ -42,30 +44,35 @@ public class ProjectResolver {
 
 @Getter
 class Visitor extends SimpleFileVisitor<Path> {
-    private final List<ProjectTypeModel> projectTypeModels;
+    private final ProjectTypeModel projectTypeModel;
 
-    Visitor(List<ProjectTypeModel> projectTypeModels) {
-        this.projectTypeModels = projectTypeModels;
+
+    private final Project project = new Project();
+    private final PathMatcher pathMatcher;
+
+    Visitor(ProjectTypeModel projectTypeModel) {
+        this.projectTypeModel = projectTypeModel;
+        List<String> identifiers = projectTypeModel.getIdentifiers();
+        String pattern = String.format("glob:**/{%s}", String.join(",", identifiers));
+        pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
     }
 
-    private Project project = new Project();
-
     @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        for (ProjectTypeModel projectTypeModel : projectTypeModels) {
-            List<String> identifiers = projectTypeModel.getIdentifiers();
-            for (String identifier : identifiers) {
-                if (file.getFileName().toString().contains(identifier)) {
-                    project.setType(projectTypeModel.getName());
-                    return FileVisitResult.TERMINATE;
-                }
-            }
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+        if (pathMatcher.matches(file)) {
+            project.setType(projectTypeModel.getName());
+            return FileVisitResult.TERMINATE;
         }
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+        if (pathMatcher.matches(dir)) {
+            project.setType(projectTypeModel.getName());
+            return FileVisitResult.SKIP_SUBTREE;
+        }
+
         return FileVisitResult.CONTINUE;
     }
 }

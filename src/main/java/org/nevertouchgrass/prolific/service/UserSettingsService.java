@@ -3,49 +3,68 @@ package org.nevertouchgrass.prolific.service;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
+@Log4j2
 public class UserSettingsService {
     private final UserSettingsHolder userSettingsHolder;
     private final SpringFXConfigurationProperties configuration;
     private final PathService pathService;
+    private final XmlMapper xmlMapper;
 
+    private UserSettingsService it;
 
-    public UserSettingsService(UserSettingsHolder userSettingsHolder, SpringFXConfigurationProperties springFXConfigurationProperties, PathService pathService) {
+    @Autowired
+    public void setSelf(@Lazy UserSettingsService it) {
+        this.it = it;
+    }
+
+    public UserSettingsService(UserSettingsHolder userSettingsHolder, SpringFXConfigurationProperties springFXConfigurationProperties, PathService pathService, XmlMapper xmlMapper) {
         this.userSettingsHolder = userSettingsHolder;
         this.configuration = springFXConfigurationProperties;
         this.pathService = pathService;
+        this.xmlMapper = xmlMapper;
     }
 
     @PostConstruct
     @SneakyThrows
     public void loadSettings() {
-        XmlMapper xmlMapper = new XmlMapper();
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Path settingsFilePath = getSettingsPath();
-
         UserSettingsHolder sett = xmlMapper.readValue(Files.newInputStream(settingsFilePath), UserSettingsHolder.class);
-        System.out.println(sett);
+        log.info("Loaded settings: {}", sett);
         if (sett.getBaseScanDirectory() == null || sett.getBaseScanDirectory().isEmpty()) {
-            onFirstLoad();
-            saveSettings();
-        } else {
-            userSettingsHolder.load(sett);
+            setDefaultBaseScanDirectory();
         }
-        System.out.println(userSettingsHolder);
+        if (sett.getLastScanDate() == null) {
+            setDefaultLastScanDate();
+        }
+        if (sett.getRescanEveryHours() == null) {
+            setDefaultRescanEvery();
+        }
+        if (sett.getUserProjects() == null) {
+            setDefaultProjects();
+        }
+        userSettingsHolder.load(sett);
+        log.info("Using settings: {}", userSettingsHolder);
     }
 
     @SneakyThrows
-    public void saveSettings() {
-        System.out.println("saving: " + userSettingsHolder);
-        XmlMapper xmlMapper = new XmlMapper();
+    @Async
+    synchronized public void saveSettings() {
+        log.info("Saving settings: " + userSettingsHolder);
         Path settingsFilePath = getSettingsPath();
         xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), userSettingsHolder);
     }
@@ -56,24 +75,38 @@ public class UserSettingsService {
         Path settingsPath = jarPath.getParent().resolve(configuration.getSettingsLocation());
         Path settingsFilePath = settingsPath.resolve("settings.xml");
         Files.createDirectories(settingsPath);
-        System.out.println(settingsFilePath);
         if (!Files.exists(settingsFilePath)) {
             Files.createFile(settingsFilePath);
-            XmlMapper xmlMapper = new XmlMapper();
             xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), new UserSettingsHolder());
         }
         return settingsFilePath;
     }
 
 
-    private void onFirstLoad() {
+    public void setDefaultBaseScanDirectory() {
         String os = System.getProperty("os.name").toLowerCase();
+        String osUser = System.getProperty("user.name");
         if (os.contains("win")) {
-            userSettingsHolder.setBaseScanDirectory("C:\\Users\\#{osUser}\\Documents");
+            userSettingsHolder.setBaseScanDirectory("C:\\Users\\" + osUser + "\\");
         } else if (os.contains("mac")) {
-            userSettingsHolder.setBaseScanDirectory("/Users/#{osUser}/Documents");
+            userSettingsHolder.setBaseScanDirectory("/Users/" + osUser + "/");
         } else if (os.contains("nix") || os.contains("nux")) {
-            userSettingsHolder.setBaseScanDirectory("/home/#{osUser}/Documents");
+            userSettingsHolder.setBaseScanDirectory("/home/" + osUser + "/");
         }
+        it.saveSettings();
+    }
+
+    public void setDefaultRescanEvery() {
+        userSettingsHolder.setRescanEveryHours(24);
+        it.saveSettings();
+    }
+
+    public void setDefaultProjects () {
+        userSettingsHolder.setUserProjects(List.of());
+        it.saveSettings();
+    }
+    public void setDefaultLastScanDate() {
+        userSettingsHolder.setLastScanDate(LocalDateTime.MIN);
+        it.saveSettings();
     }
 }
