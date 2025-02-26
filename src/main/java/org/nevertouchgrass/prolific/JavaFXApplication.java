@@ -1,9 +1,13 @@
 package org.nevertouchgrass.prolific;
 
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.nevertouchgrass.prolific.events.JavaFxStartEvent;
@@ -24,6 +28,8 @@ public class JavaFXApplication implements ApplicationRunner {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public JavaFXApplication(Stage primaryStage, Parent mainScreenParent, HeaderController headerController,
@@ -43,7 +49,7 @@ public class JavaFXApplication implements ApplicationRunner {
             VBox root = new VBox();
             root.getChildren().addAll(mainScreenParent);
 
-            Scene scene = new Scene(root, 1980, 1080);
+            Scene scene = new Scene(root, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5, Color.RED);
             primaryStage.setScene(scene);
             applicationEventPublisher.publishEvent(new StageInitializeEvent("primaryStage"));
             primaryStage.show();
