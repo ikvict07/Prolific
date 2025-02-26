@@ -5,7 +5,7 @@ springDependencyManagement = "1.1.7"
 javaFx = "0.0.13"
 jlink = "2.25.0"
 log4j = "2.24.3"
-jackson = "2.13.0"
+jackson = "2.18.2"
 jscksonTypes = "2.18.2"
 mock = "5.14.0"
 
@@ -31,8 +31,11 @@ testing = [
     "junitJupiter",
     "mockito",
 ]
+
 [plugins]
 springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
 springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
 javaFx = { id = "org.openjfx.javafxplugin", version.ref = "javaFx" }
 jlink = { id = "org.beryx.jlink", version.ref = "jlink" }
+application = { id = "application" }
+maven-publish = { id = "maven-publish" }
