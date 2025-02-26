@@ -4,9 +4,7 @@ import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -19,7 +17,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
+@SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class JavaFXApplication implements ApplicationRunner {
 
     private final Stage primaryStage;
@@ -49,7 +50,9 @@ public class JavaFXApplication implements ApplicationRunner {
             VBox root = new VBox();
             root.getChildren().addAll(mainScreenParent);
 
-            Scene scene = new Scene(root, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5, Color.RED);
+            Scene scene = new Scene(root, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
+
             primaryStage.setScene(scene);
             applicationEventPublisher.publishEvent(new StageInitializeEvent("primaryStage"));
             primaryStage.show();
