@@ -64,14 +64,17 @@ public class ProjectScannerService {
 
         @Override
         @NonNull
-        public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
-            if (pathMatcher.matches(file)) {
-                try {
-                    projects.add(file.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
-                } catch (IOException e) {
-                    log.error(e);
+        public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
+            if (!Files.isReadable(dir)) {
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+            try {
+                if (pathMatcher.matches(dir)) {
+                    projects.add(dir.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+                    return FileVisitResult.SKIP_SUBTREE;
                 }
-                return FileVisitResult.SKIP_SIBLINGS;
+            } catch (Exception e) {
+                return FileVisitResult.SKIP_SUBTREE;
             }
 
             return FileVisitResult.CONTINUE;
@@ -79,17 +82,25 @@ public class ProjectScannerService {
 
         @Override
         @NonNull
-        public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
-            if (pathMatcher.matches(dir)) {
-                try {
-                    projects.add(dir.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
-                } catch (IOException e) {
-                    log.error(e);
+        public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
+            if (!Files.isReadable(file)) {
+                return FileVisitResult.CONTINUE;
+            }
+            try {
+                if (pathMatcher.matches(file)) {
+                    projects.add(file.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+                    return FileVisitResult.SKIP_SIBLINGS;
                 }
-                return FileVisitResult.SKIP_SIBLINGS;
+            } catch (Exception e) {
+                return FileVisitResult.CONTINUE;
             }
 
             return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exc) {
+            return FileVisitResult.SKIP_SUBTREE;
         }
     }
 }

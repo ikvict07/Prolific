@@ -59,6 +59,9 @@ class Visitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+        if (!Files.isReadable(file)) {
+            return FileVisitResult.CONTINUE;
+        }
         if (pathMatcher.matches(file)) {
             project.setType(projectTypeModel.getName());
             return FileVisitResult.TERMINATE;
@@ -68,11 +71,18 @@ class Visitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+        if (!Files.isReadable(dir)) {
+            return FileVisitResult.SKIP_SUBTREE;
+        }
         if (pathMatcher.matches(dir)) {
             project.setType(projectTypeModel.getName());
             return FileVisitResult.SKIP_SUBTREE;
         }
 
         return FileVisitResult.CONTINUE;
+    }
+    @Override
+    public FileVisitResult visitFileFailed(Path file, IOException exc) {
+        return FileVisitResult.SKIP_SUBTREE;
     }
 }
