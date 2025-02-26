@@ -1,3 +1,7 @@
+.root {
+    -fx-background-color: #1E1F22;
+}
+
 #header {
     -fx-background-color: #2B2D30;
     -fx-pref-height: 40px;

@@ -1,11 +1,11 @@
 plugins {
     java
-    id("application")
+    alias(libs.plugins.application)
     alias(libs.plugins.springBoot)
     alias(libs.plugins.springDependencyManagement)
     alias(libs.plugins.javaFx)
     alias(libs.plugins.jlink)
-    id("maven-publish")
+    alias(libs.plugins.maven.publish)
 }
 
 group = "org.nevertouchgrass"
@@ -35,6 +35,8 @@ configurations {
 
 val mockitoAgent = configurations.create("mockitoAgent")
 
+
+@Suppress("unstable")
 dependencies {
     implementation(libs.bundles.spring)
     implementation(libs.oshiCore)
@@ -42,9 +44,9 @@ dependencies {
     annotationProcessor(libs.lombok)
     testImplementation(libs.bundles.testing)
     testRuntimeOnly(libs.junitJupiter)
-    implementation("org.apache.logging.log4j:log4j-api:2.24.3")
+    implementation(libs.logging)
 
-    testImplementation("org.mockito:mockito-core:5.14.0")
+    testImplementation(libs.mockito)
     mockitoAgent("org.mockito:mockito-core:5.14.0") { isTransitive = false }
 }
 
@@ -52,13 +54,15 @@ tasks {
     test {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
         jvmArgs("-Xshare:off")
+        useJUnitPlatform()
     }
 }
 
 javafx {
-    version = "21"
+    version = "23"
     modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics")
 }
+
 jlink {
     imageZip.set(file("${layout.buildDirectory}/distributions/app-${javafx.platform.classifier}.zip"))
     options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
