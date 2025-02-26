@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
-
-<AnchorPane id="header" fx:id="header" prefHeight="40.0" prefWidth="1280.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController">
+<AnchorPane id="header" fx:id="header" prefHeight="40.0" prefWidth="1280.0" stylesheets="@../css/styles.css"
+            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController"
+            onMouseClicked="#handleHeaderMaximize">
 
     <!-- Left section with controls -->
-    <HBox id="gradientBox" fx:id="leftSection" alignment="CENTER_LEFT" layoutX="1.0" prefWidth="358.0" spacing="10.0" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0">
+    <HBox id="gradientBox" fx:id="leftSection" alignment="CENTER_LEFT" layoutX="1.0" prefWidth="358.0" spacing="10.0"
+          AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0">
         <children>
-            <Circle fx:id="closeButton" fill="transparent" onMouseClicked="#handleClose" radius="5.5" stroke="#5A5D6B" />
-            <Circle fx:id="minimizeButton" fill="transparent" onMouseClicked="#handleMinimize" radius="5.5" stroke="#5A5D6B" />
-            <Circle fx:id="maximizeButton" fill="transparent" onMouseClicked="#handleMaximize" radius="5.5" stroke="#5A5D6B" />
-            <fx:include source="../icons/fxml/folder.fxml" />
-            <fx:include fx:id="settingsButton" source="../icons/fxml/settings.fxml" />
+            <Circle fx:id="closeButton" fill="transparent" onMouseClicked="#handleClose" radius="5.5" styleClass="circle-close"/>
+            <Circle fx:id="minimizeButton" fill="transparent" onMouseClicked="#handleMinimize" radius="5.5" styleClass="circle-minimize" />
+            <Circle fx:id="maximizeButton" fill="transparent" onMouseClicked="#handleMaximize" radius="5.5" styleClass="circle-maximize" />
+            <StackPane styleClass="icon-button">
+                <fx:include source="../icons/fxml/folder.fxml"/>
+            </StackPane>
+            <StackPane styleClass="icon-button" onMouseClicked="#dropdownForSettings">
+                <fx:include fx:id="settingsButton" source="../icons/fxml/settings.fxml" />
+            </StackPane>
         </children>
         <padding>
             <Insets left="10.0" />

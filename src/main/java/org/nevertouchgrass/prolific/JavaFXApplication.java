@@ -1,9 +1,11 @@
 package org.nevertouchgrass.prolific;
 
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.nevertouchgrass.prolific.events.JavaFxStartEvent;
@@ -15,7 +17,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
+@SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class JavaFXApplication implements ApplicationRunner {
 
     private final Stage primaryStage;
@@ -23,6 +28,8 @@ public class JavaFXApplication implements ApplicationRunner {
     private final HeaderController headerController;
 
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
 
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -43,7 +50,9 @@ public class JavaFXApplication implements ApplicationRunner {
             VBox root = new VBox();
             root.getChildren().addAll(mainScreenParent);
 
-            Scene scene = new Scene(root, 1980, 1080);
+            Scene scene = new Scene(root, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
+
             primaryStage.setScene(scene);
             applicationEventPublisher.publishEvent(new StageInitializeEvent("primaryStage"));
             primaryStage.show();
