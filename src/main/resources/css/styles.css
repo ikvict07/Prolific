@@ -1,3 +1,7 @@
+.root {
+    -fx-background-color: #1E1F22;
+}
+
 #header {
     -fx-background-color: #2B2D30;
     -fx-pref-height: 40px;
@@ -9,6 +13,45 @@
     #344C7D 50%,
     #344C7D00 100%);
     -fx-pref-height: 40px;
+}
+
+.circle-close {
+    -fx-fill: #FF3B30;
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}
+
+.circle-close:hover {
+    -fx-fill: #9E9E9E;
+}
+
+.circle-minimize {
+    -fx-fill: #FDB60D;
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}
+
+.circle-minimize:hover {
+    -fx-fill: #9E9E9E;
+}
+
+.circle-maximize {
+    -fx-fill: #1EBD70;
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}
+
+.circle-maximize:hover {
+    -fx-fill: #A6B3C1;
+}
+
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
+.icon-button:hover {
+    -fx-background-color: rgba(90, 155, 213, 0.3);
 }
 
 #projectIcon {
