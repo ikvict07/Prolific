@@ -22,7 +22,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(23)
     }
 }
 
@@ -36,7 +36,6 @@ configurations {
 val mockitoAgent = configurations.create("mockitoAgent")
 
 
-@Suppress("unstable")
 dependencies {
     implementation(libs.bundles.spring)
     implementation(libs.oshiCore)
@@ -45,7 +44,8 @@ dependencies {
     testImplementation(libs.bundles.testing)
     testRuntimeOnly(libs.junitJupiter)
     implementation(libs.logging)
-
+    implementation(libs.jacksonXml)
+    implementation(libs.jacksonTypes)
     testImplementation(libs.mockito)
     mockitoAgent("org.mockito:mockito-core:5.14.0") { isTransitive = false }
 }
