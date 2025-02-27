@@ -78,6 +78,7 @@
     -fx-background-color: #1E1F22;
 }
 
+
 .defaultText {
     -fx-text-fill: #DFE1E5;
     -fx-fill: #DFE1E5;
@@ -135,6 +136,10 @@
     -fx-shape: " ";
     -fx-padding: 0.0 0.15em;
 }
+
+/*.scroll-pane {*/
+/*    -fx-pref-width: 40em;*/
+/*}*/
 
 .scroll-pane > .scroll-bar {
     -fx-background-color: transparent;

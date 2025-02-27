@@ -46,13 +46,13 @@ public class ProjectPanelController {
 
         primaryStage.widthProperty().addListener((_, _, _) -> {
             var width = projectPanel.getWidth();
-            projectInfo.setMaxWidth(width * 0.24);
-            projectInfo.setMinWidth(width * 0.24);
+            projectInfo.setMaxWidth(width * 0.32);
+            projectInfo.setMinWidth(width * 0.32);
             AnchorPane.setLeftAnchor(projectInfo, calculatePadding(0.01, width));
-            AnchorPane.setRightAnchor(projectInfo, width - calculatePadding(0.28, width));
+            AnchorPane.setRightAnchor(projectInfo, width - calculatePadding(0.33, width));
 
-            AnchorPane.setLeftAnchor(run, calculatePadding(0.3, width));
-            AnchorPane.setLeftAnchor(config, calculatePadding(0.33, width));
+            AnchorPane.setLeftAnchor(run, calculatePadding(0.33, width));
+            AnchorPane.setLeftAnchor(config, calculatePadding(0.35, width));
         });
     }
 
