@@ -1,10 +1,10 @@
 .root {
     -fx-background-color: #1E1F22;
+    -fx-font-size: 12px;
 }
 
 #header {
     -fx-background-color: #2B2D30;
-    -fx-pref-height: 40px;
 }
 
 #gradientBox {
@@ -93,7 +93,6 @@
 
 .popup {
     -fx-background-color: rgba(45, 45, 48, 0.85);
-    -fx-pref-width: 80px;
     -fx-background-radius: 6px;
 
 }
@@ -106,7 +105,7 @@
 
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
-    -fx-padding: 1;
+    -fx-padding: 2;
     -fx-border-color: transparent;
     -fx-border-width: 0;
 
