@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" fx:id="scrollPane" hbarPolicy="NEVER" hmax="0.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="493.0" prefWidth="1051.0" styleClass="mainBG" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectsPanelController">
+    <content>
+        <VBox alignment="CENTER" fx:id="content" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0" styleClass="mainBG" stylesheets="@../css/styles.css">
+
+        </VBox>
+    </content>
+   <padding>
+      <Insets bottom="5.0" top="5.0" />
+   </padding>
+
+</ScrollPane>
