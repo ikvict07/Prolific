@@ -1,7 +1,6 @@
 package org.nevertouchgrass.prolific.service;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.stereotype.Service;
@@ -18,10 +17,9 @@ import java.util.List;
 
 import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.*;
 
+@Log4j2
 @Service
 public class XmlProjectScannerConfigLoaderService {
-
-	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final PluginConfigProvider pluginConfigProvider;
 
@@ -55,7 +53,7 @@ public class XmlProjectScannerConfigLoaderService {
 				projectTypeModels.add(new ProjectTypeModel(projectName, identifiers));
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error loading plugins from XML file", e);
+			log.error("Error loading plugins from XML file: {}", e.getMessage());
 		}
 
 		return projectTypeModels;
