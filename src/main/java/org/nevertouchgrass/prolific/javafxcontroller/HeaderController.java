@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @AnchorPaneController
 @StageComponent("primaryStage")
+@SuppressWarnings("unused")
 public class HeaderController {
     @FXML
     public StackPane settingsButton;
@@ -31,6 +32,7 @@ public class HeaderController {
     @FXML
     public Circle maximizeButton;
     @FXML
+    @Constraints(right = 0.66)
     public HBox leftSection;
     @FXML
     @Constraints(right = 0.5, left = 0.5)
@@ -51,6 +53,9 @@ public class HeaderController {
     private double xOffset = 0;
     private double yOffset = 0;
     private Stage stage;
+
+    private double heightBeforeMaximizing;
+    private double widthBeforeMaximizing;
 
     private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
 
@@ -79,7 +84,7 @@ public class HeaderController {
         stage.getScene().setOnMouseMoved(this::resizeCursor);
         stage.getScene().setOnMouseDragged(this::resizeWindow);
 
-        stage.setOnShown(event -> endX = stage.getX() + stage.getWidth());
+        stage.setOnShown(_ -> endX = stage.getX() + stage.getWidth());
     }
 
     private void resizeCursor(MouseEvent event) {
@@ -135,7 +140,6 @@ public class HeaderController {
             }
         } else if (stage.getScene().getCursor() == Cursor.W_RESIZE) {
             double newWidth = endX - event.getScreenX();
-            System.out.println("Height to set: " + stage.getHeight());
             if (newWidth >= minWidth && event.getScreenX() >= visualBounds.getMinX()) {
                 stage.setX(event.getScreenX());
                 stage.setWidth(endX - event.getScreenX());
@@ -177,7 +181,15 @@ public class HeaderController {
     }
 
     public void handleMaximize(MouseEvent mouseEvent) {
-        stage.setMaximized(!stage.isMaximized());
+        if (stage.isMaximized()) {
+            stage.setMaximized(false);
+            stage.setHeight(heightBeforeMaximizing);
+            stage.setWidth(widthBeforeMaximizing);
+        } else {
+            heightBeforeMaximizing = stage.getHeight();
+            widthBeforeMaximizing = stage.getWidth();
+            stage.setMaximized(true);
+        }
     }
 
     public void handleHeaderMaximize(MouseEvent mouseEvent) {
