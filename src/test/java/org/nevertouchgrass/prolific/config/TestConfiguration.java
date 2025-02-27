@@ -21,8 +21,8 @@ public class TestConfiguration {
 	}
 
 	@Bean
-	public PluginConfigProvider pluginConfigProvider(SpringFXConfigurationProperties springFXConfigurationProperties, PathService pathService) {
-		PluginConfigProvider pluginConfigProvider = new PluginConfigProvider(springFXConfigurationProperties, pathService);
+	public PluginConfigProvider pluginConfigProvider() {
+		PluginConfigProvider pluginConfigProvider = new PluginConfigProvider();
 		pluginConfigProvider.setPluginConfigPath(Path.of("src/test/resources/plugin/plugins.xml"));
 		return pluginConfigProvider;
 	}
