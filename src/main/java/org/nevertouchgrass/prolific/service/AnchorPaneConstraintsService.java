@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Scope;
@@ -14,7 +15,13 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("prototype")
 public class AnchorPaneConstraintsService {
+	private Stage stage;
 	private Scene scene;
+
+	public void setStage(Stage stage) {
+		this.stage = stage;
+		this.scene = stage.getScene();
+	}
 
 	AnchorPaneConstraintsService() {
 		System.out.println("AnchorPaneConstraintsService created.");
@@ -33,6 +40,9 @@ public class AnchorPaneConstraintsService {
 		scene.widthProperty().addListener((observable, oldValue, newValue) -> {
 			block.run();
 		});
+		stage.maximizedProperty().addListener((_,_,_) -> {
+			block.run();
+		});
 		block.run();
 	}
 
@@ -45,6 +55,9 @@ public class AnchorPaneConstraintsService {
 		scene.widthProperty().addListener((observable, oldValue, newValue) -> {
 			block.run();
 		});
+		stage.maximizedProperty().addListener((_,_,_) -> {
+			block.run();
+		});
 		block.run();
 	}
 
@@ -53,14 +66,13 @@ public class AnchorPaneConstraintsService {
 			return;
 		}
 		Runnable block = () -> {
-			System.out.println("Setting top anchor for " + node);
-			System.out.println("Scene height: " + scene.getHeight());
-			System.out.println("Top: " + top);
-			System.out.println("Node bounds: " + node.getBoundsInLocal());
 			AnchorPane.setTopAnchor(node,
 					scene.getHeight() * top - node.getBoundsInLocal().getHeight() / 2);
 		};
 		scene.heightProperty().addListener((observable, oldValue, newValue) -> {
+			block.run();
+		});
+		stage.maximizedProperty().addListener((_,_,_) -> {
 			block.run();
 		});
 		block.run();
@@ -75,6 +87,9 @@ public class AnchorPaneConstraintsService {
 		scene.heightProperty().addListener((observable, oldValue, newValue) -> {
 			block.run();
 		});
+		stage.maximizedProperty().addListener((_,_,_) -> {
+			block.run();
+		});
 		block.run();
 	}
 
@@ -87,6 +102,9 @@ public class AnchorPaneConstraintsService {
 		scene.widthProperty().addListener((observable, oldValue, newValue) -> {
 			block.run();
 		});
+		stage.maximizedProperty().addListener((_,_,_) -> {
+			block.run();
+		});
 		block.run();
 	}
 	public void setAnchorConstraintsIgnoreElementSizeRight(Node node, double right) {
@@ -95,6 +113,9 @@ public class AnchorPaneConstraintsService {
 		}
 		Runnable block = () -> AnchorPane.setRightAnchor(node, scene.getWidth() * right);
 		scene.widthProperty().addListener((observable, oldValue, newValue) -> {
+			block.run();
+		});
+		stage.maximizedProperty().addListener((_,_,_) -> {
 			block.run();
 		});
 		block.run();
@@ -107,6 +128,9 @@ public class AnchorPaneConstraintsService {
 		scene.heightProperty().addListener((observable, oldValue, newValue) -> {
 			block.run();
 		});
+		stage.maximizedProperty().addListener((_,_,_) -> {
+			block.run();
+		});
 		block.run();
 	}
 	public void setAnchorConstraintsIgnoreElementSizeBottom(Node node, double bottom) {
@@ -115,6 +139,9 @@ public class AnchorPaneConstraintsService {
 		}
 		Runnable block = () -> AnchorPane.setBottomAnchor(node, scene.getHeight() * bottom);
 		scene.heightProperty().addListener((observable, oldValue, newValue) -> {
+			block.run();
+		});
+		stage.maximizedProperty().addListener((_,_,_) -> {
 			block.run();
 		});
 		block.run();

@@ -135,7 +135,7 @@ public class HeaderController {
             }
         } else if (stage.getScene().getCursor() == Cursor.W_RESIZE) {
             double newWidth = endX - event.getScreenX();
-
+            System.out.println("Height to set: " + stage.getHeight());
             if (newWidth >= minWidth && event.getScreenX() >= visualBounds.getMinX()) {
                 stage.setX(event.getScreenX());
                 stage.setWidth(endX - event.getScreenX());
