@@ -8,25 +8,20 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
 
 @Service
 @Log4j2
 public class ProjectScannerService {
 
     private final List<ProjectTypeModel> projectTypeModels;
-    private final Set<Path> projects = new HashSet<>();
+    private final Set<Path> projects = ConcurrentHashMap.newKeySet();
 
     @Autowired
     public ProjectScannerService(@NonNull XmlProjectScannerConfigLoaderService configLoaderService) {
@@ -34,74 +29,58 @@ public class ProjectScannerService {
     }
 
     public Set<Path> scanForProjects(String rootDirectory) {
-        File file = new File(rootDirectory);
-
-        if (file.isDirectory()) {
-            try {
-                Files.walkFileTree(file.toPath(), new ProjectFinder());
-            } catch (Exception e) {
-                log.error("Error occurred while trying to access file", e);
-            }
+        try (ForkJoinPool pool = new ForkJoinPool()) {
+            return pool.invoke(new FileVisitorTask(new File(rootDirectory).toPath()));
         }
-
-        return projects;
     }
 
-    private class ProjectFinder extends SimpleFileVisitor<Path> {
-
+    private class FileVisitorTask extends RecursiveTask<Set<Path>> {
+        private final Path path;
         private final PathMatcher pathMatcher;
 
-        private ProjectFinder() {
+        private FileVisitorTask(Path path) {
+            this.path = path;
             List<String> matchers = new ArrayList<>();
             for (ProjectTypeModel projectTypeModel : projectTypeModels) {
                 matchers.addAll(projectTypeModel.getIdentifiers());
             }
-
             String pattern = String.format("glob:**/{%s}", String.join(",", matchers));
-
             this.pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
         }
 
         @Override
-        @NonNull
-        public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
-            if (!Files.isReadable(dir)) {
-                return FileVisitResult.SKIP_SUBTREE;
-            }
+        protected Set<Path> compute() {
             try {
-                if (pathMatcher.matches(dir)) {
-                    projects.add(dir.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
-                    return FileVisitResult.SKIP_SUBTREE;
+                List<FileVisitorTask> fileVisitorTasks = new ArrayList<>();
+                try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path,
+                        entry -> Files.isReadable(entry) && !Files.isSymbolicLink(entry) && Files.exists(entry)
+                )) {
+                    for (Path entry : directoryStream) {
+                        if (Files.isDirectory(entry)) {
+                            if (pathMatcher.matches(entry)) {
+                                projects.add(entry.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+                                break;
+                            }
+                            FileVisitorTask fileVisitorTask = new FileVisitorTask(entry);
+                            fileVisitorTask.fork();
+                            fileVisitorTasks.add(fileVisitorTask);
+                        } else {
+                            if (pathMatcher.matches(entry)) {
+                                projects.add(entry.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+                                break;
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    log.error("{}", e.getMessage());
+                }
+                for (FileVisitorTask fileVisitorTask : fileVisitorTasks) {
+                    projects.addAll(fileVisitorTask.join());
                 }
             } catch (Exception e) {
-                return FileVisitResult.SKIP_SUBTREE;
+                log.error("{}", e.getMessage());
             }
-
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        @NonNull
-        public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
-            if (!Files.isReadable(file)) {
-                return FileVisitResult.CONTINUE;
-            }
-            try {
-                if (pathMatcher.matches(file)) {
-                    projects.add(file.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
-                    return FileVisitResult.SKIP_SIBLINGS;
-                }
-            } catch (Exception e) {
-                return FileVisitResult.CONTINUE;
-            }
-
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        @NonNull
-        public FileVisitResult visitFileFailed(Path file, IOException exc) {
-            return FileVisitResult.SKIP_SUBTREE;
+            return projects;
         }
     }
 }

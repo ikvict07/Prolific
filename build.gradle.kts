@@ -41,11 +41,14 @@ dependencies {
     implementation(libs.oshiCore)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
-    testImplementation(libs.bundles.testing)
-    testRuntimeOnly(libs.junitJupiter)
     implementation(libs.logging)
     implementation(libs.jacksonXml)
     implementation(libs.jacksonTypes)
+
+    testCompileOnly(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
+    testImplementation(libs.bundles.testing)
+    testRuntimeOnly(libs.junitJupiter)
     testImplementation(libs.mockito)
     mockitoAgent("org.mockito:mockito-core:5.14.0") { isTransitive = false }
 }
