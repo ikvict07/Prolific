@@ -157,7 +157,9 @@
 .scroll-pane > .scroll-bar .track {
     -fx-background-color: transparent;
 }
-
+.scroll-pane {
+    -fx-pref-height: 50em;
+}
 
 .scroll-bar:vertical .thumb {
     -fx-background-color: rgba(255, 255, 255, 0.2);
