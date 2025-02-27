@@ -48,6 +48,7 @@ public class ProjectScannerService {
 
         private FileVisitorTask(Path path) {
             this.path = path;
+            log.info("Path: {}", path);
         }
 
         @Override
@@ -58,6 +59,7 @@ public class ProjectScannerService {
                 Files.walkFileTree(path, new FileVisitor<>() {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                        log.info("preVisitDirectory: {}", dir);
                         if (Files.isReadable(dir)) {
                             if (pathMatcher.matches(dir)) {
                                 addProject(dir);
@@ -78,6 +80,7 @@ public class ProjectScannerService {
 
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        log.info("visitFile: {}", file);
                         if(Files.isReadable(file)) {
                             if (pathMatcher.matches(file)) {
                                 addProject(file);
@@ -95,6 +98,7 @@ public class ProjectScannerService {
 
                     @Override
                     public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                        log.info("postVisitDirectory: {}", dir);
                         for (FileVisitorTask fileVisitorTask : fileVisitorTasks) {
                             projects.addAll(fileVisitorTask.join());
                         }
@@ -104,6 +108,7 @@ public class ProjectScannerService {
                     private void addProject(Path path) {
                         try {
                             projects.add(path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+                            log.info("Add project: {}", path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
                         } catch (IOException e) {
                             log.error("{}", e.getMessage());
                         }
