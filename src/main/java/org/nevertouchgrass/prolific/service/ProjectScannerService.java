@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -53,9 +54,14 @@ public class ProjectScannerService {
             try {
                 List<FileVisitorTask> fileVisitorTasks = new ArrayList<>();
                 try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path,
-                        entry -> Files.isReadable(entry) && !Files.isSymbolicLink(entry) && Files.exists(entry)
+                        entry -> Files.isReadable(entry) &&
+                                !Files.isSymbolicLink(entry) &&
+                                Files.exists(entry)
                 )) {
                     for (Path entry : directoryStream) {
+                        if (!Files.readSymbolicLink(path).equals(path)) {
+                            continue;
+                        }
                         if (Files.isDirectory(entry)) {
                             if (pathMatcher.matches(entry)) {
                                 projects.add(entry.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
