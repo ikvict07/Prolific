@@ -2,58 +2,60 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-
-<HBox id="projectPanel" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="800.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox id="projectPanel"
+      fx:id="projectPanel"
+      alignment="CENTER_LEFT"
+      prefHeight="40.0" prefWidth="800.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectPanelController"
+>
     <children>
-        <VBox id="gradientBox" alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="275.0" stylesheets="@../css/styles.css">
+        <VBox id="gradientBox" alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="275.0"
+              stylesheets="@../css/styles.css">
             <children>
-                <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="223.0" spacing="5.0" stylesheets="@../css/styles.css">
+                <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="223.0" spacing="5.0"
+                      stylesheets="@../css/styles.css">
                     <children>
-                        <GridPane id="projectIcon" alignment="CENTER" stylesheets="@../css/styles.css">
-                            <columnConstraints>
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            </rowConstraints>
+                        <HBox id="projectIcon" alignment="CENTER" stylesheets="@../css/styles.css">
                             <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="IJ" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                <Text fill="WHITE" fx:id="projectIconText" strokeType="OUTSIDE" strokeWidth="0.0"
+                                      text="IJ" textAlignment="CENTER">
                                     <font>
-                                        <Font name="JetBrainsMono NF Regular" size="13.0" />
+                                        <Font name="JetBrainsMono NF Regular" size="13.0"/>
                                     </font>
                                 </Text>
                             </children>
                             <HBox.margin>
-                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                             </HBox.margin>
-                        </GridPane>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Poject Name">
+                        </HBox>
+                        <Text fill="WHITE" strokeType="OUTSIDE" fx:id="projectTitleText" strokeWidth="0.0"
+                              text="Poject Name">
                             <HBox.margin>
-                                <Insets right="10.0" />
+                                <Insets right="10.0"/>
                             </HBox.margin>
                         </Text>
-                  <VBox alignment="CENTER" prefHeight="40.0" prefWidth="40.0">
-                     <children>
-                              <fx:include source="../icons/fxml/runButton.fxml" />
-                     </children>
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox alignment="CENTER" prefHeight="40.0" prefWidth="38.0">
-                     <children>
-                              <fx:include source="../icons/fxml/configurationButton.fxml" HBox.hgrow="ALWAYS" />
-                     </children>
-                  </VBox>
+                        <VBox alignment="CENTER" prefHeight="40.0" prefWidth="40.0">
+                            <children>
+                                <fx:include source="../icons/fxml/runButton.fxml"/>
+                            </children>
+                            <HBox.margin>
+                                <Insets/>
+                            </HBox.margin>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="40.0" prefWidth="38.0">
+                            <children>
+                                <fx:include source="../icons/fxml/configurationButton.fxml" HBox.hgrow="ALWAYS"/>
+                            </children>
+                        </VBox>
                     </children>
                     <VBox.margin>
-                        <Insets left="5.0" right="10.0" />
+                        <Insets left="5.0" right="10.0"/>
                     </VBox.margin>
                 </HBox>
             </children>

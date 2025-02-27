@@ -59,6 +59,10 @@
     -fx-background-radius: 4px;
     -fx-pref-height: 20px;
     -fx-pref-width: 20px;
+    -fx-max-height: 20px;
+    -fx-max-wight: 20px;
+    -fx-min-height: 20px;
+    -fx-min-width: 20px;
     -fx-flex-shrink: 0;
 }
 
