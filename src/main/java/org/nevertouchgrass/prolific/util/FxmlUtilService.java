@@ -12,9 +12,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class FxmlUtilService {
+    private FxmlUtilService() {
+    }
+
     public static List<String> getFxmlNames(SpringFXConfigurationProperties projectConfigurationProperties) {
         try {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
