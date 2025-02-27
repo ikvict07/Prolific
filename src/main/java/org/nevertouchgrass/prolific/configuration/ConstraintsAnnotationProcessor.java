@@ -43,7 +43,7 @@ public class ConstraintsAnnotationProcessor implements ApplicationListener<Stage
                 if (field.getType() == Stage.class) {
                     field.setAccessible(true);
                     try {
-                        anchorPaneConstraintsService.setScene(((Stage) field.get(bean)).getScene());
+                        anchorPaneConstraintsService.setStage(((Stage) field.get(bean)));
                         break;
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
