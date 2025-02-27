@@ -57,6 +57,9 @@ public class HeaderController {
     private double heightBeforeMaximizing;
     private double widthBeforeMaximizing;
 
+    private double xBeforeMaximizing;
+    private double yBeforeMaximizing;
+
     private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
 
     private final double minWidth = visualBounds.getMaxX() / 1.5;
@@ -84,12 +87,15 @@ public class HeaderController {
         stage.getScene().setOnMouseMoved(this::resizeCursor);
         stage.getScene().setOnMouseDragged(this::resizeWindow);
 
-        stage.setOnShown(_ -> endX = stage.getX() + stage.getWidth());
+        stage.setOnShown(_ -> {
+            endX = stage.getX() + stage.getWidth();
+            widthBeforeMaximizing = stage.getWidth();
+            heightBeforeMaximizing = stage.getHeight();
+        });
     }
 
     private void resizeCursor(MouseEvent event) {
         double border = 8;
-        Stage stage = this.stage;
         double x = event.getSceneX();
         double y = event.getSceneY();
         double width = stage.getWidth();
@@ -114,7 +120,8 @@ public class HeaderController {
         if (stage.getScene().getCursor() == Cursor.SW_RESIZE) {
             double newWidth = endX - event.getScreenX();
             double newHeight = event.getScreenY() - stage.getY();
-
+            widthBeforeMaximizing = newWidth;
+            heightBeforeMaximizing = newHeight;
             if (newWidth >= minWidth && event.getScreenX() >= visualBounds.getMinX()) {
                 stage.setX(event.getScreenX());
                 stage.setWidth(endX - event.getScreenX());
@@ -128,7 +135,8 @@ public class HeaderController {
         } else if (stage.getScene().getCursor() == Cursor.SE_RESIZE) {
             double newWidth = event.getScreenX() - stage.getX();
             double newHeight = event.getScreenY() - stage.getY();
-
+            widthBeforeMaximizing = newWidth;
+            heightBeforeMaximizing = newHeight;
             if (newWidth >= minWidth && event.getScreenX() <= visualBounds.getMaxX()) {
                 stage.setWidth(newWidth);
                 stage.setHeight(stage.getHeight());
@@ -140,14 +148,15 @@ public class HeaderController {
             }
         } else if (stage.getScene().getCursor() == Cursor.W_RESIZE) {
             double newWidth = endX - event.getScreenX();
+            widthBeforeMaximizing = newWidth;
             if (newWidth >= minWidth && event.getScreenX() >= visualBounds.getMinX()) {
                 stage.setX(event.getScreenX());
-                stage.setWidth(endX - event.getScreenX());
+                stage.setWidth(newWidth);
                 stage.setHeight(stage.getHeight());
             }
         } else if (stage.getScene().getCursor() == Cursor.E_RESIZE) {
             double newWidth = event.getScreenX() - stage.getX();
-
+            widthBeforeMaximizing = newWidth;
             if (newWidth >= minWidth && event.getScreenX() <= visualBounds.getMaxX()) {
                 stage.setWidth(newWidth);
                 stage.setHeight(stage.getHeight());
@@ -164,14 +173,11 @@ public class HeaderController {
     }
 
     public void handleClose(MouseEvent mouseEvent) {
-        System.out.println("Close");
         if (Platform.isFxApplicationThread()) {
             stage.close();
         } else {
             Platform.runLater(() -> stage.close());
         }
-        System.out.println("Closed");
-
     }
 
     public void handleMinimize(MouseEvent mouseEvent) {
@@ -183,11 +189,16 @@ public class HeaderController {
     public void handleMaximize(MouseEvent mouseEvent) {
         if (stage.isMaximized()) {
             stage.setMaximized(false);
-            stage.setHeight(heightBeforeMaximizing);
             stage.setWidth(widthBeforeMaximizing);
+            stage.setHeight(heightBeforeMaximizing);
+            stage.setX(xBeforeMaximizing);
+            stage.setY(yBeforeMaximizing);
+            endX = stage.getX() + stage.getWidth();
         } else {
-            heightBeforeMaximizing = stage.getHeight();
+            xBeforeMaximizing = stage.getX();
+            yBeforeMaximizing = stage.getY();
             widthBeforeMaximizing = stage.getWidth();
+            heightBeforeMaximizing = stage.getHeight();
             stage.setMaximized(true);
         }
     }
