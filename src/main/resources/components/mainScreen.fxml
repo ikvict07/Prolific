@@ -8,4 +8,5 @@
             styleClass="mainBG"
             fx:id="mainScreen">
     <fx:include fx:id="headerComponent" source="../components/header.fxml"/>
+    <fx:include source="projectsPanel.fxml" fx:id="projectsPanel"/>
 </AnchorPane>
