@@ -21,9 +21,12 @@ public class ProjectScannerServiceTests {
         String path = System.getProperty("user.dir");
         Set<Path> expected = Set.of(Path.of(path));
 
+        long startTime = System.currentTimeMillis();
         Set<Path> actual = projectScannerService.scanForProjects(path);
 
+        log.info("Path: {}", path);
         log.info("Actual set: {}", actual);
+        log.info("Running time: {}", System.currentTimeMillis() - startTime);
 
         Assertions.assertNotNull(actual);
 
