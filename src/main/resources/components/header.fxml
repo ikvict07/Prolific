@@ -10,7 +10,7 @@
             onMouseClicked="#handleHeaderMaximize">
 
     <!-- Left section with controls -->
-    <HBox id="gradientBox" fx:id="leftSection" alignment="CENTER_LEFT" layoutX="1.0" prefWidth="358.0" spacing="10.0"
+    <HBox id="gradientBox" fx:id="leftSection" alignment="CENTER_LEFT" layoutX="1.0" spacing="10.0"
           AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0">
         <children>
             <Circle fx:id="closeButton" fill="transparent" onMouseClicked="#handleClose" radius="5.5" styleClass="circle-close"/>
