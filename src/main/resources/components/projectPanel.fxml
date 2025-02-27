@@ -11,7 +11,7 @@
 <HBox id="gradientBox" fx:id="projectPanel" alignment="CENTER_LEFT" prefHeight="40.0"
       stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectPanelController">
-    <AnchorPane fx:id="gradientBox" id="gradienBox" maxHeight="200" prefHeight="200.0" stylesheets="@../css/styles.css">
+    <AnchorPane fx:id="gradientBox" id="gradienBox" stylesheets="@../css/styles.css">
         <HBox fx:id="projectInfo" alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0"
               stylesheets="@../css/styles.css">
             <VBox.margin>
