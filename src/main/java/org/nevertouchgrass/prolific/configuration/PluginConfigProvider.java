@@ -13,17 +13,11 @@ import java.nio.file.Path;
 @Getter
 @Setter
 public class PluginConfigProvider {
-	private final SpringFXConfigurationProperties configuration;
 	private Path pluginConfigPath;
-	private final PathService pathService;
 
 	@SneakyThrows
-	public PluginConfigProvider(SpringFXConfigurationProperties configuration, PathService pathService) {
-		this.configuration = configuration;
-		this.pathService = pathService;
-		Path jarPath = pathService.getProjectPath();
-		System.out.println("Path: " + jarPath);
-		Path settingsPath = jarPath.getParent().resolve(configuration.getSettingsLocation());
+	public PluginConfigProvider() {
+		Path settingsPath = Path.of("src/main/resources/plugin/");
 		Path settingsFilePath = settingsPath.resolve("plugins.xml");
 		Files.createDirectories(settingsPath);
 		if (!Files.exists(settingsFilePath)) {
