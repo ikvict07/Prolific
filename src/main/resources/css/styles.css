@@ -137,10 +137,6 @@
     -fx-padding: 0.0 0.15em;
 }
 
-/*.scroll-pane {*/
-/*    -fx-pref-width: 40em;*/
-/*}*/
-
 .scroll-pane > .scroll-bar {
     -fx-background-color: transparent;
     -fx-transition: opacity 0.3s;
