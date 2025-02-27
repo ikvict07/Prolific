@@ -14,14 +14,12 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 @StageComponent("primaryStage")
+@SuppressWarnings("unused")
 public class ProjectsPanelController {
-
     @FXML
     public ScrollPane scrollPane;
 
-
     private Stage stage;
-
     @Initialize
     private void init() {
         scrollPane.skinProperty().addListener((obs, oldSkin, newSkin) -> {
@@ -41,9 +39,7 @@ public class ProjectsPanelController {
                         fadeOutV.playFromStart();
                     });
 
-                    scrollPane.setOnScrollStarted(event -> {
-                        vScrollBar.setOpacity(1);
-                    });
+                    scrollPane.setOnScrollStarted(event -> vScrollBar.setOpacity(1));
                 }
             }
         });
