@@ -4,22 +4,10 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" hmax="0.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="493.0" prefWidth="1051.0" styleClass="mainBG" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectsPanelController">
+<ScrollPane fitToWidth="true" fx:id="scrollPane" hbarPolicy="NEVER" hmax="0.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="493.0" prefWidth="1051.0" styleClass="mainBG" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectsPanelController">
     <content>
-        <VBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="640.0" prefWidth="1089.0" spacing="10.0" styleClass="mainBG" stylesheets="@../css/styles.css">
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
-            <fx:include source="projectPanel.fxml" />
+        <VBox alignment="CENTER" fx:id="content" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0" styleClass="mainBG" stylesheets="@../css/styles.css">
+
         </VBox>
     </content>
    <padding>
