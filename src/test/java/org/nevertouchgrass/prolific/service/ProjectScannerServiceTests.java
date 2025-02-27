@@ -1,5 +1,6 @@
 package org.nevertouchgrass.prolific.service;
 
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.config.TestConfiguration;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.nio.file.Path;
 import java.util.Set;
 
+@Log4j2
 @SpringBootTest(classes = TestConfiguration.class)
 public class ProjectScannerServiceTests {
     @Autowired
@@ -16,11 +18,14 @@ public class ProjectScannerServiceTests {
 
     @Test
     public void givenNothing_whenScanForProjects_returnProjects() {
-        String path = ".";
-        Set<Path> expected = Set.of(Path.of(System.getProperty("user.dir")));
+        String path = System.getProperty("user.dir");
+        Set<Path> expected = Set.of(Path.of(path));
+
         Set<Path> actual = projectScannerService.scanForProjects(path);
 
-        Assertions.assertNotNull(actual, "Actual is null");
+        log.info("Actual set: {}", actual);
+
+        Assertions.assertNotNull(actual);
 
         Assertions.assertEquals(expected.size(), actual.size(), "Expected and actual differ in sizes");
 

@@ -6,10 +6,8 @@ import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.service.PathService;
 import org.springframework.stereotype.Component;
 
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Component
 @Getter
