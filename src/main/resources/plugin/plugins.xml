@@ -16,14 +16,6 @@
     </project>
 
     <project>
-        <name>IntelliJ IDEA</name>
-        <identifiers>
-            <folder>.idea</folder>
-            <file>*.iml</file>
-        </identifiers>
-    </project>
-
-    <project>
         <name>Eclipse</name>
         <identifiers>
             <file>.project</file>
