@@ -33,10 +33,7 @@ public class ProjectsPanelController {
     private VBox content;
     private Stage stage;
 
-    @Autowired
     private FxmlProvider fxmlProvider;
-
-    @Autowired
     private UserSettingsHolder userSettingsHolder;
 
     @Initialize
@@ -76,8 +73,8 @@ public class ProjectsPanelController {
             controller.getProjectTitleText().setText(title);
             controller.getProjectIconText().setText(icon);
             content.getChildren().add(resource.getParent());
+            controller.init();
         });
-        content.getChildren().add(fxmlProvider.getFxmlResource("projectPanel").getParent());
     }
 
     private String getIconTextFromTitle(String title) {
@@ -92,4 +89,10 @@ public class ProjectsPanelController {
         }
     }
 
+
+    @Autowired
+    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder) {
+        this.fxmlProvider = fxmlProvider;
+        this.userSettingsHolder = userSettingsHolder;
+    }
 }
