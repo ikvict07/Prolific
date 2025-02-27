@@ -9,8 +9,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @StageComponent("primaryStage")
 public class HeaderController {
     @FXML
-    public SVGPath settingsButton;
+    public StackPane settingsButton;
     @FXML
     public Circle minimizeButton;
     @FXML
@@ -189,7 +189,7 @@ public class HeaderController {
     public void dropdownForSettings() {
         Bounds bounds = settingsButton.localToScreen(settingsButton.getBoundsInLocal());
         settingsPopup.setX(bounds.getMinX());
-        settingsPopup.setY(bounds.getMaxY() + 5);
+        settingsPopup.setY(bounds.getMaxY());
         settingsPopup.show(stage);
     }
 }
