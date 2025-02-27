@@ -5,6 +5,8 @@ springDependencyManagement = "1.1.7"
 javaFx = "0.0.13"
 jlink = "2.25.0"
 log4j = "2.24.3"
+jackson = "2.18.2"
+jscksonTypes = "2.18.2"
 mock = "5.14.0"
 
 [libraries]
@@ -14,8 +16,10 @@ springBootTest = { module = "org.springframework.boot:spring-boot-starter-test" 
 oshiCore = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
 lombok = { module = "org.projectlombok:lombok" }
 junitJupiter = { module = "org.junit.platform:junit-platform-launcher" }
-logging = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mock" }
+jacksonXml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
+jacksonTypes = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jscksonTypes" }
+logging = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 
 [bundles]
 spring = [
@@ -25,6 +29,7 @@ spring = [
 testing = [
     "springBootTest",
     "junitJupiter",
+    "mockito",
 ]
 
 [plugins]

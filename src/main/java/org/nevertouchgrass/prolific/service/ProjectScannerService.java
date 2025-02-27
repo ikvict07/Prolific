@@ -1,8 +1,7 @@
 package org.nevertouchgrass.prolific.service;
 
 import lombok.NonNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,82 +9,78 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
 
 @Service
+@Log4j2
 public class ProjectScannerService {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+    private final List<ProjectTypeModel> projectTypeModels;
+    private final Set<Path> projects = ConcurrentHashMap.newKeySet();
 
-	private final List<ProjectTypeModel> projectTypeModels;
-	private final Set<Path> projects = new HashSet<>();
+    @Autowired
+    public ProjectScannerService(@NonNull XmlProjectScannerConfigLoaderService configLoaderService) {
+        this.projectTypeModels = configLoaderService.loadProjectTypes();
+    }
 
-	@Autowired
-	public ProjectScannerService(@NonNull XmlProjectScannerConfigLoaderService configLoaderService) {
-		this.projectTypeModels = configLoaderService.loadProjectTypes();
-	}
+    public Set<Path> scanForProjects(String rootDirectory) {
+        try (ForkJoinPool pool = new ForkJoinPool()) {
+            return pool.invoke(new FileVisitorTask(new File(rootDirectory).toPath()));
+        }
+    }
 
-	public Set<Path> scanForProjects(String rootDirectory) {
-		File file = new File(rootDirectory);
+    private class FileVisitorTask extends RecursiveTask<Set<Path>> {
+        private final Path path;
+        private final PathMatcher pathMatcher;
 
-		if (file.isDirectory()) {
-			try {
-				Files.walkFileTree(file.toPath(), new ProjectFinder());
-			} catch (Exception e) {
-				LOGGER.error("Error occurred while trying to access file", e);
-			}
-		}
+        private FileVisitorTask(Path path) {
+            this.path = path;
+            List<String> matchers = new ArrayList<>();
+            for (ProjectTypeModel projectTypeModel : projectTypeModels) {
+                matchers.addAll(projectTypeModel.getIdentifiers());
+            }
+            String pattern = String.format("glob:**/{%s}", String.join(",", matchers));
+            this.pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
+        }
 
-		return projects;
-	}
-
-	private class ProjectFinder extends SimpleFileVisitor<Path> {
-
-		private final PathMatcher pathMatcher;
-
-		private ProjectFinder() {
-			List<String> matchers = new ArrayList<>();
-			for (ProjectTypeModel projectTypeModel : projectTypeModels) {
-				matchers.addAll(projectTypeModel.getIdentifiers());
-			}
-
-			String pattern = String.format("glob:**/{%s}", String.join(",", matchers));
-
-			this.pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
-		}
-
-		@Override
-		@NonNull
-		public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
-			if (pathMatcher.matches(file)) {
-                try {
-                    projects.add(file.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+        @Override
+        protected Set<Path> compute() {
+            try {
+                List<FileVisitorTask> fileVisitorTasks = new ArrayList<>();
+                try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path,
+                        entry -> Files.isReadable(entry) && !Files.isSymbolicLink(entry) && Files.exists(entry)
+                )) {
+                    for (Path entry : directoryStream) {
+                        if (Files.isDirectory(entry)) {
+                            if (pathMatcher.matches(entry)) {
+                                projects.add(entry.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+                                break;
+                            }
+                            FileVisitorTask fileVisitorTask = new FileVisitorTask(entry);
+                            fileVisitorTask.fork();
+                            fileVisitorTasks.add(fileVisitorTask);
+                        } else {
+                            if (pathMatcher.matches(entry)) {
+                                projects.add(entry.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+                                break;
+                            }
+                        }
+                    }
                 } catch (IOException e) {
-                    LOGGER.error(e);
+                    log.error("{}", e.getMessage());
                 }
-                return FileVisitResult.SKIP_SIBLINGS;
-			}
-
-			return FileVisitResult.CONTINUE;
-		}
-
-		@Override
-		@NonNull
-		public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
-			if (pathMatcher.matches(dir)) {
-                try {
-                    projects.add(dir.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
-                } catch (IOException e) {
-                    LOGGER.error(e);
+                for (FileVisitorTask fileVisitorTask : fileVisitorTasks) {
+                    projects.addAll(fileVisitorTask.join());
                 }
-                return FileVisitResult.SKIP_SUBTREE;
-			}
-
-			return FileVisitResult.CONTINUE;
-		}
-	}
+            } catch (Exception e) {
+                log.error("{}", e.getMessage());
+            }
+            return projects;
+        }
+    }
 }
