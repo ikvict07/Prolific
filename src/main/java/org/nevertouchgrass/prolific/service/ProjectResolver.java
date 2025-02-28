@@ -76,7 +76,6 @@ class Visitor extends SimpleFileVisitor<Path> {
         if (file.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
             return FileVisitResult.SKIP_SIBLINGS;
         }
-        System.out.println("Indexing: " + file);
         return FileVisitResult.CONTINUE;
     }
 
@@ -104,7 +103,6 @@ class Visitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) {
-        System.out.println("Error reading file: " + file);
         if (exc instanceof AccessDeniedException) {
             return FileVisitResult.SKIP_SUBTREE;
         }
