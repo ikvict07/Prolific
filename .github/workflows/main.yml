@@ -14,7 +14,7 @@ jobs:
 
       - name: Set approval environment variable
         run: |
-          ALLOWED_USERS=("petukhoudzmitry" "ikvict07")
+          ALLOWED_USERS=("petukhoudzmitry")
 
           if [[ " ${ALLOWED_USERS[@]} " =~ " $GITHUB_ACTOR " ]]; then
             echo "User $GITHUB_ACTOR is allowed to auto-approve."
