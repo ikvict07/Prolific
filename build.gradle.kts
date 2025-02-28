@@ -80,3 +80,9 @@ tasks.register<Exec>("runLinux") {
     environment("GDK_BACKEND", "x11")
     commandLine("java", "-Dprism.order=sw", "-jar", "build/libs/Prolific-0.0.1.jar")
 }
+
+tasks.register<Exec>("runWindows") {
+    dependsOn(tasks.bootJar)
+    workingDir = rootDir
+    commandLine("java", "-Dprism.order=sw", "-jar", "build/libs/Prolific-0.0.1.jar")
+}

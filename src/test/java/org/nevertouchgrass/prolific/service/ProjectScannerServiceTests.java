@@ -12,21 +12,22 @@ import java.util.Set;
 
 @Log4j2
 @SpringBootTest(classes = TestConfiguration.class)
-public class ProjectScannerServiceTests {
+class ProjectScannerServiceTests {
     @Autowired
     private ProjectScannerService projectScannerService;
 
     @Test
     public void givenNothing_whenScanForProjects_returnProjects() {
-        String path = "/";
+        String path = System.getProperty("user.dir");
         Set<Path> expected = Set.of(Path.of(path));
 
         long startTime = System.currentTimeMillis();
         Set<Path> actual = projectScannerService.scanForProjects(path);
+        log.info("Running time: {}", System.currentTimeMillis() - startTime);
 
         log.info("Path: {}", path);
         log.info("Actual set: {}", actual);
-        log.info("Running time: {}", System.currentTimeMillis() - startTime);
+        log.info("Expected set: {}", expected);
 
         Assertions.assertNotNull(actual);
 
