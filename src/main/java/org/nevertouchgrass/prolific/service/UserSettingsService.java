@@ -87,15 +87,7 @@ public class UserSettingsService {
 
 
     public void setDefaultBaseScanDirectory() {
-        String os = System.getProperty("os.name").toLowerCase();
-        String osUser = System.getProperty("user.name");
-        if (os.contains("win")) {
-            userSettingsHolder.setBaseScanDirectory("C:\\Users\\" + osUser + "\\");
-        } else if (os.contains("mac")) {
-            userSettingsHolder.setBaseScanDirectory("/Users/" + osUser + "/");
-        } else if (os.contains("nix") || os.contains("nux")) {
-            userSettingsHolder.setBaseScanDirectory("/home/" + osUser + "/");
-        }
+        userSettingsHolder.setBaseScanDirectory(System.getProperty("user.home"));
         it.saveSettings();
     }
 
