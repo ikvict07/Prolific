@@ -63,6 +63,9 @@ public class UserSettingsService {
         if (sett.getMaximumProjectDepth() == null) {
             setDefaultProjectDepth();
         }
+        if (sett.getExcludedDirs() == null) {
+            setDefaultExcludedDirs();
+        }
         userSettingsHolder.load(sett);
         log.info("Using settings: {}", userSettingsHolder);
     }
@@ -112,6 +115,17 @@ public class UserSettingsService {
 
     public void setDefaultProjectDepth() {
         userSettingsHolder.setMaximumProjectDepth(6);
+        it.saveSettings();
+    }
+
+    public void setDefaultExcludedDirs() {
+        userSettingsHolder.setExcludedDirs(List.of(
+                "OneDrive",
+                "AppData",
+                "miniconda3",
+                "cargo",
+                ".*"
+        ));
         it.saveSettings();
     }
 }

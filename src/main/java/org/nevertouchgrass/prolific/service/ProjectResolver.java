@@ -18,9 +18,6 @@ import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.StreamSupport;
 
 /**
  * Service for resolution of project's type
@@ -30,15 +27,20 @@ public class ProjectResolver {
     private final List<ProjectTypeModel> projectTypeModels;
     private final UserSettingsHolder userSettingsHolder;
 
+    private final PathMatcher excludeMatcher;
+
     public ProjectResolver(@NonNull XmlProjectScannerConfigLoaderService configLoaderService, UserSettingsHolder userSettingsHolder) {
         this.projectTypeModels = configLoaderService.loadProjectTypes();
         this.userSettingsHolder = userSettingsHolder;
+        List<String> exclude = userSettingsHolder.getExcludedDirs();
+        String excludePattern = String.format("glob:**/{%s}", String.join(",", exclude));
+        this.excludeMatcher = FileSystems.getDefault().getPathMatcher(excludePattern);
     }
 
     @SneakyThrows
     public Project resolveProject(Path path) {
         for (var projectTypeModel : projectTypeModels) {
-            Visitor visitor = new Visitor(projectTypeModel, userSettingsHolder);
+            Visitor visitor = new Visitor(projectTypeModel, userSettingsHolder, excludeMatcher);
             Files.walkFileTree(path, visitor);
             if (visitor.getProject().getType() != null) {
                 Project project = visitor.getProject();
@@ -59,10 +61,12 @@ class Visitor extends SimpleFileVisitor<Path> {
     private final Project project = new Project();
     private final PathMatcher pathMatcher;
     private final UserSettingsHolder userSettingsHolder;
+    private final PathMatcher excludeMatcher;
 
-    Visitor(ProjectTypeModel projectTypeModel, UserSettingsHolder userSettingsHolder) {
+    Visitor(ProjectTypeModel projectTypeModel, UserSettingsHolder userSettingsHolder, PathMatcher excludeMatcher) {
         this.projectTypeModel = projectTypeModel;
         this.userSettingsHolder = userSettingsHolder;
+        this.excludeMatcher = excludeMatcher;
         List<String> identifiers = projectTypeModel.getIdentifiers();
         String pattern = String.format("glob:**/{%s}", String.join(",", identifiers));
         pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
@@ -70,6 +74,9 @@ class Visitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
+        if (excludeMatcher.matches(file)) {
+            return FileVisitResult.SKIP_SUBTREE;
+        }
         if (Files.isReadable(file)) {
             if (pathMatcher.matches(file)) {
                 project.setType(projectTypeModel.getName());
@@ -84,10 +91,7 @@ class Visitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
-        if (StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(dir.iterator(), Spliterator.ORDERED),
-                false
-        ).anyMatch(element -> element.startsWith(".") && pathMatcher.matches(element))) {
+        if (excludeMatcher.matches(dir)) {
             return FileVisitResult.SKIP_SUBTREE;
         }
         if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
