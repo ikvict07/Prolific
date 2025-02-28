@@ -87,6 +87,10 @@ public class ProjectScannerService {
                                     return FileVisitResult.SKIP_SIBLINGS;
                                 }
                             }
+                            if (file.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
+                                return FileVisitResult.SKIP_SIBLINGS;
+                            }
+                            System.out.println("Indexing: " + file);
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -97,6 +101,14 @@ public class ProjectScannerService {
                                     Spliterators.spliteratorUnknownSize(dir.iterator(), Spliterator.ORDERED),
                                     false
                             ).anyMatch(element -> element.startsWith(".") && patterns.stream().noneMatch(p -> p.matches(element)))) {
+                                return FileVisitResult.SKIP_SUBTREE;
+                            }
+                            if (dir.getFileName().endsWith("AppData")) {
+                                System.out.println("Skipping AppData");
+                                return FileVisitResult.SKIP_SUBTREE;
+                            }
+                            if (dir.getFileName().endsWith("OneDrive")) {
+                                System.out.println("Skipping OneDrive");
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
                             if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
@@ -115,6 +127,7 @@ public class ProjectScannerService {
 
                         @Override
                         public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                            System.out.println("Error reading file: " + file);
                             if (exc instanceof AccessDeniedException) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
