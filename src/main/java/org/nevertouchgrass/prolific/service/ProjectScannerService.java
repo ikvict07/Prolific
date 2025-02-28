@@ -17,6 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
+/**
+ * Service that scans directories and finds projects
+ */
+@SuppressWarnings("FieldCanBeLocal")
 @Service
 @Log4j2
 public class ProjectScannerService {
@@ -43,6 +47,7 @@ public class ProjectScannerService {
         }
     }
 
+    @SuppressWarnings("NullableProblems")
     private class FileVisitorTask extends RecursiveTask<Set<Path>> {
         private final Path path;
 

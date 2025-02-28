@@ -10,6 +10,12 @@ import lombok.Setter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service that manages constraints
+ * @see org.nevertouchgrass.prolific.annotation.Constraints
+ * @see org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize
+ */
+
 @Getter
 @Setter
 @Service
