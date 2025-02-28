@@ -16,6 +16,10 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Service for managing user's settings
+ */
+
 @Service
 @Log4j2
 public class UserSettingsService {

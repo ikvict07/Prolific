@@ -29,6 +29,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
+/**
+ * Service that scans directories and finds projects
+ */
+
 @Service
 @Log4j2
 @SuppressWarnings({"unused", "FieldCanBeLocal", "NullableProblems"})
