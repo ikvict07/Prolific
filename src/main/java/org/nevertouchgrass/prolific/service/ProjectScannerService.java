@@ -21,13 +21,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.StreamSupport;
 
 /**
  * Service that scans directories and finds projects
@@ -41,6 +38,7 @@ public class ProjectScannerService {
     private final List<ProjectTypeModel> projectTypeModels;
     private final Set<Path> projects = ConcurrentHashMap.newKeySet();
     private final PathMatcher pathMatcher;
+    private final PathMatcher excludeMatcher;
     private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private final UserSettingsHolder userSettingsHolder;
 
@@ -53,9 +51,13 @@ public class ProjectScannerService {
         for (ProjectTypeModel projectTypeModel : projectTypeModels) {
             matchers.addAll(projectTypeModel.getIdentifiers());
         }
+
+        List<String> exclude = userSettingsHolder.getExcludedDirs();
+        String excludePattern = String.format("glob:**/{%s}", String.join(",", exclude));
         String pattern = String.format("glob:**/{%s}", String.join(",", matchers));
         this.pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
         this.userSettingsHolder = userSettingsHolder;
+        this.excludeMatcher = FileSystems.getDefault().getPathMatcher(excludePattern);
     }
 
     public Set<Path> scanForProjects(String rootDirectory) {
@@ -72,12 +74,6 @@ public class ProjectScannerService {
     }
 
     public void startSearching(Path root) {
-        List<String> matchers = new ArrayList<>();
-        projectTypeModels.stream().map(ProjectTypeModel::getIdentifiers).forEach(matchers::addAll);
-        List<PathMatcher> patterns = matchers.stream().map(f -> {
-            String p = String.format("glob:**/{%s}", f);
-            return FileSystems.getDefault().getPathMatcher(p);
-        }).toList();
         try (var subDirs = Files.list(root)) {
             subDirs.forEach(subDir -> executor.submit(() -> {
                 try {
@@ -85,6 +81,9 @@ public class ProjectScannerService {
                         @Override
                         @NonNull
                         public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
+                            if (excludeMatcher.matches(file)) {
+                                return FileVisitResult.CONTINUE;
+                            }
                             if (Files.isReadable(file)) {
                                 if (pathMatcher.matches(file)) {
                                     addProject(file);
@@ -100,19 +99,7 @@ public class ProjectScannerService {
                         @Override
                         @NonNull
                         public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
-                            if (StreamSupport.stream(
-                                    Spliterators.spliteratorUnknownSize(dir.iterator(), Spliterator.ORDERED),
-                                    false
-                            ).anyMatch(element -> element.startsWith(".") && patterns.stream().noneMatch(p -> p.matches(element)))) {
-                                return FileVisitResult.SKIP_SUBTREE;
-                            }
-                            if (dir.getFileName().endsWith("AppData")) {
-                                return FileVisitResult.SKIP_SUBTREE;
-                            }
-                            if (dir.getFileName().endsWith("OneDrive")) {
-                                return FileVisitResult.SKIP_SUBTREE;
-                            }
-                            if (dir.getFileName().endsWith("miniconda3")) {
+                            if (excludeMatcher.matches(dir)) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
                             if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
