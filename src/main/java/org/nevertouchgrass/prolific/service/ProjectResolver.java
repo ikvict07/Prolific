@@ -9,6 +9,7 @@ import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -16,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -50,13 +50,11 @@ public class ProjectResolver {
 }
 
 @Getter
+@SuppressWarnings({"unused", "FieldCanBeLocal", "NullableProblems"})
 class Visitor extends SimpleFileVisitor<Path> {
     private final ProjectTypeModel projectTypeModel;
-
-
     private final Project project = new Project();
     private final PathMatcher pathMatcher;
-    private final List<PathMatcher> patterns;
     private final UserSettingsHolder userSettingsHolder;
 
     Visitor(ProjectTypeModel projectTypeModel, UserSettingsHolder userSettingsHolder) {
@@ -65,52 +63,51 @@ class Visitor extends SimpleFileVisitor<Path> {
         List<String> identifiers = projectTypeModel.getIdentifiers();
         String pattern = String.format("glob:**/{%s}", String.join(",", identifiers));
         pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
-        List<String> matchers = new ArrayList<>(projectTypeModel.getIdentifiers());
-        patterns = matchers.stream().map(f -> {
-            String p = String.format("glob:**/{%s}", f);
-            return FileSystems.getDefault().getPathMatcher(p);
-        }).toList();
     }
 
     @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-        if (!Files.isReadable(file)) {
-            return FileVisitResult.CONTINUE;
+    public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
+        if (Files.isReadable(file)) {
+            if (pathMatcher.matches(file)) {
+                project.setType(projectTypeModel.getName());
+                return FileVisitResult.SKIP_SIBLINGS;
+            }
         }
-        System.out.println(file);
         if (file.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
             return FileVisitResult.SKIP_SIBLINGS;
         }
-        if (pathMatcher.matches(file)) {
-            project.setType(projectTypeModel.getName());
-            return FileVisitResult.TERMINATE;
-        }
+        System.out.println("Indexing: " + file);
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-        if (!Files.isReadable(dir)) {
-            return FileVisitResult.SKIP_SUBTREE;
-        }
-        if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
-            return FileVisitResult.SKIP_SIBLINGS;
-        }
+    public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
         if (StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(dir.iterator(), Spliterator.ORDERED),
                 false
-        ).anyMatch(element -> element.startsWith(".") && patterns.stream().noneMatch(p -> p.matches(element)))) {
+        ).anyMatch(element -> element.startsWith(".") && pathMatcher.matches(element))) {
             return FileVisitResult.SKIP_SUBTREE;
         }
-        if (pathMatcher.matches(dir)) {
-            project.setType(projectTypeModel.getName());
+        if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
             return FileVisitResult.SKIP_SUBTREE;
+        }
+        if (Files.isReadable(dir)) {
+            if (pathMatcher.matches(dir)) {
+                project.setType(projectTypeModel.getName());
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+            return FileVisitResult.CONTINUE;
         }
 
-        return FileVisitResult.CONTINUE;
+        return FileVisitResult.SKIP_SUBTREE;
     }
+
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) {
-        return FileVisitResult.SKIP_SUBTREE;
+        System.out.println("Error reading file: " + file);
+        if (exc instanceof AccessDeniedException) {
+            return FileVisitResult.SKIP_SUBTREE;
+        }
+        return FileVisitResult.CONTINUE;
     }
 }
