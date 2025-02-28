@@ -17,6 +17,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
 import org.nevertouchgrass.prolific.annotation.Constraints;
+import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class HeaderController {
     @FXML
     public Circle maximizeButton;
     @FXML
-    @Constraints(right = 0.66)
+    @ConstraintsIgnoreElementSize(right = 0.66)
     public HBox leftSection;
     @FXML
     @Constraints(right = 0.5, left = 0.5)
     public Text titleText;
     @FXML
-    @Constraints(right = 0.33)
+    @ConstraintsIgnoreElementSize(right = 0.33)
     public Region rightSection;
 
     @FXML
@@ -74,14 +75,18 @@ public class HeaderController {
         maximizeButton.setOnMouseClicked(this::handleMaximize);
 
         header.setOnMousePressed(event -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
+            if (event.getTarget().equals(header)) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
         });
 
         header.setOnMouseDragged(event -> {
-            stage.setX(event.getScreenX() - xOffset);
-            stage.setY(event.getScreenY() - yOffset);
-            endX = stage.getX() + stage.getWidth();
+            if (event.getTarget().equals(header)) {
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
+                endX = stage.getX() + stage.getWidth();
+            }
         });
 
         stage.getScene().setOnMouseMoved(this::resizeCursor);
@@ -215,4 +220,6 @@ public class HeaderController {
         settingsPopup.setY(bounds.getMaxY());
         settingsPopup.show(stage);
     }
+
+    public void projects(MouseEvent mouseEvent) {}
 }
