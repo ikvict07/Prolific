@@ -6,6 +6,7 @@
 
 #header {
     -fx-background-color: #2B2D30;
+    -fx-font-size: 1.25em;
 }
 
 #gradientBox {
@@ -50,7 +51,7 @@
 
 .icon-button {
     -fx-background-color: transparent;
-    -fx-padding: 10px;
+    -fx-background-radius: 8;
 }
 
 .icon-button:hover {
