@@ -9,6 +9,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+/**
+ * Calls all method marked by @Initialize
+ * @see Initialize
+ */
+@SuppressWarnings("NullableProblems")
 @Component
 public class InitializeAnnotationProcessor implements ApplicationListener<StageInitializeEvent> {
     private final ApplicationContext applicationContext;
@@ -19,7 +24,7 @@ public class InitializeAnnotationProcessor implements ApplicationListener<StageI
 
     @Override
     public void onApplicationEvent(StageInitializeEvent event) {
-        applicationContext.getBeansWithAnnotation(Component.class).forEach((name, bean) -> {
+        applicationContext.getBeansWithAnnotation(Component.class).forEach((_, bean) -> {
             var methods = bean.getClass().getDeclaredMethods();
             Arrays.stream(methods).filter(method -> method.isAnnotationPresent(Initialize.class)).forEach(method -> {
                 method.setAccessible(true);
