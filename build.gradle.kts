@@ -86,3 +86,9 @@ tasks.register<Exec>("runWindows") {
     workingDir = rootDir
     commandLine("java", "-Dprism.order=sw", "-jar", "build/libs/Prolific-0.0.1.jar")
 }
+
+tasks.register<Exec>("runMac") {
+    dependsOn(tasks.bootJar)
+    workingDir = rootDir
+    commandLine("java", "-jar", "build/libs/Prolific-0.0.1.jar")
+}
