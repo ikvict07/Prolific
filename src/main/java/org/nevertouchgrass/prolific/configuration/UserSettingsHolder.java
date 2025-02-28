@@ -15,9 +15,10 @@ import java.util.List;
 public class UserSettingsHolder {
     private String baseScanDirectory;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd['T'HH:mm:ss]")
-    private LocalDateTime lastScanDate;
+    private LocalDateTime lastScanDate = LocalDateTime.now().minusYears(100);
     private Integer rescanEveryHours;
     private List<Project> userProjects;
+    private Integer maximumProjectDepth;
 
     public void load(UserSettingsHolder userSettingsHolder) {
         if (userSettingsHolder.getBaseScanDirectory() != null && !userSettingsHolder.getBaseScanDirectory().isEmpty()) {
@@ -31,6 +32,9 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.getUserProjects() != null) {
             this.userProjects = userSettingsHolder.getUserProjects();
+        }
+        if (userSettingsHolder.maximumProjectDepth != null) {
+            this.maximumProjectDepth = userSettingsHolder.getMaximumProjectDepth();
         }
     }
 }

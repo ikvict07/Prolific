@@ -8,7 +8,6 @@ log4j = "2.24.3"
 jackson = "2.18.2"
 jscksonTypes = "2.18.2"
 mock = "5.14.0"
-
 [libraries]
 springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
 springBoot = { module = "org.springframework.boot:spring-boot-starter" }

@@ -21,7 +21,7 @@ import java.util.Set;
 
 @Service
 @Log4j2
-@SuppressWarnings("NullableProblems")
+@SuppressWarnings({"unused", "FieldCanBeLocal", "NullableProblems"})
 public class PeriodicalScanningService implements ApplicationListener<ContextRefreshedEvent> {
     private final ProjectScannerService projectScannerService;
     private final UserSettingsHolder userSettingsHolder;
@@ -66,5 +66,10 @@ public class PeriodicalScanningService implements ApplicationListener<ContextRef
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         it.scheduleScanning();
+    }
+
+    @Override
+    public boolean supportsAsyncExecution() {
+        return false;
     }
 }
