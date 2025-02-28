@@ -21,10 +21,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.StreamSupport;
 
 @Service
 @Log4j2
@@ -65,6 +68,12 @@ public class ProjectScannerService {
     }
 
     public void startSearching(Path root) {
+        List<String> matchers = new ArrayList<>();
+        projectTypeModels.stream().map(ProjectTypeModel::getIdentifiers).forEach(matchers::addAll);
+        List<PathMatcher> patterns = matchers.stream().map(f -> {
+            String p = String.format("glob:**/{%s}", f);
+            return FileSystems.getDefault().getPathMatcher(p);
+        }).toList();
         try (var subDirs = Files.list(root)) {
             subDirs.forEach(subDir -> executor.submit(() -> {
                 try {
@@ -84,6 +93,12 @@ public class ProjectScannerService {
                         @Override
                         @NonNull
                         public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
+                            if (StreamSupport.stream(
+                                    Spliterators.spliteratorUnknownSize(dir.iterator(), Spliterator.ORDERED),
+                                    false
+                            ).anyMatch(element -> element.startsWith(".") && patterns.stream().noneMatch(p -> p.matches(element)))) {
+                                return FileVisitResult.SKIP_SUBTREE;
+                            }
                             if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
@@ -101,7 +116,6 @@ public class ProjectScannerService {
                         @Override
                         public FileVisitResult visitFileFailed(Path file, IOException exc) {
                             if (exc instanceof AccessDeniedException) {
-                                System.err.println("Access denied to: " + file.toString());
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
                             return FileVisitResult.CONTINUE;
