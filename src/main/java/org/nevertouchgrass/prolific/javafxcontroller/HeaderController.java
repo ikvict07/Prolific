@@ -75,14 +75,18 @@ public class HeaderController {
         maximizeButton.setOnMouseClicked(this::handleMaximize);
 
         header.setOnMousePressed(event -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
+            if (event.getTarget().equals(header)) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
         });
 
         header.setOnMouseDragged(event -> {
-            stage.setX(event.getScreenX() - xOffset);
-            stage.setY(event.getScreenY() - yOffset);
-            endX = stage.getX() + stage.getWidth();
+            if (event.getTarget().equals(header)) {
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
+                endX = stage.getX() + stage.getWidth();
+            }
         });
 
         stage.getScene().setOnMouseMoved(this::resizeCursor);
@@ -216,4 +220,6 @@ public class HeaderController {
         settingsPopup.setY(bounds.getMaxY());
         settingsPopup.show(stage);
     }
+
+    public void projects(MouseEvent mouseEvent) {}
 }

@@ -169,6 +169,7 @@
     -fx-background-radius: 0.0em;
     -fx-pref-height: 5px;
     -fx-max-height: 5px;
+    -fx-pref-width: 20px;
 }
 
 .scroll-bar:horizontal .thumb:hover,
