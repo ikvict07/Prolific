@@ -4,6 +4,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
+/**
+ * Service that manages color creation
+ */
 @Service
 public class ColorService {
 

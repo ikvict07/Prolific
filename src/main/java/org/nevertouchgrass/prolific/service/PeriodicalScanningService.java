@@ -15,8 +15,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Service for periodical project scanning
+ */
+
 @Service
 @Log4j2
+@SuppressWarnings("NullableProblems")
 public class PeriodicalScanningService implements ApplicationListener<ContextRefreshedEvent> {
     private final ProjectScannerService projectScannerService;
     private final UserSettingsHolder userSettingsHolder;

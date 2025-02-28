@@ -17,6 +17,9 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
+/**
+ * Service for resolution of project's type
+ */
 @Service
 public class ProjectResolver {
     private final List<ProjectTypeModel> projectTypeModels;
@@ -43,6 +46,7 @@ public class ProjectResolver {
 }
 
 @Getter
+@SuppressWarnings("NullableProblems")
 class Visitor extends SimpleFileVisitor<Path> {
     private final ProjectTypeModel projectTypeModel;
 
