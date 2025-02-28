@@ -5,6 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+
+/**
+ * Basic spring boot class
+ */
 @SpringBootApplication
 @EnableAsync
 public class ProlificApplication {

@@ -18,6 +18,9 @@ import java.util.List;
 
 import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.*;
 
+/**
+ * Service for loading user's plugins, that will be used in a project finding process
+ */
 @Service
 public class XmlProjectScannerConfigLoaderService {
 
