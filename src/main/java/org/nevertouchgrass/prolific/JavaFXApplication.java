@@ -11,6 +11,7 @@ import javafx.stage.StageStyle;
 import org.nevertouchgrass.prolific.events.JavaFxStartEvent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.nevertouchgrass.prolific.javafxcontroller.HeaderController;
+import org.nevertouchgrass.prolific.service.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -29,16 +30,20 @@ public class JavaFXApplication implements ApplicationRunner {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final UserSettingsService userSettingsService;
+
+
     private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
 
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public JavaFXApplication(Stage primaryStage, Parent mainScreenParent, HeaderController headerController,
-                             ApplicationEventPublisher applicationEventPublisher) {
+                             ApplicationEventPublisher applicationEventPublisher, UserSettingsService userSettingsService) {
         this.primaryStage = primaryStage;
         this.mainScreenParent = mainScreenParent;
         this.headerController = headerController;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.userSettingsService = userSettingsService;
     }
 
     @Override

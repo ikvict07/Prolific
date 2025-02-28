@@ -37,7 +37,12 @@ public class PathService {
             if (index == -1) {
                 throw new NoSuchElementException("Invalid Jar File URL String");
             }
-            String path = fixed.substring(0, index);
+            String path;
+            if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                path = fixed.substring(1, index);
+            } else {
+                path = fixed.substring(0, index);
+            }
             log.info("Working in directory: {}", path);
             return Paths.get(path);
         }
