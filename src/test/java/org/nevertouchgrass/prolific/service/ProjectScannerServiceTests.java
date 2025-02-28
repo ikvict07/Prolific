@@ -18,7 +18,7 @@ public class ProjectScannerServiceTests {
 
     @Test
     public void givenNothing_whenScanForProjects_returnProjects() {
-        String path = System.getProperty("user.dir");
+        String path = "/";
         Set<Path> expected = Set.of(Path.of(path));
 
         long startTime = System.currentTimeMillis();

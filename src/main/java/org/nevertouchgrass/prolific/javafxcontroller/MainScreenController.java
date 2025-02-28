@@ -15,7 +15,7 @@ import org.nevertouchgrass.prolific.annotation.StageComponent;
 @SuppressWarnings("unused")
 public class MainScreenController {
     @FXML
-    @ConstraintsIgnoreElementSize(left = 0.05, top = 0.20, right = 0.5)
+    @ConstraintsIgnoreElementSize(left = 0.05, top = 0.20, right = 0.5, bottom = 0.20)
     public ScrollPane projectsPanel;
     private Stage stage;
 

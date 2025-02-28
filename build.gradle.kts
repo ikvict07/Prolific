@@ -62,7 +62,7 @@ tasks {
 }
 
 javafx {
-    version = "23"
+    version = "23.0.1"
     modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics")
 }
 
@@ -74,7 +74,7 @@ jlink {
     }
 }
 
-tasks.register<Exec> ("runLinux") {
+tasks.register<Exec>("runLinux") {
     dependsOn(tasks.bootJar)
     workingDir = rootDir
     environment("GDK_BACKEND", "x11")
