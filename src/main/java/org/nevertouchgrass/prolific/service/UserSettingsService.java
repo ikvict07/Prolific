@@ -115,7 +115,7 @@ public class UserSettingsService {
     }
 
     public void setDefaultProjectDepth() {
-        userSettingsHolder.setMaximumProjectDepth(5);
+        userSettingsHolder.setMaximumProjectDepth(6);
         it.saveSettings();
     }
 }
