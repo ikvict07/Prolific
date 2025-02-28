@@ -33,10 +33,10 @@ public class PathService {
             }
             String path;
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                 path = fixed.substring(1, index + 4);
+                path = fixed.substring(1, index + 4);
 
             } else {
-                 path = fixed.substring(0, index + 4);
+                path = fixed.substring(0, index + 4);
 
             }
             return Paths.get(path);
