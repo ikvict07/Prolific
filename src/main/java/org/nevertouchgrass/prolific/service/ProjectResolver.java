@@ -9,6 +9,7 @@ import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
