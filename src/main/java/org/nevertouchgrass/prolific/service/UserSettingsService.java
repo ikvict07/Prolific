@@ -7,7 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +27,8 @@ public class UserSettingsService {
     private UserSettingsService it;
 
     @Autowired
-    public void setSelf(@Lazy UserSettingsService it) {
-        this.it = it;
+    public void setSelf(ApplicationContext context) {
+        this.it = context.getBean(UserSettingsService.class);
     }
 
     public UserSettingsService(UserSettingsHolder userSettingsHolder, SpringFXConfigurationProperties springFXConfigurationProperties, PathService pathService, XmlMapper xmlMapper) {
@@ -56,6 +56,9 @@ public class UserSettingsService {
         if (sett.getUserProjects() == null) {
             setDefaultProjects();
         }
+        if (sett.getMaximumProjectDepth() == null) {
+            setDefaultProjectDepth();
+        }
         userSettingsHolder.load(sett);
         log.info("Using settings: {}", userSettingsHolder);
     }
@@ -63,7 +66,7 @@ public class UserSettingsService {
     @SneakyThrows
     @Async
     synchronized public void saveSettings() {
-        log.info("Saving settings: " + userSettingsHolder);
+        log.info("Saving settings: {}", userSettingsHolder);
         Path settingsFilePath = getSettingsPath();
         xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), userSettingsHolder);
     }
@@ -76,7 +79,8 @@ public class UserSettingsService {
         Files.createDirectories(settingsPath);
         if (!Files.exists(settingsFilePath)) {
             Files.createFile(settingsFilePath);
-            xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), new UserSettingsHolder());
+            var settings = new UserSettingsHolder();
+            xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), settings);
         }
         return settingsFilePath;
     }
@@ -100,12 +104,18 @@ public class UserSettingsService {
         it.saveSettings();
     }
 
-    public void setDefaultProjects () {
+    public void setDefaultProjects() {
         userSettingsHolder.setUserProjects(List.of());
         it.saveSettings();
     }
+
     public void setDefaultLastScanDate() {
-        userSettingsHolder.setLastScanDate(LocalDateTime.MIN);
+        userSettingsHolder.setLastScanDate(LocalDateTime.now().minusYears(100));
+        it.saveSettings();
+    }
+
+    public void setDefaultProjectDepth() {
+        userSettingsHolder.setMaximumProjectDepth(5);
         it.saveSettings();
     }
 }
