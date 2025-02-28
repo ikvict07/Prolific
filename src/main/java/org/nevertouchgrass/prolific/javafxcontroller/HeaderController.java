@@ -17,6 +17,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
 import org.nevertouchgrass.prolific.annotation.Constraints;
+import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class HeaderController {
     @FXML
     public Circle maximizeButton;
     @FXML
-    @Constraints(right = 0.66)
+    @ConstraintsIgnoreElementSize(right = 0.66)
     public HBox leftSection;
     @FXML
     @Constraints(right = 0.5, left = 0.5)
     public Text titleText;
     @FXML
-    @Constraints(right = 0.33)
+    @ConstraintsIgnoreElementSize(right = 0.33)
     public Region rightSection;
 
     @FXML
