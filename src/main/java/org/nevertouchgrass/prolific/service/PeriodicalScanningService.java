@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Service for periodical project scanning
+ */
+
 @Service
 @Log4j2
 @SuppressWarnings({"unused", "FieldCanBeLocal", "NullableProblems"})
