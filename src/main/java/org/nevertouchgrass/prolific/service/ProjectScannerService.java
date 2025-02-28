@@ -111,6 +111,10 @@ public class ProjectScannerService {
                                 System.out.println("Skipping OneDrive");
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
+                            if (dir.getFileName().endsWith("miniconda3")) {
+                                System.out.println("Skipping OneDrive");
+                                return FileVisitResult.SKIP_SUBTREE;
+                            }
                             if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
