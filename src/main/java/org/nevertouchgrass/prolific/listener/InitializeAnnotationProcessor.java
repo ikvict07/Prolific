@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 /**
  * Calls all method marked by @Initialize
+ *
  * @see Initialize
  */
 @SuppressWarnings("NullableProblems")

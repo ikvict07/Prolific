@@ -44,6 +44,8 @@ dependencies {
     implementation(libs.logging)
     implementation(libs.jacksonXml)
     implementation(libs.jacksonTypes)
+    implementation(libs.sqlite)
+    implementation(libs.hikari)
 
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)
