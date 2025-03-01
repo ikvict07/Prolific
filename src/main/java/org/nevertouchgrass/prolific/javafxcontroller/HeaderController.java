@@ -49,6 +49,10 @@ public class HeaderController {
     private Circle closeButton;
 
     @Autowired
+    public void setSettingsPopup(Popup settingsPopup) {
+        this.settingsPopup = settingsPopup;
+    }
+
     private Popup settingsPopup;
 
     private double xOffset = 0;
@@ -122,60 +126,54 @@ public class HeaderController {
     }
 
     private void resizeWindow(MouseEvent event) {
-        if (stage.getScene().getCursor() == Cursor.SW_RESIZE) {
-            double newWidth = endX - event.getScreenX();
-            double newHeight = event.getScreenY() - stage.getY();
-            widthBeforeMaximizing = newWidth;
-            heightBeforeMaximizing = newHeight;
-            if (newWidth >= minWidth && event.getScreenX() >= visualBounds.getMinX()) {
-                stage.setX(event.getScreenX());
-                stage.setWidth(endX - event.getScreenX());
-                stage.setHeight(stage.getHeight());
+        double deltaX = event.getScreenX();
+        double deltaY = event.getScreenY();
+        switch (org.nevertouchgrass.prolific.constants.Cursor.getCursor(stage.getScene().getCursor())) {
+            case SW_RESIZE -> {
+                resizeWidth(endX - deltaX, deltaX, true);
+                double newHeight = deltaY - stage.getY();
+                resizeHeight(newHeight);
             }
-            if (newHeight >= minHeight && event.getScreenY() <= visualBounds.getMaxY()) {
-                stage.setHeight(newHeight);
-                stage.setWidth(stage.getWidth());
+            case SE_RESIZE -> {
+                resizeWidth(deltaX - stage.getX(), deltaX, false);
+                double newHeight = deltaY - stage.getY();
+                resizeHeight(newHeight);
+            }
+            case W_RESIZE -> resizeWidth(endX - deltaX, deltaX, true);
+            case E_RESIZE -> resizeWidth(deltaX - stage.getX(), deltaX, false);
+            case S_RESIZE -> {
+                double newHeight = deltaY - stage.getY();
+                resizeHeight(newHeight);
             }
 
-        } else if (stage.getScene().getCursor() == Cursor.SE_RESIZE) {
-            double newWidth = event.getScreenX() - stage.getX();
-            double newHeight = event.getScreenY() - stage.getY();
-            widthBeforeMaximizing = newWidth;
-            heightBeforeMaximizing = newHeight;
-            if (newWidth >= minWidth && event.getScreenX() <= visualBounds.getMaxX()) {
-                stage.setWidth(newWidth);
-                stage.setHeight(stage.getHeight());
-                endX = stage.getX() + stage.getWidth();
-            }
-            if (newHeight >= minHeight && event.getScreenY() <= visualBounds.getMaxY()) {
-                stage.setHeight(newHeight);
-                stage.setWidth(stage.getWidth());
-            }
-        } else if (stage.getScene().getCursor() == Cursor.W_RESIZE) {
-            double newWidth = endX - event.getScreenX();
-            widthBeforeMaximizing = newWidth;
-            if (newWidth >= minWidth && event.getScreenX() >= visualBounds.getMinX()) {
-                stage.setX(event.getScreenX());
-                stage.setWidth(newWidth);
-                stage.setHeight(stage.getHeight());
-            }
-        } else if (stage.getScene().getCursor() == Cursor.E_RESIZE) {
-            double newWidth = event.getScreenX() - stage.getX();
-            widthBeforeMaximizing = newWidth;
-            if (newWidth >= minWidth && event.getScreenX() <= visualBounds.getMaxX()) {
-                stage.setWidth(newWidth);
-                stage.setHeight(stage.getHeight());
-                endX = stage.getX() + stage.getWidth();
-            }
-        } else if (stage.getScene().getCursor() == Cursor.S_RESIZE) {
-            double newHeight = event.getScreenY() - stage.getY();
-
-            if (newHeight >= minHeight && event.getScreenY() <= visualBounds.getMaxY()) {
-                stage.setHeight(newHeight);
-                stage.setWidth(stage.getWidth());
+            case null -> throw new IllegalStateException("Unexpected value: " + null);
+            case N_RESIZE, NE_RESIZE, NW_RESIZE, DEFAULT -> {
+                // No action
             }
         }
     }
+
+
+
+    private void resizeWidth(double newWidth, double deltaX, boolean adjustX) {
+        widthBeforeMaximizing = newWidth;
+
+        if (newWidth >= minWidth && deltaX >= visualBounds.getMinX() && deltaX <= visualBounds.getMaxX()) {
+            if (adjustX) {
+                stage.setX(deltaX);
+            }
+            stage.setWidth(newWidth);
+        }
+    }
+
+    private void resizeHeight(double newHeight) {
+        heightBeforeMaximizing = newHeight;
+
+        if (newHeight >= minHeight && stage.getY() + newHeight <= visualBounds.getMaxY()) {
+            stage.setHeight(newHeight);
+        }
+    }
+
 
     public void handleClose(MouseEvent mouseEvent) {
         if (Platform.isFxApplicationThread()) {
@@ -221,5 +219,7 @@ public class HeaderController {
         settingsPopup.show(stage);
     }
 
-    public void projects(MouseEvent mouseEvent) {}
+    public void projects(MouseEvent mouseEvent) {
+        // TODO: Implement
+    }
 }
