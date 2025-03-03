@@ -27,7 +27,7 @@ import java.util.Set;
 @Service
 @Log4j2
 @SuppressWarnings({"unused", "FieldCanBeLocal", "NullableProblems"})
-public class PeriodicalScanningService implements ApplicationListener<StageInitializeEvent> {
+public class PeriodicalScanningService implements ApplicationListener<StageShowEvent> {
     private final ProjectScannerService projectScannerService;
     private final UserSettingsHolder userSettingsHolder;
     private final ProjectResolver projectResolver;
@@ -74,7 +74,7 @@ public class PeriodicalScanningService implements ApplicationListener<StageIniti
     }
 
     @Override
-    public void onApplicationEvent(StageInitializeEvent event) {
+    public void onApplicationEvent(StageShowEvent event) {
         it.scheduleScanning();
     }
 
