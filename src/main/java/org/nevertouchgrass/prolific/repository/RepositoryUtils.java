@@ -9,6 +9,10 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Utility class for repositories that provides common methods for repositories.
+ * Like generating insert queries, finding table names, and so on.
+ */
 public class RepositoryUtils {
     private RepositoryUtils() {
 
