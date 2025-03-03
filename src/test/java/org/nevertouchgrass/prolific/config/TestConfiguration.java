@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.nio.file.Path;
+import java.util.List;
 
 @Configuration
 @EnableConfigurationProperties(SpringFXConfigurationProperties.class)
@@ -39,6 +40,7 @@ public class TestConfiguration {
     public UserSettingsHolder userSettingsHolder() {
         var userSettings = new UserSettingsHolder();
         userSettings.setMaximumProjectDepth(5);
+        userSettings.setExcludedDirs(List.of("build", "target", ".git", ".idea", ".gradle"));
         return userSettings;
     }
 
