@@ -21,11 +21,15 @@ import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 
 @AnchorPaneController
 @StageComponent("primaryStage")
 @SuppressWarnings("unused")
 public class HeaderController {
+
+    private ApplicationContext applicationContext;
     @FXML
     public StackPane settingsButton;
     @FXML
@@ -181,6 +185,7 @@ public class HeaderController {
         } else {
             Platform.runLater(() -> stage.close());
         }
+        SpringApplication.exit(applicationContext);
     }
 
     public void handleMinimize(MouseEvent mouseEvent) {
@@ -221,5 +226,10 @@ public class HeaderController {
 
     public void projects(MouseEvent mouseEvent) {
         // TODO: Implement
+    }
+
+    @Autowired
+    public void set(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }
