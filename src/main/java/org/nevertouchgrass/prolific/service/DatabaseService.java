@@ -31,10 +31,12 @@ public class DatabaseService {
 
     private String createProjectsTable() {
         return "CREATE TABLE IF NOT EXISTS projects ("
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "title TEXT NOT NULL, "
                 + "type TEXT NOT NULL, "
                 + "path TEXT NOT NULL, "
                 + "is_manually_added BOOLEAN DEFAULT 0"
                 + ");";
+
     }
 }
