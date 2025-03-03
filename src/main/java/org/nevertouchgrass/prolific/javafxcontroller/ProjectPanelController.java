@@ -44,7 +44,7 @@ public class ProjectPanelController {
         String baseColor = extractPrimaryColor(iconColorStyle);
         gradientBox.setStyle(generateGradientBoxStyle(baseColor));
 
-        primaryStage.widthProperty().addListener((_, _, _) -> {
+        Runnable block = () -> {
             var width = projectPanel.getWidth();
             projectInfo.setMaxWidth(width * 0.32);
             projectInfo.setMinWidth(width * 0.32);
@@ -53,7 +53,9 @@ public class ProjectPanelController {
 
             AnchorPane.setLeftAnchor(run, calculatePadding(0.33, width));
             AnchorPane.setLeftAnchor(config, calculatePadding(0.35, width));
-        });
+        };
+        primaryStage.widthProperty().addListener((_, _, _) -> block.run());
+        projectPanel.widthProperty().addListener((_, _, _) -> block.run());
     }
 
     private String generateGradientBoxStyle(String baseColor) {

@@ -20,7 +20,6 @@ public class OnSaveAspect {
     private final ConfigurableBeanFactory beanFactory;
 
     public OnSaveAspect(ConfigurableBeanFactory beanFactory) {
-        System.out.println("OnSaveAspect.OnSaveAspect");
         this.beanFactory = beanFactory;
     }
 
@@ -75,8 +74,8 @@ public class OnSaveAspect {
                                         log.info("Called method {} in bean {} for entity {}",
                                                 method.getName(), bean.getClass().getSimpleName(), entityClass.getSimpleName());
                                     } catch (Exception e) {
-                                        log.error("Failed to invoke @OnSave method {} in bean {}",
-                                                method.getName(), bean.getClass().getSimpleName(), e);
+                                        log.error("Failed to invoke @OnSave method {} in bean {} caused by {}",
+                                                method.getName(), bean.getClass().getSimpleName(), e.getCause());
                                     }
                                 }
                             }

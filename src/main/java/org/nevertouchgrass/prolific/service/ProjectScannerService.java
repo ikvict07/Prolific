@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Service that scans directories and finds projects
@@ -60,8 +61,13 @@ public class ProjectScannerService {
         this.excludeMatcher = FileSystems.getDefault().getPathMatcher(excludePattern);
     }
 
+    public Set<Path> scanForProjects(String rootDirectory, Consumer<Path> onFind) {
+        startSearching(Path.of(rootDirectory), onFind);
+        return projects;
+    }
+
     public Set<Path> scanForProjects(String rootDirectory) {
-        startSearching(Path.of(rootDirectory));
+        startSearching(Path.of(rootDirectory), this::addProject);
         return projects;
     }
 
@@ -73,7 +79,7 @@ public class ProjectScannerService {
         }
     }
 
-    public void startSearching(Path root) {
+    public void startSearching(Path root, Consumer<Path> onFind) {
         try (var subDirs = Files.list(root)) {
             subDirs.forEach(subDir -> executor.submit(() -> {
                 try {
@@ -84,12 +90,11 @@ public class ProjectScannerService {
                             if (excludeMatcher.matches(file)) {
                                 return FileVisitResult.CONTINUE;
                             }
-                            if (Files.isReadable(file)) {
-                                if (pathMatcher.matches(file)) {
-                                    addProject(file);
+                            if (Files.isReadable(file) && pathMatcher.matches(file)) {
+                                    onFind.accept(file);
                                     return FileVisitResult.SKIP_SIBLINGS;
                                 }
-                            }
+
                             if (file.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
                                 return FileVisitResult.SKIP_SIBLINGS;
                             }
@@ -107,7 +112,7 @@ public class ProjectScannerService {
                             }
                             if (Files.isReadable(dir)) {
                                 if (pathMatcher.matches(dir)) {
-                                    addProject(dir);
+                                    onFind.accept(dir);
                                     return FileVisitResult.SKIP_SUBTREE;
                                 }
                                 return FileVisitResult.CONTINUE;
@@ -136,7 +141,7 @@ public class ProjectScannerService {
             var _ = executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Indexing interrupted", e);
+            throw new IllegalStateException("Indexing interrupted", e);
         }
     }
 }

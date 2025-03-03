@@ -2,6 +2,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
@@ -11,8 +12,11 @@ import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.OnSave;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,6 +39,7 @@ public class ProjectsPanelController {
 
     private FxmlProvider fxmlProvider;
     private UserSettingsHolder userSettingsHolder;
+    private ProjectsRepository projectsRepository;
 
     @Initialize
     private void init() {
@@ -64,8 +69,12 @@ public class ProjectsPanelController {
     }
 
     private void addProjectPanels() {
-        var projects = userSettingsHolder.getUserProjects();
-        projects.forEach(project -> {
+        var projects = projectsRepository.findAll(Project.class);
+        projects.forEach(this::addProjectToList);
+    }
+
+    private void addProjectToList(Project project) {
+        Platform.runLater(() -> {
             var title = project.getTitle();
             var icon = getIconTextFromTitle(title);
             var resource = fxmlProvider.getFxmlResource("projectPanel");
@@ -77,22 +86,28 @@ public class ProjectsPanelController {
         });
     }
 
+    @OnSave(Project.class)
+    private void addProjectListener(Project project) {
+        addProjectToList(project);
+    }
+
     private String getIconTextFromTitle(String title) {
-        var splitted =  Arrays.stream(title.split("-")).toList();
+        var splitted = Arrays.stream(title.split("-")).toList();
         if (splitted.size() == 1) {
-            return splitted.getFirst().substring(0,1).toUpperCase();
+            return splitted.getFirst().substring(0, 1).toUpperCase();
         } else {
-            var result =  splitted.stream().map(s -> s.substring(0, 1)).collect(Collectors.joining()).toUpperCase();
-            var firstLetter = result.substring(0,1);
-            var lastLetter = result.substring(result.length()-1);
+            var result = splitted.stream().map(s -> s.substring(0, 1)).collect(Collectors.joining()).toUpperCase();
+            var firstLetter = result.substring(0, 1);
+            var lastLetter = result.substring(result.length() - 1);
             return firstLetter + lastLetter;
         }
     }
 
 
     @Autowired
-    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder) {
+    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder, ProjectsRepository projectsRepository) {
         this.fxmlProvider = fxmlProvider;
         this.userSettingsHolder = userSettingsHolder;
+        this.projectsRepository = projectsRepository;
     }
 }
