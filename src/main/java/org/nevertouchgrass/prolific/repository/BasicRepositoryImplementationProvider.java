@@ -23,6 +23,12 @@ import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getTableNa
 import static org.nevertouchgrass.prolific.repository.RepositoryUtils.prepareInsertQuery;
 import static org.nevertouchgrass.prolific.repository.RepositoryUtils.toSnakeCase;
 
+/**
+ * Simple implementation of a basic repository.
+ * Inherit this class and you will have a basic repository implementation.
+ * @param <T> The type of the entity managed by this repository implementation.
+ */
+
 @Log4j2
 @Repository
 public abstract class BasicRepositoryImplementationProvider<T> implements BasicRepository<T> {
