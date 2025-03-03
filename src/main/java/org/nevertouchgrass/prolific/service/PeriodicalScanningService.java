@@ -50,14 +50,16 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     }
 
     public void scheduleScanning() {
-        LocalDateTime lastScanDate = userSettingsHolder.getLastScanDate();
-        int rescanEvery = userSettingsHolder.getRescanEveryHours();
-        String baseScanDirectory = userSettingsHolder.getBaseScanDirectory();
-        log.info("Last scan date: {}", lastScanDate);
-        if (lastScanDate.isBefore(LocalDateTime.now().minus(Duration.ofHours(rescanEvery)))) {
-            log.info("Scanning for projects in {}", baseScanDirectory);
-            findProjects(baseScanDirectory);
-        }
+        new Thread(() -> {
+            LocalDateTime lastScanDate = userSettingsHolder.getLastScanDate();
+            int rescanEvery = userSettingsHolder.getRescanEveryHours();
+            String baseScanDirectory = userSettingsHolder.getBaseScanDirectory();
+            log.info("Last scan date: {}", lastScanDate);
+            if (lastScanDate.isBefore(LocalDateTime.now().minus(Duration.ofHours(rescanEvery)))) {
+                log.info("Scanning for projects in {}", baseScanDirectory);
+                findProjects(baseScanDirectory);
+            }
+        }).start();
     }
 
     private void findProjects(String baseScanDirectory) {
@@ -76,10 +78,5 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     @Override
     public void onApplicationEvent(StageShowEvent event) {
         it.scheduleScanning();
-    }
-
-    @Override
-    public boolean supportsAsyncExecution() {
-        return false;
     }
 }
