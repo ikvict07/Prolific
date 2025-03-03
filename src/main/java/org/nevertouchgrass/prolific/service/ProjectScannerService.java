@@ -87,7 +87,7 @@ public class ProjectScannerService {
                         @Override
                         @NonNull
                         public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
-                            if (excludeMatcher.matches(file)) {
+                            if (excludeMatcher.matches(file) && !pathMatcher.matches(file)) {
                                 return FileVisitResult.CONTINUE;
                             }
                             if (Files.isReadable(file) && pathMatcher.matches(file)) {
@@ -104,7 +104,7 @@ public class ProjectScannerService {
                         @Override
                         @NonNull
                         public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
-                            if (excludeMatcher.matches(dir)) {
+                            if (excludeMatcher.matches(dir) && !pathMatcher.matches(dir)) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
                             if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
