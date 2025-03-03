@@ -34,7 +34,7 @@ public class DatabaseService {
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "title TEXT NOT NULL, "
                 + "type TEXT NOT NULL, "
-                + "path TEXT NOT NULL, "
+                + "path TEXT NOT NULL UNIQUE, "
                 + "is_manually_added BOOLEAN DEFAULT 0"
                 + ");";
 
