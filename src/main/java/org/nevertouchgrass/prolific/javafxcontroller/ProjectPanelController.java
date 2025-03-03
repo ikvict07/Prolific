@@ -8,6 +8,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import lombok.Data;
+import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
+import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
 import org.nevertouchgrass.prolific.service.ColorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -37,25 +39,27 @@ public class ProjectPanelController {
     private Stage primaryStage;
     private ColorService colorService;
 
+    private AnchorPaneConstraintsService anchorPaneConstraintsService;
+
     public void init() {
         String iconColorStyle = generateRandomColorStyle();
         projectIcon.setStyle(iconColorStyle);
 
         String baseColor = extractPrimaryColor(iconColorStyle);
         gradientBox.setStyle(generateGradientBoxStyle(baseColor));
+        anchorPaneConstraintsService.setStage(primaryStage);
+        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(projectInfo, 0.40);
 
+        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(run, 0.20);
+        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(config, 0.22);
         Runnable block = () -> {
             var width = projectPanel.getWidth();
             projectInfo.setMaxWidth(width * 0.32);
             projectInfo.setMinWidth(width * 0.32);
-            AnchorPane.setLeftAnchor(projectInfo, calculatePadding(0.01, width));
-            AnchorPane.setRightAnchor(projectInfo, width - calculatePadding(0.33, width));
-
-            AnchorPane.setLeftAnchor(run, calculatePadding(0.33, width));
-            AnchorPane.setLeftAnchor(config, calculatePadding(0.35, width));
         };
         primaryStage.widthProperty().addListener((_, _, _) -> block.run());
         projectPanel.widthProperty().addListener((_, _, _) -> block.run());
+        block.run();
     }
 
     private String generateGradientBoxStyle(String baseColor) {
@@ -86,8 +90,9 @@ public class ProjectPanelController {
 
     @Autowired
 
-    private void set(Stage primaryStage, ColorService colorService) {
+    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
+        this.anchorPaneConstraintsService = anchorPaneConstraintsService;
     }
 }

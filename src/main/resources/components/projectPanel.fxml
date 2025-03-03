@@ -8,7 +8,7 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.control.Label?>
-<HBox id="gradientBox" fx:id="projectPanel" VBox.vgrow="ALWAYS"
+<HBox id="gradientBox" fx:id="projectPanel"
       alignment="CENTER_LEFT" maxHeight="40.0"
       stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectPanelController">
