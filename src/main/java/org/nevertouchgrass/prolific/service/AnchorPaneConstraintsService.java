@@ -59,7 +59,6 @@ public class AnchorPaneConstraintsService {
         stage.widthProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());
-
         block.run();
     }
 
