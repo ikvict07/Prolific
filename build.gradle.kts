@@ -83,7 +83,7 @@ tasks.register<Exec>("runLinux") {
     dependsOn(tasks.bootJar)
     workingDir = rootDir
     environment("GDK_BACKEND", "x11")
-    commandLine("java", "-Dprism.order=sw", "-jar", "build/libs/Prolific-0.0.1.jar")
+    commandLine("java", "-Dprism.order=sw", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
 }
 
 tasks.register<Exec>("runWindows") {
@@ -91,7 +91,7 @@ tasks.register<Exec>("runWindows") {
     group = "application"
     dependsOn(tasks.bootJar)
     workingDir = rootDir
-    commandLine("java", "-Dprism.order=sw", "-jar", "build/libs/Prolific-0.0.1.jar")
+    commandLine("java", "-Dprism.order=sw", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
 }
 
 tasks.register<Exec>("runMac") {
@@ -99,5 +99,5 @@ tasks.register<Exec>("runMac") {
     group = "application"
     dependsOn(tasks.bootJar)
     workingDir = rootDir
-    commandLine("java", "-jar", "build/libs/Prolific-0.0.1.jar")
+    commandLine("java", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
 }
