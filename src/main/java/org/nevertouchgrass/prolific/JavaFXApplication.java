@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.nevertouchgrass.prolific.events.JavaFxStartEvent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
+import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.javafxcontroller.HeaderController;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.UserSettingsService;
@@ -68,6 +69,7 @@ public class JavaFXApplication implements ApplicationRunner {
             primaryStage.setScene(scene);
             applicationEventPublisher.publishEvent(new StageInitializeEvent("primaryStage"));
             primaryStage.show();
+            applicationEventPublisher.publishEvent(new StageShowEvent("primaryStage"));
         });
     }
 }
