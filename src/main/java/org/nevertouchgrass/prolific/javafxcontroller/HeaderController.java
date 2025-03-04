@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -12,6 +13,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -20,9 +22,14 @@ import org.nevertouchgrass.prolific.annotation.Constraints;
 import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.service.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+
+import java.io.IOException;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 
 @AnchorPaneController
 @StageComponent("primaryStage")
@@ -51,6 +58,7 @@ public class HeaderController {
 
     @FXML
     private Circle closeButton;
+    private ProjectsService projectsService;
 
     @Autowired
     public void setSettingsPopup(Popup settingsPopup) {
@@ -224,11 +232,34 @@ public class HeaderController {
     }
 
     public void projects(MouseEvent mouseEvent) {
-        // TODO: Implement
+        DirectoryChooser fileChooser = new DirectoryChooser();
+        fileChooser.setTitle("Open Project");
+        try {
+            String f = fileChooser.showDialog(stage).getPath();
+            Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
+            projectsService.manuallyAddProject(p);
+        } catch (IllegalStateException | IOException e) {
+            showAlert("Error", "Unknown project type");
+        }
     }
 
     @Autowired
-    public void set(ApplicationContext applicationContext) {
+    public void set(ApplicationContext applicationContext, ProjectsService projectsService) {
         this.applicationContext = applicationContext;
+        this.projectsService = projectsService;
     }
+
+    @Autowired
+    public void setProjectsService(ProjectsService projectsService) {
+        this.projectsService = projectsService;
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 }
