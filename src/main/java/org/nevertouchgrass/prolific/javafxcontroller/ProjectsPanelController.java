@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -40,6 +42,8 @@ public class ProjectsPanelController {
     private FxmlProvider fxmlProvider;
     private UserSettingsHolder userSettingsHolder;
     private ProjectsRepository projectsRepository;
+
+    private Set<Project> projects = new HashSet<>();
 
     @Initialize
     private void init() {
@@ -75,12 +79,16 @@ public class ProjectsPanelController {
 
     private void addProjectToList(Project project) {
         Platform.runLater(() -> {
+            if (projects.contains(project)) {
+                return;
+            }
             var title = project.getTitle();
             var icon = getIconTextFromTitle(title);
             var resource = fxmlProvider.getFxmlResource("projectPanel");
             ProjectPanelController controller = (ProjectPanelController) resource.getController();
             controller.getProjectTitleText().setText(title);
             controller.getProjectIconText().setText(icon);
+            projects.add(project);
             content.getChildren().add(resource.getParent());
             controller.init();
         });

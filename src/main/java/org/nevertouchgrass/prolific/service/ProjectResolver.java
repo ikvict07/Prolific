@@ -1,11 +1,13 @@
 package org.nevertouchgrass.prolific.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,15 +25,24 @@ import java.util.List;
  * Service for resolution of project's type
  */
 @Service
+@DependsOn("userSettingsService")
 public class ProjectResolver {
-    private final List<ProjectTypeModel> projectTypeModels;
+    private List<ProjectTypeModel> projectTypeModels;
     private final UserSettingsHolder userSettingsHolder;
 
-    private final PathMatcher excludeMatcher;
+    private PathMatcher excludeMatcher;
+
+    private final XmlProjectScannerConfigLoaderService configLoaderService;
 
     public ProjectResolver(@NonNull XmlProjectScannerConfigLoaderService configLoaderService, UserSettingsHolder userSettingsHolder) {
-        this.projectTypeModels = configLoaderService.loadProjectTypes();
+        this.configLoaderService = configLoaderService;
         this.userSettingsHolder = userSettingsHolder;
+
+    }
+
+    @PostConstruct
+    public void init() {
+        this.projectTypeModels = configLoaderService.loadProjectTypes();
         List<String> exclude = userSettingsHolder.getExcludedDirs();
         String excludePattern = String.format("glob:**/{%s}", String.join(",", exclude));
         this.excludeMatcher = FileSystems.getDefault().getPathMatcher(excludePattern);
