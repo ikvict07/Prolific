@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.application.Platform;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
@@ -24,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Set;
+
 @AnchorPaneController
 @StageComponent("primaryStage")
 @SuppressWarnings("unused")
@@ -38,7 +41,7 @@ public class HeaderController {
     public Circle maximizeButton;
     @FXML
     @ConstraintsIgnoreElementSize(right = 0.66)
-    public HBox leftSection;
+    public HBox gradientBox;
     @FXML
     @Constraints(right = 0.5, left = 0.5)
     public Text titleText;
@@ -76,6 +79,8 @@ public class HeaderController {
 
     private double endX = 0;
 
+    private Set<Object> headerMaximizeAndDragComponents;
+
     @Initialize
     public void init() {
         closeButton.setOnMouseClicked(this::handleClose);
@@ -83,14 +88,14 @@ public class HeaderController {
         maximizeButton.setOnMouseClicked(this::handleMaximize);
 
         header.setOnMousePressed(event -> {
-            if (event.getTarget().equals(header)) {
+            if (isHeaderMaximizeAndDragComponent(event.getTarget())) {
                 xOffset = event.getSceneX();
                 yOffset = event.getSceneY();
             }
         });
 
         header.setOnMouseDragged(event -> {
-            if (event.getTarget().equals(header)) {
+            if (isHeaderMaximizeAndDragComponent(event.getTarget())) {
                 stage.setX(event.getScreenX() - xOffset);
                 stage.setY(event.getScreenY() - yOffset);
                 endX = stage.getX() + stage.getWidth();
@@ -105,6 +110,8 @@ public class HeaderController {
             widthBeforeMaximizing = stage.getWidth();
             heightBeforeMaximizing = stage.getHeight();
         });
+
+        headerMaximizeAndDragComponents = Set.of(gradientBox, titleText, header);
     }
 
     private void resizeCursor(MouseEvent event) {
@@ -157,27 +164,24 @@ public class HeaderController {
         }
     }
 
-
-
     private void resizeWidth(double newWidth, double deltaX, boolean adjustX) {
-        widthBeforeMaximizing = newWidth;
-
         if (newWidth >= minWidth && deltaX >= visualBounds.getMinX() && deltaX <= visualBounds.getMaxX()) {
             if (adjustX) {
                 stage.setX(deltaX);
             }
+            widthBeforeMaximizing = newWidth;
             stage.setWidth(newWidth);
+            stage.setHeight(stage.getHeight());
         }
     }
 
     private void resizeHeight(double newHeight) {
-        heightBeforeMaximizing = newHeight;
-
         if (newHeight >= minHeight && stage.getY() + newHeight <= visualBounds.getMaxY()) {
+            heightBeforeMaximizing = newHeight;
             stage.setHeight(newHeight);
+            stage.setWidth(stage.getWidth());
         }
     }
-
 
     public void handleClose(MouseEvent mouseEvent) {
         if (Platform.isFxApplicationThread()) {
@@ -212,7 +216,7 @@ public class HeaderController {
     }
 
     public void handleHeaderMaximize(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && (mouseEvent.getTarget().equals(header) || mouseEvent.getTarget().equals(leftSection))) {
+        if (mouseEvent.getClickCount() == 2 && isHeaderMaximizeAndDragComponent(mouseEvent.getTarget())) {
             handleMaximize(mouseEvent);
         }
     }
@@ -231,5 +235,9 @@ public class HeaderController {
     @Autowired
     public void set(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+
+    private boolean isHeaderMaximizeAndDragComponent(EventTarget eventTarget) {
+        return headerMaximizeAndDragComponents.contains(eventTarget);
     }
 }
