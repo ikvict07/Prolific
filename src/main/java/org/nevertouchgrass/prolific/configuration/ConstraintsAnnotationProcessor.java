@@ -77,16 +77,6 @@ public class ConstraintsAnnotationProcessor implements ApplicationListener<Stage
 
     private void processConstraints(Node node, Constraints constraints,
                                     AnchorPaneConstraintsService anchorPaneConstraintsService) {
-        var width = 1 - (constraints.right() == -1 ? 0 : constraints.right()) - (constraints.left() == -1 ? 0 : constraints.left());
-        var height = 1 - (constraints.top() == -1 ? 0 : constraints.top()) - (constraints.bottom() == -1 ? 0 : constraints.bottom());
-        if (node instanceof Region) {
-            if (height != 1) {
-                anchorPaneConstraintsService.setElementHeight((Region) node, height);
-            }
-            if (width != 1) {
-                anchorPaneConstraintsService.setElementWidth((Region) node, width);
-            }
-        }
         if (constraints.top() != -1) {
             anchorPaneConstraintsService.setAnchorConstraintsTop(node, constraints.top());
         }
@@ -104,16 +94,6 @@ public class ConstraintsAnnotationProcessor implements ApplicationListener<Stage
 
     private void processConstraintsIgnoreElementSize(Node node, ConstraintsIgnoreElementSize constraints,
                                                      AnchorPaneConstraintsService anchorPaneConstraintsService) {
-        var width = 1 - (constraints.right() == -1 ? 0 : constraints.right()) - (constraints.left() == -1 ? 0 : constraints.left());
-        var height = 1 - (constraints.top() == -1 ? 0 : constraints.top()) - (constraints.bottom() == -1 ? 0 : constraints.bottom());
-        if (node instanceof Region) {
-            if (height != 1) {
-                anchorPaneConstraintsService.setElementHeight((Region) node, height);
-            }
-            if (width != 1) {
-                anchorPaneConstraintsService.setElementWidth((Region) node, width);
-            }
-        }
         if (constraints.top() != -1) {
             anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeTop(node, constraints.top());
         }

@@ -31,21 +31,15 @@ public class AnchorPaneConstraintsService {
         this.scene = stage.getScene();
     }
 
-    AnchorPaneConstraintsService() {
-        System.out.println("AnchorPaneConstraintsService created.");
-    }
-
-    @PostConstruct
-    public void init() {
-        System.out.println("AnchorPaneConstraintsService initialized.");
-    }
-
     public void setAnchorConstraintsLeft(Node node, double left) {
         if (node == null) {
             return;
         }
-        Runnable block = () -> AnchorPane.setLeftAnchor(node,
-                stage.getWidth() * left - node.getBoundsInLocal().getWidth() / 2);
+        Runnable block = () -> {
+            var offset = (stage.getWidth() * left - node.getBoundsInLocal().getWidth() / 2);
+            var value = offset < 0 ? 0 : offset;
+            AnchorPane.setLeftAnchor(node, value);
+        };
         stage.widthProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());
@@ -57,8 +51,9 @@ public class AnchorPaneConstraintsService {
             return;
         }
         Runnable block = () -> {
-            AnchorPane.setRightAnchor(node,
-                    stage.getWidth() * right - node.getBoundsInLocal().getWidth() / 2);
+            var offset = (stage.getWidth() * right - node.getBoundsInLocal().getWidth() / 2);
+            var value = offset < 0 ? 0 : offset;
+            AnchorPane.setRightAnchor(node, value);
         };
         stage.widthProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
@@ -70,8 +65,11 @@ public class AnchorPaneConstraintsService {
         if (node == null) {
             return;
         }
-        Runnable block = () -> AnchorPane.setTopAnchor(node,
-                stage.getHeight() * top - node.getBoundsInLocal().getHeight() / 2);
+        Runnable block = () -> {
+            var offset = (stage.getHeight() * top - node.getBoundsInLocal().getHeight() / 2);
+            var value = offset < 0 ? 0 : offset;
+            AnchorPane.setTopAnchor(node, value);
+        };
         stage.heightProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());
@@ -83,8 +81,11 @@ public class AnchorPaneConstraintsService {
         if (node == null) {
             return;
         }
-        Runnable block = () -> AnchorPane.setBottomAnchor(node,
-                stage.getHeight() * bottom - node.getBoundsInLocal().getHeight() / 2);
+        Runnable block = () -> {
+            var offset = (stage.getHeight() * bottom - node.getBoundsInLocal().getHeight() / 2);
+            var value = offset < 0 ? 0 : offset;
+            AnchorPane.setBottomAnchor(node, value);
+        };
         stage.heightProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());
@@ -144,17 +145,26 @@ public class AnchorPaneConstraintsService {
         if (node == null) {
             return;
         }
-        Runnable block = () -> node.setPrefWidth(stage.getWidth() * width);
+        Runnable block = () -> {
+            node.setPrefWidth(stage.getWidth() * width);
+            node.setMaxWidth(stage.getWidth() * width);
+            node.setMinWidth(stage.getWidth() * width);
+        };
         stage.widthProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());
         block.run();
     }
+
     public void setElementHeight(Region node, double height) {
         if (node == null) {
             return;
         }
-        Runnable block = () -> node.setPrefHeight(stage.getHeight() * height);
+        Runnable block = () -> {
+            node.setPrefHeight(stage.getHeight() * height);
+            node.setMaxHeight(stage.getHeight() * height);
+            node.setMinHeight(stage.getHeight() * height);
+        };
         stage.heightProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());
