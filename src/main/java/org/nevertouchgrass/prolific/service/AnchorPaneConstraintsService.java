@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Service that manages constraints
+ *
  * @see org.nevertouchgrass.prolific.annotation.Constraints
  * @see org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize
  */
@@ -54,8 +56,10 @@ public class AnchorPaneConstraintsService {
         if (node == null) {
             return;
         }
-        Runnable block = () -> AnchorPane.setRightAnchor(node,
-                stage.getWidth() * right - node.getBoundsInLocal().getWidth() / 2);
+        Runnable block = () -> {
+            AnchorPane.setRightAnchor(node,
+                    stage.getWidth() * right - node.getBoundsInLocal().getWidth() / 2);
+        };
         stage.widthProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());
@@ -130,6 +134,27 @@ public class AnchorPaneConstraintsService {
             return;
         }
         Runnable block = () -> AnchorPane.setBottomAnchor(node, stage.getHeight() * bottom);
+        stage.heightProperty().addListener((_, _, _) -> block.run());
+        stage.maximizedProperty().addListener((_, _, _) -> block.run());
+        stage.setOnShown(_ -> block.run());
+        block.run();
+    }
+
+    public void setElementWidth(Region node, double width) {
+        if (node == null) {
+            return;
+        }
+        Runnable block = () -> node.setPrefWidth(stage.getWidth() * width);
+        stage.widthProperty().addListener((_, _, _) -> block.run());
+        stage.maximizedProperty().addListener((_, _, _) -> block.run());
+        stage.setOnShown(_ -> block.run());
+        block.run();
+    }
+    public void setElementHeight(Region node, double height) {
+        if (node == null) {
+            return;
+        }
+        Runnable block = () -> node.setPrefHeight(stage.getHeight() * height);
         stage.heightProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());

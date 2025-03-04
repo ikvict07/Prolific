@@ -48,18 +48,11 @@ public class ProjectPanelController {
         String baseColor = extractPrimaryColor(iconColorStyle);
         gradientBox.setStyle(generateGradientBoxStyle(baseColor));
         anchorPaneConstraintsService.setStage(primaryStage);
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(projectInfo, 0.40);
+        anchorPaneConstraintsService.setElementWidth(projectInfo, 0.30);
+        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(projectInfo, 0.30);
 
         anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(run, 0.20);
         anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(config, 0.22);
-        Runnable block = () -> {
-            var width = projectPanel.getWidth();
-            projectInfo.setMaxWidth(width * 0.32);
-            projectInfo.setMinWidth(width * 0.32);
-        };
-        primaryStage.widthProperty().addListener((_, _, _) -> block.run());
-        projectPanel.widthProperty().addListener((_, _, _) -> block.run());
-        block.run();
     }
 
     private String generateGradientBoxStyle(String baseColor) {

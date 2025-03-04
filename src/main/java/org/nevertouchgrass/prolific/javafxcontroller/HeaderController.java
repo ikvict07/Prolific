@@ -37,7 +37,7 @@ public class HeaderController {
     @FXML
     public Circle maximizeButton;
     @FXML
-    @ConstraintsIgnoreElementSize(right = 0.66)
+    @ConstraintsIgnoreElementSize(right = 0.48)
     public HBox leftSection;
     @FXML
     @Constraints(right = 0.5, left = 0.5)
@@ -156,7 +156,6 @@ public class HeaderController {
             }
         }
     }
-
 
 
     private void resizeWidth(double newWidth, double deltaX, boolean adjustX) {
