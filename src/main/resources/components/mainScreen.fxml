@@ -5,7 +5,6 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.MainScreenController"
             stylesheets="@../css/styles.css"
-            styleClass="mainBG"
             fx:id="mainScreen">
     <fx:include fx:id="headerComponent" source="../components/header.fxml"/>
     <fx:include source="projectsPanel.fxml" fx:id="projectsPanel"/>

@@ -5,6 +5,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -58,7 +59,7 @@ public class JavaFXApplication implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         Platform.runLater(() -> {
             applicationEventPublisher.publishEvent(new JavaFxStartEvent(this));
-            primaryStage.initStyle(StageStyle.UNDECORATED);
+            primaryStage.initStyle(StageStyle.TRANSPARENT);
 
             VBox root = new VBox();
             root.getChildren().addAll(mainScreenParent);
@@ -67,6 +68,7 @@ public class JavaFXApplication implements ApplicationRunner {
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
 
             primaryStage.setScene(scene);
+            scene.setFill(Color.TRANSPARENT);
             applicationEventPublisher.publishEvent(new StageInitializeEvent("primaryStage"));
             primaryStage.show();
             applicationEventPublisher.publishEvent(new StageShowEvent("primaryStage"));

@@ -1,5 +1,5 @@
 .root {
-    -fx-background-color: #1E1F22;
+    -fx-background-radius: 16px;
     -fx-font-size: 12px;
     -fx-pref-height: 16px;
 }
@@ -7,6 +7,7 @@
 #header {
     -fx-background-color: #2B2D30;
     -fx-font-size: 1.25em;
+    -fx-background-radius: 16px 16px 0 0;
 }
 
 #gradientBox {
@@ -16,6 +17,7 @@
     #2B2D30 33.0%,
     #2B2D30 100%);
     -fx-pref-height: 40px;
+    -fx-background-radius: 16px 0 0 0;
 }
 
 
@@ -80,6 +82,10 @@
     -fx-background-color: #1E1F22;
 }
 
+#mainScreen {
+    -fx-background-radius: 16px;
+    -fx-background-color: #1E1F22;
+}
 
 .defaultText {
     -fx-text-fill: #DFE1E5;
