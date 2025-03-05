@@ -165,6 +165,7 @@
 .scroll-pane > .scroll-bar .track {
     -fx-background-color: transparent;
 }
+
 .scroll-pane {
     -fx-pref-height: 40em;
 }
@@ -182,4 +183,15 @@
 .scroll-bar:vertical .thumb:hover {
     -fx-background-color: rgba(255, 255, 255, 0.3);
     -fx-background-insets: 2.0, 0.0, 0.0;
+}
+
+.dialog-pane {
+    -fx-background-color: #2B2D30;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+
+.label {
+    -fx-text-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
 }

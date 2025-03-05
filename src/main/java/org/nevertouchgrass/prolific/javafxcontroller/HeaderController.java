@@ -17,12 +17,14 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
 import org.nevertouchgrass.prolific.annotation.Constraints;
 import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +35,7 @@ import java.nio.file.Path;
 
 @AnchorPaneController
 @StageComponent("primaryStage")
+@Log4j2
 @SuppressWarnings("unused")
 public class HeaderController {
 
@@ -59,6 +62,8 @@ public class HeaderController {
     @FXML
     private Circle closeButton;
     private ProjectsService projectsService;
+
+    private ObjectFactory<Alert> alertFactory;
 
     @Autowired
     public void setSettingsPopup(Popup settingsPopup) {
@@ -187,12 +192,14 @@ public class HeaderController {
 
 
     public void handleClose(MouseEvent mouseEvent) {
+        log.info("Closing application");
         if (Platform.isFxApplicationThread()) {
             stage.close();
         } else {
             Platform.runLater(() -> stage.close());
         }
         SpringApplication.exit(applicationContext);
+        log.info("Application closed");
     }
 
     public void handleMinimize(MouseEvent mouseEvent) {
@@ -239,14 +246,15 @@ public class HeaderController {
             Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
             projectsService.manuallyAddProject(p);
         } catch (IllegalStateException | IOException e) {
-            showAlert("Error", "Unknown project type");
+            showAlert();
         }
     }
 
     @Autowired
-    public void set(ApplicationContext applicationContext, ProjectsService projectsService) {
+    public void set(ApplicationContext applicationContext, ProjectsService projectsService, ObjectFactory<Alert> alert) {
         this.applicationContext = applicationContext;
         this.projectsService = projectsService;
+        this.alertFactory = alert;
     }
 
     @Autowired
@@ -254,11 +262,11 @@ public class HeaderController {
         this.projectsService = projectsService;
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
+    private void showAlert() {
+        var alert = alertFactory.getObject();
+        alert.setTitle("Error");
         alert.setHeaderText(null);
-        alert.setContentText(content);
+        alert.setContentText("Unknown project type");
         alert.showAndWait();
     }
 
