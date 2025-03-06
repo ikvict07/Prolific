@@ -46,9 +46,13 @@ jobs:
           distribution: 'liberica'
           java-version: '23'
 
-
       - name: Run Javadoc
         run: ./gradlew javadoc
+
+      - name: Configure Git for Javadoc Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Commit and Push Javadoc
         env:
