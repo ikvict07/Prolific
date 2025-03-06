@@ -26,7 +26,6 @@ java {
     }
 }
 
-
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
@@ -34,7 +33,6 @@ configurations {
 }
 
 val mockitoAgent = configurations.create("mockitoAgent")
-
 
 dependencies {
     implementation(libs.bundles.spring)
@@ -58,6 +56,10 @@ tasks {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
         jvmArgs("-Xshare:off")
         useJUnitPlatform()
+    }
+
+    javadoc {
+        setDestinationDir(file("${layout.projectDirectory}/docs"))
     }
 }
 

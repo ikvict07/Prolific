@@ -50,13 +50,6 @@ jobs:
       - name: Run Javadoc
         run: ./gradlew javadoc
 
-      - name: Move Javadoc to docs folder
-        run: |
-          rm -rf docs
-          mkdir -p docs
-          mv build/docs/javadoc/* docs/
-          ls -la docs
-
       - name: Commit and Push Javadoc
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
