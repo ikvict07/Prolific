@@ -1,4 +1,6 @@
 name: Sync Main to Docs and Generate Javadoc
+permissions:
+  contents: write
 
 on:
   push:
@@ -19,19 +21,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Merge main into docs
+      - name: Sync documentation branch
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
+          git fetch origin documentation || true
           git checkout documentation || git checkout -b documentation
-          git merge origin/main --no-edit
-          git push origin documentation
+          git reset --hard origin/main
+          git push -f origin documentation
 
   generate-javadoc:
     needs: merge-to-docs
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout documentation branch
         uses: actions/checkout@v4
         with:
+          ref: documentation
           fetch-depth: 0
 
       - name: Set up JDK 21
@@ -45,14 +51,15 @@ jobs:
 
       - name: Move Javadoc to docs folder
         run: |
-          rm -rf docs 
-          mkdir -p docs 
-          mv build/docs/javadoc/* docs/  
-          ls -la docs 
+          rm -rf docs
+          mkdir -p docs
+          mv build/docs/javadoc/* docs/
+          ls -la docs
 
       - name: Commit and Push Javadoc
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          git checkout documentation
           git add docs
-          git commit -m "Update Javadoc"
+          git commit -m "Update Javadoc" || echo "No changes to commit"
           git push origin documentation
