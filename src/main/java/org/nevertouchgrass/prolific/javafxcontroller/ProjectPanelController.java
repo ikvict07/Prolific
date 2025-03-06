@@ -57,7 +57,6 @@ public class ProjectPanelController {
         String baseColor = extractPrimaryColor(iconColorStyle);
         projectInfo.setStyle(generateGradientBoxStyle(baseColor));
         anchorPaneConstraintsService.setStage(primaryStage);
-//        anchorPaneConstraintsService.setElementWidth(projectInfo, 0.30);
         projectPanel.minWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
         projectPanel.maxWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
         projectPanel.prefWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
