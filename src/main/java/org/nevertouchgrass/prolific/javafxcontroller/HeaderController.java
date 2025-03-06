@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
-import java.io.IOException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
@@ -126,6 +125,10 @@ public class HeaderController {
         double y = event.getSceneY();
         double width = stage.getWidth();
         double height = stage.getHeight();
+
+        if (stage.isMaximized()) {
+            return;
+        }
 
         if (x < border && y > height - border) {
             stage.getScene().setCursor(Cursor.SW_RESIZE);
@@ -238,14 +241,14 @@ public class HeaderController {
         settingsPopup.show(stage);
     }
 
-    public void projects(MouseEvent mouseEvent) {
+    public void projects() {
         DirectoryChooser fileChooser = new DirectoryChooser();
         fileChooser.setTitle("Open Project");
         try {
             String f = fileChooser.showDialog(stage).getPath();
             Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
             projectsService.manuallyAddProject(p);
-        } catch (IllegalStateException | IOException e) {
+        } catch (Exception e) {
             showAlert();
         }
     }
