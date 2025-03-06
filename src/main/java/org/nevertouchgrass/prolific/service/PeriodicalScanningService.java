@@ -66,7 +66,7 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
         userSettingsService.saveSettings();
     }
 
-    private void findProjects(String baseScanDirectory) {
+    private synchronized void findProjects(String baseScanDirectory) {
         projectScannerService.scanForProjects(baseScanDirectory, this::resolveAndSave);
     }
 
