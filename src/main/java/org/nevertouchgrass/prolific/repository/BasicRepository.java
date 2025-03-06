@@ -9,4 +9,5 @@ public interface BasicRepository<T> {
     Iterable<T> findAll(Class<T> clazz);
 
     T findById(Long id, Class<T> clazz);
+
 }

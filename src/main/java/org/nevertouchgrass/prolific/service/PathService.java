@@ -15,7 +15,6 @@ import java.util.NoSuchElementException;
 @Log4j2
 public class PathService {
     public Path getProjectPath() {
-        System.out.println("I WAS CALLED1");
         Class<?> clazz = PathService.class;
         URL classResource = clazz.getResource(clazz.getSimpleName() + ".class");
         if (classResource == null) {

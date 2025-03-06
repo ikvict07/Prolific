@@ -9,6 +9,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import lombok.Data;
 import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
+import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
 import org.nevertouchgrass.prolific.service.ColorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class ProjectPanelController {
     private Label projectTitleText;
     @FXML
     private AnchorPane gradientBox;
+
+    private Project project;
 
     private Stage primaryStage;
     private ColorService colorService;
@@ -67,11 +70,6 @@ public class ProjectPanelController {
         int startIndex = style.indexOf("#");
         int endIndex = style.indexOf(" ", startIndex);
         return style.substring(startIndex, endIndex);
-    }
-
-
-    private double calculatePadding(double percents, Number width) {
-        return width.doubleValue() * percents;
     }
 
     private String generateRandomColorStyle() {

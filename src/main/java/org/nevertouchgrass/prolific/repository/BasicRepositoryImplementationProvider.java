@@ -40,6 +40,7 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
 
     @Override
     @SneakyThrows
+    @SuppressWarnings("java:S3011")
     public void save(T t) {
         var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
         var fieldPairs = getFieldPairs(t.getClass());
@@ -48,8 +49,19 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             prepareInsertQuery(t, fieldPairs, preparedStatement);
             preparedStatement.executeUpdate();
-        }
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    Integer id = generatedKeys.getInt(1);
+                    log.info("Saved: {} with ID: {}", t, id);
 
+                    Field idField = t.getClass().getDeclaredField("id");
+                    idField.setAccessible(true);
+                    idField.set(t, id);
+                } else {
+                    log.warn("No ID obtained for {}", t);
+                }
+            }
+        }
         log.info("Saved: {}", t);
     }
 
@@ -133,6 +145,14 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
             }
         }
         return null;
+    }
+
+    public void execute(String query) {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute(query);
+        } catch (SQLException e) {
+            log.error("Error executing query: {}", query, e);
+        }
     }
 
 }
