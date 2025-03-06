@@ -90,6 +90,9 @@ public class HeaderController {
 
     @Initialize
     public void init() {
+        header.maxWidthProperty().bind(stage.widthProperty());
+        header.minWidthProperty().bind(stage.widthProperty());
+        header.prefWidthProperty().bind(stage.widthProperty());
         closeButton.setOnMouseClicked(this::handleClose);
         minimizeButton.setOnMouseClicked(this::handleMinimize);
         maximizeButton.setOnMouseClicked(this::handleMaximize);

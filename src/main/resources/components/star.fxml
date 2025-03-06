@@ -3,7 +3,7 @@
 
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.SVGPath?>
-<StackPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" prefWidth="32" prefHeight="32"
+<StackPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" prefWidth="1" prefHeight="1"
            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.StarController">
     <SVGPath
             fx:id="star"

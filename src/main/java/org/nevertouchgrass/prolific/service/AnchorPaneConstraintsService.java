@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.service;
 
-import jakarta.annotation.PostConstruct;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -11,13 +12,14 @@ import lombok.Setter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.function.BiConsumer;
+
 /**
  * Service that manages constraints
  *
  * @see org.nevertouchgrass.prolific.annotation.Constraints
  * @see org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize
  */
-
 @Getter
 @Setter
 @Service
@@ -31,114 +33,85 @@ public class AnchorPaneConstraintsService {
         this.scene = stage.getScene();
     }
 
-    public void setAnchorConstraintsLeft(Node node, double left) {
+    private void setAnchorConstraint(Node node, BiConsumer<Node, Double> anchorSetter, double value, boolean isWidthBased) {
         if (node == null) {
             return;
         }
+        var parent = node.getParent();
+        if (!(parent instanceof Region region)) {
+            return;
+        }
+
+        Runnable block = () -> anchorSetter.accept(node, (isWidthBased ? region.getWidth() : region.getHeight()) * value);
+        addResizeListener(region, block, isWidthBased);
+        addStageListeners(block);
+        block.run();
+    }
+
+    private void setAnchorWithOffset(Node node, BiConsumer<Node, Double> anchorSetter, double value, boolean isWidthBased) {
+        if (node == null) {
+            return;
+        }
+        var parent = node.getParent();
+        if (!(parent instanceof Region region)) {
+            return;
+        }
         Runnable block = () -> {
-            var offset = (stage.getWidth() * left - node.getBoundsInLocal().getWidth() / 2);
-            var value = offset < 0 ? 0 : offset;
-            AnchorPane.setLeftAnchor(node, value);
+            double offset = (isWidthBased ? region.getWidth() : region.getHeight()) * value - node.getBoundsInLocal().getWidth() / 2;
+            anchorSetter.accept(node, Math.max(0, offset));
         };
+
+        addResizeListener(region, block, isWidthBased);
+        addStageListeners(block);
+        block.run();
+    }
+
+    private void addResizeListener(Region region, Runnable block, boolean isWidthBased) {
+        ChangeListener<Number> resizeListener = (obs, oldVal, newVal) -> Platform.runLater(block);
+        if (isWidthBased) {
+            region.widthProperty().addListener(resizeListener);
+        } else {
+            region.heightProperty().addListener(resizeListener);
+        }
+    }
+
+    private void addStageListeners(Runnable block) {
         stage.widthProperty().addListener((_, _, _) -> block.run());
+        stage.heightProperty().addListener((_, _, _) -> block.run());
         stage.maximizedProperty().addListener((_, _, _) -> block.run());
         stage.setOnShown(_ -> block.run());
-        block.run();
+    }
+
+    public void setAnchorConstraintsLeft(Node node, double left) {
+        setAnchorWithOffset(node, AnchorPane::setLeftAnchor, left, true);
     }
 
     public void setAnchorConstraintsRight(Node node, double right) {
-        if (node == null) {
-            return;
-        }
-        Runnable block = () -> {
-            var offset = (stage.getWidth() * right - node.getBoundsInLocal().getWidth() / 2);
-            var value = offset < 0 ? 0 : offset;
-            AnchorPane.setRightAnchor(node, value);
-        };
-        stage.widthProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
-        block.run();
+        setAnchorWithOffset(node, AnchorPane::setRightAnchor, right, true);
     }
 
     public void setAnchorConstraintsTop(Node node, double top) {
-        if (node == null) {
-            return;
-        }
-        Runnable block = () -> {
-            var offset = (stage.getHeight() * top - node.getBoundsInLocal().getHeight() / 2);
-            var value = offset < 0 ? 0 : offset;
-            AnchorPane.setTopAnchor(node, value);
-        };
-        stage.heightProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
-
-        block.run();
+        setAnchorWithOffset(node, AnchorPane::setTopAnchor, top, false);
     }
 
     public void setAnchorConstraintsBottom(Node node, double bottom) {
-        if (node == null) {
-            return;
-        }
-        Runnable block = () -> {
-            var offset = (stage.getHeight() * bottom - node.getBoundsInLocal().getHeight() / 2);
-            var value = offset < 0 ? 0 : offset;
-            AnchorPane.setBottomAnchor(node, value);
-        };
-        stage.heightProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
-
-        block.run();
+        setAnchorWithOffset(node, AnchorPane::setBottomAnchor, bottom, false);
     }
 
-
     public void setAnchorConstraintsIgnoreElementSizeLeft(Node node, double left) {
-        if (node == null) {
-            return;
-        }
-        Runnable block = () -> AnchorPane.setLeftAnchor(node, stage.getWidth() * left);
-        stage.widthProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
-
-        block.run();
+        setAnchorConstraint(node, AnchorPane::setLeftAnchor, left, true);
     }
 
     public void setAnchorConstraintsIgnoreElementSizeRight(Node node, double right) {
-        if (node == null) {
-            return;
-        }
-        Runnable block = () -> AnchorPane.setRightAnchor(node, stage.getWidth() * right);
-        stage.widthProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
-
-        block.run();
+        setAnchorConstraint(node, AnchorPane::setRightAnchor, right, true);
     }
 
     public void setAnchorConstraintsIgnoreElementSizeTop(Node node, double top) {
-        if (node == null) {
-            return;
-        }
-        Runnable block = () -> AnchorPane.setTopAnchor(node, stage.getHeight() * top);
-        stage.heightProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
-
-        block.run();
+        setAnchorConstraint(node, AnchorPane::setTopAnchor, top, false);
     }
 
     public void setAnchorConstraintsIgnoreElementSizeBottom(Node node, double bottom) {
-        if (node == null) {
-            return;
-        }
-        Runnable block = () -> AnchorPane.setBottomAnchor(node, stage.getHeight() * bottom);
-        stage.heightProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
-        block.run();
+        setAnchorConstraint(node, AnchorPane::setBottomAnchor, bottom, false);
     }
 
     public void setElementWidth(Region node, double width) {
@@ -146,13 +119,12 @@ public class AnchorPaneConstraintsService {
             return;
         }
         Runnable block = () -> {
-            node.setPrefWidth(stage.getWidth() * width);
-            node.setMaxWidth(stage.getWidth() * width);
-            node.setMinWidth(stage.getWidth() * width);
+            double newWidth = stage.getWidth() * width;
+            node.setPrefWidth(newWidth);
+            node.setMaxWidth(newWidth);
+            node.setMinWidth(newWidth);
         };
-        stage.widthProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
+        addStageListeners(block);
         block.run();
     }
 
@@ -161,13 +133,12 @@ public class AnchorPaneConstraintsService {
             return;
         }
         Runnable block = () -> {
-            node.setPrefHeight(stage.getHeight() * height);
-            node.setMaxHeight(stage.getHeight() * height);
-            node.setMinHeight(stage.getHeight() * height);
+            double newHeight = stage.getHeight() * height;
+            node.setPrefHeight(newHeight);
+            node.setMaxHeight(newHeight);
+            node.setMinHeight(newHeight);
         };
-        stage.heightProperty().addListener((_, _, _) -> block.run());
-        stage.maximizedProperty().addListener((_, _, _) -> block.run());
-        stage.setOnShown(_ -> block.run());
+        addStageListeners(block);
         block.run();
     }
 }

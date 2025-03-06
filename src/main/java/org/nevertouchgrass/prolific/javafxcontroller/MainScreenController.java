@@ -28,6 +28,7 @@ public class MainScreenController {
 
     @Initialize
     public void init() {
+        System.out.println("MainScreen's parent is " + mainScreen.getParent());
         ChangeListener<Number> block1 = (observable, oldValue, newValue) -> mainScreen.setPrefWidth(newValue.doubleValue());
         ChangeListener<Number> block2 = (observable, oldValue, newValue) -> mainScreen.setPrefHeight(newValue.doubleValue());
         stage.widthProperty().addListener(block1);

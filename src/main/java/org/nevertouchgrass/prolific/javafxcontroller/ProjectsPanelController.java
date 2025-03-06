@@ -48,6 +48,9 @@ public class ProjectsPanelController {
 
     @Initialize
     private void init() {
+        content.minWidthProperty().bind(scrollPane.widthProperty());
+        content.prefWidthProperty().bind(scrollPane.widthProperty());
+        content.maxWidthProperty().bind(scrollPane.widthProperty());
         scrollPane.skinProperty().addListener((obs, oldSkin, newSkin) -> {
             if (newSkin != null) {
                 ScrollBar vScrollBar = (ScrollBar) scrollPane.lookup(".scroll-bar:vertical");
