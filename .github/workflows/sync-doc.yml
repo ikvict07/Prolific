@@ -1,0 +1,58 @@
+name: Sync Main to Docs and Generate Javadoc
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  merge-to-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge main into docs
+        run: |
+          git checkout documentation || git checkout -b documentation
+          git merge origin/main --no-edit
+          git push origin documentation
+
+  generate-javadoc:
+    needs: merge-to-docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Run Javadoc
+        run: ./gradlew javadoc
+
+      - name: Move Javadoc to docs folder
+        run: |
+          rm -rf docs 
+          mkdir -p docs 
+          mv build/docs/javadoc/* docs/  
+          ls -la docs 
+
+      - name: Commit and Push Javadoc
+        run: |
+          git checkout documentation
+          git add docs
+          git commit -m "Update Javadoc"
+          git push origin documentation
