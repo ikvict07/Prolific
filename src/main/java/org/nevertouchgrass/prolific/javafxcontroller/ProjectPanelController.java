@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -54,14 +55,18 @@ public class ProjectPanelController {
         projectIcon.setStyle(iconColorStyle);
 
         String baseColor = extractPrimaryColor(iconColorStyle);
-        projectPanel.setStyle(generateGradientBoxStyle(baseColor));
+        projectInfo.setStyle(generateGradientBoxStyle(baseColor));
         anchorPaneConstraintsService.setStage(primaryStage);
-        anchorPaneConstraintsService.setElementWidth(projectInfo, 0.30);
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(projectInfo, 0.30);
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(star, 0.15);
+//        anchorPaneConstraintsService.setElementWidth(projectInfo, 0.30);
+        projectPanel.minWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
+        projectPanel.maxWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
+        projectPanel.prefWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
+        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(projectInfo, 0.48);
+        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(projectInfo, 0.01);
+        AnchorPane.setRightAnchor(star, 8d);
 
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(run, 0.20);
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(config, 0.22);
+        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(run, 0.50);
+        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(config, 0.52);
 
         var starImage = (SVGPath) star.lookup("SVGPath");
         starImage.hoverProperty().addListener((_, _, newVal) -> {
@@ -87,7 +92,7 @@ public class ProjectPanelController {
         String highlightColor = colorService.generateSimilarBrightPastelColor(baseColor);
 
         return String.format(
-                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, #2B2D30 0%%, %s 16.5%%, #2B2D30 33%%, #2B2D30 100%%);",
+                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, #2B2D30 0%%, %s 50%%, #2B2D30 100%%);",
                 highlightColor);
     }
 

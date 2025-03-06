@@ -61,10 +61,7 @@ public class JavaFXApplication implements ApplicationRunner {
             applicationEventPublisher.publishEvent(new JavaFxStartEvent(this));
             primaryStage.initStyle(StageStyle.TRANSPARENT);
 
-            VBox root = new VBox();
-            root.getChildren().addAll(mainScreenParent);
-
-            Scene scene = new Scene(root, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
+            Scene scene = new Scene(mainScreenParent, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
 
             primaryStage.setScene(scene);
