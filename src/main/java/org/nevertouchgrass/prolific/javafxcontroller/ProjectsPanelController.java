@@ -12,6 +12,7 @@ import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.OnDelete;
 import org.nevertouchgrass.prolific.annotation.OnSave;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
@@ -73,10 +74,10 @@ public class ProjectsPanelController {
     }
 
     private void addProjectPanels() {
-        var projects = projectsRepository.findAll(Project.class);
-        projects.forEach(this::addProjectToList);
+        projectsRepository.findAll(Project.class).forEach(this::addProjectToList);
     }
 
+    @OnSave(Project.class)
     private void addProjectToList(Project project) {
         Platform.runLater(() -> {
             if (projects.contains(project)) {
@@ -88,15 +89,22 @@ public class ProjectsPanelController {
             ProjectPanelController controller = (ProjectPanelController) resource.getController();
             controller.getProjectTitleText().setText(title);
             controller.getProjectIconText().setText(icon);
+            controller.setProject(project);
             projects.add(project);
             content.getChildren().add(resource.getParent());
             controller.init();
         });
     }
 
-    @OnSave(Project.class)
-    private void addProjectListener(Project project) {
-        addProjectToList(project);
+    @OnDelete(Project.class)
+    private void deleteProjectFromList(Project project) {
+        Platform.runLater(() -> {
+            projects.remove(project);
+            content.getChildren().removeIf(node -> {
+                var controller = (ProjectPanelController) node.getProperties().get("controller");
+                return controller.getProject().getId().equals(project.getId());
+            });
+        });
     }
 
     private String getIconTextFromTitle(String title) {

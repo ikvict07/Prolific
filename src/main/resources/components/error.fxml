@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.shape.Circle?>
-<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="svgGraphic" prefWidth="28" prefHeight="28" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ErrorIconController">
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="svgGraphic" prefWidth="28" prefHeight="28">
     <Circle fx:id="circle" centerX="14" centerY="14" radius="12" fill="#DB5C5C"/>
 
     <SVGPath fx:id="svgPath1"

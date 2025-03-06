@@ -62,7 +62,7 @@ public class UserSettingsService {
     }
 
     @SneakyThrows
-    synchronized public void saveSettings() {
+    public synchronized void saveSettings() {
         log.info("Saving settings: {}", userSettingsHolder);
         Path settingsFilePath = getSettingsPath();
         xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), userSettingsHolder);
@@ -71,7 +71,6 @@ public class UserSettingsService {
     @SneakyThrows
     private Path getSettingsPath() {
         Path jarPath = pathService.getProjectPath();
-        System.out.println("JAR PATH: " + jarPath);
         Path settingsPath = jarPath.getParent().resolve(configuration.getSettingsLocation());
         Path settingsFilePath = settingsPath.resolve("settings.xml");
         Files.createDirectories(settingsPath);

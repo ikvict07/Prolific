@@ -2,9 +2,9 @@ package org.nevertouchgrass.prolific.aspect;
 
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.nevertouchgrass.prolific.annotation.OnSave;
+import org.nevertouchgrass.prolific.annotation.OnDelete;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.stereotype.Component;
@@ -15,34 +15,27 @@ import java.util.List;
 @Aspect
 @Component
 @Log4j2
-public class OnSaveAspect {
+public class OnDeleteAspect {
 
     private final ConfigurableBeanFactory beanFactory;
 
-    public OnSaveAspect(ConfigurableBeanFactory beanFactory) {
+    public OnDeleteAspect(ConfigurableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
-    @After(
-            value = "execution(* save(..)) && @within(org.springframework.stereotype.Repository)",
-            argNames = "joinPoint"
+    @AfterReturning(
+            pointcut = "execution(* delete*(..)) && @within(org.springframework.stereotype.Repository)",
+            returning = "result"
     )
-    public void afterSave(JoinPoint joinPoint) {
-        Object[] params = joinPoint.getArgs();
-
-        invokeAnnotatedMethods(params[0].getClass(), params[0]);
-    }
-
-    @After(
-            value = "execution(* saveAll(..)) && @within(org.springframework.stereotype.Repository)",
-            argNames = "joinPoint"
-    )
-    public void afterSaveAll(JoinPoint joinPoint) {
-        List<?> result = (List<?>) joinPoint.getArgs()[0];
-        for (Object entity : result) {
-            if (entity != null) {
-                invokeAnnotatedMethods(entity.getClass(), entity);
+    public void afterDelete(Object result) {
+        if (result instanceof List<?> list) {
+            for (Object entity : list) {
+                if (entity != null) {
+                    invokeAnnotatedMethods(entity.getClass(), entity);
+                }
             }
+        } else {
+            invokeAnnotatedMethods(result.getClass(), result);
         }
     }
 
@@ -56,8 +49,8 @@ public class OnSaveAspect {
 
                 if (beanType != null) {
                     for (Method method : beanType.getDeclaredMethods()) {
-                        if (method.isAnnotationPresent(OnSave.class)) {
-                            Class<?> targetEntityClass = method.getAnnotation(OnSave.class).value();
+                        if (method.isAnnotationPresent(OnDelete.class)) {
+                            Class<?> targetEntityClass = method.getAnnotation(OnDelete.class).value();
 
                             if (targetEntityClass.isAssignableFrom(entityClass)) {
                                 Object bean = null;
@@ -82,8 +75,8 @@ public class OnSaveAspect {
                     }
                 }
             }
+
         }
     }
-
 
 }
