@@ -40,11 +40,12 @@ jobs:
           ref: documentation
           fetch-depth: 0
 
-      - name: Set up JDK 21
+      - name: Set up JDK 23
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: 'liberica'
+          java-version: '23'
+
 
       - name: Run Javadoc
         run: ./gradlew javadoc
