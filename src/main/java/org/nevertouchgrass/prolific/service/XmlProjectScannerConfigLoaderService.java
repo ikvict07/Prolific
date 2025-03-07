@@ -21,6 +21,9 @@ import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.FOLDER;
 import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.NAME;
 import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.PROJECT;
 
+/**
+ * Service for loading user's plugins, that will be used in a project finding process
+ */
 @Service
 public class XmlProjectScannerConfigLoaderService {
 
