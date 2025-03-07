@@ -21,6 +21,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+/**
+ * JavaFx entry point
+ */
+
 @Component
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class JavaFXApplication implements ApplicationRunner {
