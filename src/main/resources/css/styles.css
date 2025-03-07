@@ -18,7 +18,6 @@
     -fx-pref-height: 40px;
 }
 
-
 .circle-close {
     -fx-fill: #FF3B30;
     -fx-scale-x: 1.2;
@@ -127,12 +126,6 @@
     -fx-background-color: #3466B8;
 }
 
-.scroll-bar .increment-arrow,
-.scroll-bar .decrement-arrow {
-    -fx-shape: " ";
-    -fx-padding: 0.15em 0.0;
-}
-
 .scroll-bar:vertical .increment-arrow,
 .scroll-bar:vertical .decrement-arrow {
     -fx-shape: " ";
@@ -148,17 +141,10 @@
     -fx-opacity: 0;
 }
 
-.scroll-pane > .scroll-bar .thumb {
-    -fx-background-color: #505050;
-    -fx-background-radius: 5px;
-    -fx-pref-width: 8px;
-    -fx-pref-height: 5px;
-    -fx-max-height: 5px;
-}
-
 .scroll-pane > .scroll-bar .track {
     -fx-background-color: transparent;
 }
+
 .scroll-pane {
     -fx-pref-height: 40em;
 }
@@ -167,13 +153,5 @@
     -fx-background-color: rgba(255, 255, 255, 0.2);
     -fx-background-insets: 2.0, 0.0, 0.0;
     -fx-background-radius: 0.0em;
-    -fx-pref-height: 5px;
-    -fx-max-height: 5px;
-    -fx-pref-width: 20px;
-}
-
-.scroll-bar:horizontal .thumb:hover,
-.scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.3);
-    -fx-background-insets: 2.0, 0.0, 0.0;
+    -fx-background-size: 50px;
 }

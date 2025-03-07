@@ -26,8 +26,6 @@ public class ProjectPanelController {
     @FXML
     private VBox run;
     @FXML
-    private HBox projectPanel;
-    @FXML
     private Text projectIconText;
     @FXML
     private Label projectTitleText;
@@ -43,19 +41,6 @@ public class ProjectPanelController {
 
         String baseColor = extractPrimaryColor(iconColorStyle);
         gradientBox.setStyle(generateGradientBoxStyle(baseColor));
-
-        Runnable block = () -> {
-            var width = projectPanel.getWidth();
-            projectInfo.setMaxWidth(width * 0.32);
-            projectInfo.setMinWidth(width * 0.32);
-            AnchorPane.setLeftAnchor(projectInfo, calculatePadding(0.01, width));
-            AnchorPane.setRightAnchor(projectInfo, width - calculatePadding(0.33, width));
-
-            AnchorPane.setLeftAnchor(run, calculatePadding(0.33, width));
-            AnchorPane.setLeftAnchor(config, calculatePadding(0.35, width));
-        };
-        primaryStage.widthProperty().addListener((_, _, _) -> block.run());
-        projectPanel.widthProperty().addListener((_, _, _) -> block.run());
     }
 
     private String generateGradientBoxStyle(String baseColor) {
@@ -85,7 +70,6 @@ public class ProjectPanelController {
     }
 
     @Autowired
-
     private void set(Stage primaryStage, ColorService colorService) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
