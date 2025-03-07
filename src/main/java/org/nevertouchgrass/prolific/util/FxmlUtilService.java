@@ -13,9 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Util class for more convenient fxml operations
- */
 public class FxmlUtilService {
     private FxmlUtilService() {
     }

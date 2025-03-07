@@ -9,9 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 
-/**
- * Service that manages paths
- */
 @Service
 @Log4j2
 public class PathService {
