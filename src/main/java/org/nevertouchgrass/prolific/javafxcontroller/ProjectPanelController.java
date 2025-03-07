@@ -1,6 +1,8 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -11,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import lombok.Data;
 import org.nevertouchgrass.prolific.model.Project;
@@ -50,6 +53,8 @@ public class ProjectPanelController {
     private AnchorPaneConstraintsService anchorPaneConstraintsService;
     private ProjectsRepository projectsRepository;
 
+    private Popup projectSettingsPopup;
+
     public void init() {
         String iconColorStyle = generateRandomColorStyle();
         projectIcon.setStyle(iconColorStyle);
@@ -83,9 +88,6 @@ public class ProjectPanelController {
     }
 
 
-    public void setStarred(boolean isStarred) {
-        star.setVisible(isStarred);
-    }
 
     private String generateGradientBoxStyle(String baseColor) {
         String highlightColor = colorService.generateSimilarBrightPastelColor(baseColor);
@@ -109,11 +111,12 @@ public class ProjectPanelController {
     }
 
     @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository) {
+    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Popup projectSettingsPopup) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
         this.anchorPaneConstraintsService = anchorPaneConstraintsService;
         this.projectsRepository = projectsRepository;
+        this.projectSettingsPopup = projectSettingsPopup;
     }
 
     public void setProject(Project project) {
@@ -125,5 +128,17 @@ public class ProjectPanelController {
             star.setVisible(false);
             projectsRepository.update(project);
         });
+    }
+
+
+    public void showProjectSetting() {
+        Bounds bounds = config.localToScreen(config.getBoundsInLocal());
+        projectSettingsPopup.setX(bounds.getCenterX());
+        projectSettingsPopup.setY(bounds.getMaxY());
+        Stage stage = (Stage) projectPanel.getScene().getWindow();
+        Parent projectSettingDropdownParent = (Parent) projectSettingsPopup.getProperties().get("content");
+        ProjectSettingDropdownController controller = (ProjectSettingDropdownController) projectSettingDropdownParent.getProperties().get("controller");
+        controller.setProject(project);
+        projectSettingsPopup.show(stage);
     }
 }
