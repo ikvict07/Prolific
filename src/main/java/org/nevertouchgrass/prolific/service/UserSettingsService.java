@@ -6,9 +6,6 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
@@ -28,12 +25,6 @@ public class UserSettingsService {
     private final PathService pathService;
     private final XmlMapper xmlMapper;
 
-    private UserSettingsService it;
-
-    @Autowired
-    public void setSelf(ApplicationContext context) {
-        this.it = context.getBean(UserSettingsService.class);
-    }
 
     public UserSettingsService(UserSettingsHolder userSettingsHolder, SpringFXConfigurationProperties springFXConfigurationProperties, PathService pathService, XmlMapper xmlMapper) {
         this.userSettingsHolder = userSettingsHolder;
@@ -71,8 +62,7 @@ public class UserSettingsService {
     }
 
     @SneakyThrows
-    @Async
-    synchronized public void saveSettings() {
+    public synchronized void saveSettings() {
         log.info("Saving settings: {}", userSettingsHolder);
         Path settingsFilePath = getSettingsPath();
         xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), userSettingsHolder);
@@ -95,27 +85,27 @@ public class UserSettingsService {
 
     public void setDefaultBaseScanDirectory() {
         userSettingsHolder.setBaseScanDirectory(System.getProperty("user.home"));
-        it.saveSettings();
+        saveSettings();
     }
 
     public void setDefaultRescanEvery() {
         userSettingsHolder.setRescanEveryHours(24);
-        it.saveSettings();
+        saveSettings();
     }
 
     public void setDefaultProjects() {
         userSettingsHolder.setUserProjects(List.of());
-        it.saveSettings();
+        saveSettings();
     }
 
     public void setDefaultLastScanDate() {
         userSettingsHolder.setLastScanDate(LocalDateTime.now().minusYears(100));
-        it.saveSettings();
+        saveSettings();
     }
 
     public void setDefaultProjectDepth() {
         userSettingsHolder.setMaximumProjectDepth(6);
-        it.saveSettings();
+        saveSettings();
     }
 
     public void setDefaultExcludedDirs() {
@@ -126,6 +116,6 @@ public class UserSettingsService {
                 "cargo",
                 ".*"
         ));
-        it.saveSettings();
+        saveSettings();
     }
 }

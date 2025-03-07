@@ -20,17 +20,20 @@ import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getFindAll
 import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getFindByIdQuery;
 import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getInsertQuery;
 import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getTableName;
+import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getUpdateQuery;
 import static org.nevertouchgrass.prolific.repository.RepositoryUtils.prepareInsertQuery;
 import static org.nevertouchgrass.prolific.repository.RepositoryUtils.toSnakeCase;
 
 /**
  * Simple implementation of a basic repository.
  * Inherit this class and you will have a basic repository implementation.
+ *
  * @param <T> The type of the entity managed by this repository implementation.
  */
 
 @Log4j2
 @Repository
+@SuppressWarnings({"java:S3011", "java:S1192", "unused"})
 public abstract class BasicRepositoryImplementationProvider<T> implements BasicRepository<T> {
     protected final DataSource dataSource;
 
@@ -40,7 +43,8 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
 
     @Override
     @SneakyThrows
-    public void save(T t) {
+    @SuppressWarnings("java:S3011")
+    public T save(T t) {
         var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
         var fieldPairs = getFieldPairs(t.getClass());
         String query = getInsertQuery(tableName, fieldPairs);
@@ -48,18 +52,32 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             prepareInsertQuery(t, fieldPairs, preparedStatement);
             preparedStatement.executeUpdate();
-        }
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    Integer id = generatedKeys.getInt(1);
+                    log.info("Saved: {} with ID: {}", t, id);
 
+                    Field idField = t.getClass().getDeclaredField("id");
+                    idField.setAccessible(true);
+                    idField.set(t, id);
+                } else {
+                    log.warn("No ID obtained for {}", t);
+                }
+            } catch (Exception e) {
+                log.error("Error while saving entity: {}", t, e);
+            }
+        }
         log.info("Saved: {}", t);
+        return t;
     }
 
 
     @Override
     @SneakyThrows
-    public void saveAll(Iterable<T> t) {
+    public Iterable<T> saveAll(Iterable<T> t) {
         var iter = t.iterator();
         if (!iter.hasNext()) {
-            return;
+            return t;
         }
         var first = iter.next();
         var tableName = first.getClass().getSimpleName().toLowerCase() + "s";
@@ -78,6 +96,7 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
             connection.commit();
         }
         log.info("Saved: {}", t);
+        return t;
     }
 
     @Override
@@ -96,7 +115,7 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
                 results.add(clazz.getConstructor(values.stream().map(Object::getClass).toArray(Class[]::new)).newInstance(values.toArray()));
             }
         }
-
+        results.forEach(r -> log.info("Found: {}", r));
         log.info("Found {} projects", results.size());
         return results;
     }
@@ -133,6 +152,33 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
             }
         }
         return null;
+    }
+
+    @SuppressWarnings({"SqlSourceToSinkFlow"})
+    public void execute(String query) {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute(query);
+        } catch (SQLException e) {
+            log.error("Error executing query: {}", query, e);
+        }
+    }
+
+    @Override
+    @SneakyThrows
+    public T update(T t) {
+        var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
+        var fieldPairs = getFieldPairs(t.getClass());
+        var query = getUpdateQuery(fieldPairs, tableName);
+
+        log.info("Executing query: {}", query);
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            prepareInsertQuery(t, fieldPairs, preparedStatement);
+            var id = t.getClass().getDeclaredField("id");
+            id.setAccessible(true);
+            preparedStatement.setLong(fieldPairs.size() + 1, (Integer) id.get(t));
+            preparedStatement.executeUpdate();
+        }
+        return t;
     }
 
 }

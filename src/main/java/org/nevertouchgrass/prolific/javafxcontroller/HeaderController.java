@@ -1,11 +1,11 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.application.Platform;
-import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -13,22 +13,28 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
 import org.nevertouchgrass.prolific.annotation.Constraints;
 import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Set;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 
 @AnchorPaneController
 @StageComponent("primaryStage")
+@Log4j2
 @SuppressWarnings("unused")
 public class HeaderController {
 
@@ -40,8 +46,8 @@ public class HeaderController {
     @FXML
     public Circle maximizeButton;
     @FXML
-    @ConstraintsIgnoreElementSize(right = 0.66)
-    public HBox gradientBox;
+    @ConstraintsIgnoreElementSize(right = 0.48)
+    public HBox leftSection;
     @FXML
     @Constraints(right = 0.5, left = 0.5)
     public Text titleText;
@@ -54,6 +60,9 @@ public class HeaderController {
 
     @FXML
     private Circle closeButton;
+    private ProjectsService projectsService;
+
+    private ObjectFactory<Alert> alertFactory;
 
     @Autowired
     public void setSettingsPopup(Popup settingsPopup) {
@@ -79,8 +88,6 @@ public class HeaderController {
 
     private double endX = 0;
 
-    private Set<Object> headerMaximizeAndDragComponents;
-
     @Initialize
     public void init() {
         closeButton.setOnMouseClicked(this::handleClose);
@@ -88,14 +95,14 @@ public class HeaderController {
         maximizeButton.setOnMouseClicked(this::handleMaximize);
 
         header.setOnMousePressed(event -> {
-            if (isHeaderMaximizeAndDragComponent(event.getTarget())) {
+            if (event.getTarget().equals(header)) {
                 xOffset = event.getSceneX();
                 yOffset = event.getSceneY();
             }
         });
 
         header.setOnMouseDragged(event -> {
-            if (isHeaderMaximizeAndDragComponent(event.getTarget())) {
+            if (event.getTarget().equals(header)) {
                 stage.setX(event.getScreenX() - xOffset);
                 stage.setY(event.getScreenY() - yOffset);
                 endX = stage.getX() + stage.getWidth();
@@ -110,8 +117,6 @@ public class HeaderController {
             widthBeforeMaximizing = stage.getWidth();
             heightBeforeMaximizing = stage.getHeight();
         });
-
-        headerMaximizeAndDragComponents = Set.of(gradientBox, titleText, header);
     }
 
     private void resizeCursor(MouseEvent event) {
@@ -120,6 +125,10 @@ public class HeaderController {
         double y = event.getSceneY();
         double width = stage.getWidth();
         double height = stage.getHeight();
+
+        if (stage.isMaximized()) {
+            return;
+        }
 
         if (x < border && y > height - border) {
             stage.getScene().setCursor(Cursor.SW_RESIZE);
@@ -164,32 +173,36 @@ public class HeaderController {
         }
     }
 
+
     private void resizeWidth(double newWidth, double deltaX, boolean adjustX) {
+        widthBeforeMaximizing = newWidth;
+
         if (newWidth >= minWidth && deltaX >= visualBounds.getMinX() && deltaX <= visualBounds.getMaxX()) {
             if (adjustX) {
                 stage.setX(deltaX);
             }
-            widthBeforeMaximizing = newWidth;
             stage.setWidth(newWidth);
-            stage.setHeight(stage.getHeight());
         }
     }
 
     private void resizeHeight(double newHeight) {
+        heightBeforeMaximizing = newHeight;
+
         if (newHeight >= minHeight && stage.getY() + newHeight <= visualBounds.getMaxY()) {
-            heightBeforeMaximizing = newHeight;
             stage.setHeight(newHeight);
-            stage.setWidth(stage.getWidth());
         }
     }
 
+
     public void handleClose(MouseEvent mouseEvent) {
+        log.info("Closing application");
         if (Platform.isFxApplicationThread()) {
             stage.close();
         } else {
             Platform.runLater(() -> stage.close());
         }
         SpringApplication.exit(applicationContext);
+        log.info("Application closed");
     }
 
     public void handleMinimize(MouseEvent mouseEvent) {
@@ -216,7 +229,7 @@ public class HeaderController {
     }
 
     public void handleHeaderMaximize(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && isHeaderMaximizeAndDragComponent(mouseEvent.getTarget())) {
+        if (mouseEvent.getClickCount() == 2 && (mouseEvent.getTarget().equals(header) || mouseEvent.getTarget().equals(leftSection))) {
             handleMaximize(mouseEvent);
         }
     }
@@ -228,16 +241,36 @@ public class HeaderController {
         settingsPopup.show(stage);
     }
 
-    public void projects(MouseEvent mouseEvent) {
-        // TODO: Implement
+    public void projects() {
+        DirectoryChooser fileChooser = new DirectoryChooser();
+        fileChooser.setTitle("Open Project");
+        try {
+            String f = fileChooser.showDialog(stage).getPath();
+            Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
+            projectsService.manuallyAddProject(p);
+        } catch (Exception e) {
+            showAlert();
+        }
     }
 
     @Autowired
-    public void set(ApplicationContext applicationContext) {
+    public void set(ApplicationContext applicationContext, ProjectsService projectsService, ObjectFactory<Alert> alert) {
         this.applicationContext = applicationContext;
+        this.projectsService = projectsService;
+        this.alertFactory = alert;
     }
 
-    private boolean isHeaderMaximizeAndDragComponent(EventTarget eventTarget) {
-        return headerMaximizeAndDragComponents.contains(eventTarget);
+    @Autowired
+    public void setProjectsService(ProjectsService projectsService) {
+        this.projectsService = projectsService;
     }
+
+    private void showAlert() {
+        var alert = alertFactory.getObject();
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText("Unknown project type");
+        alert.showAndWait();
+    }
+
 }

@@ -1,5 +1,5 @@
 .root {
-    -fx-background-color: #1E1F22;
+    -fx-background-radius: 16px;
     -fx-font-size: 12px;
     -fx-pref-height: 16px;
 }
@@ -7,6 +7,7 @@
 #header {
     -fx-background-color: #2B2D30;
     -fx-font-size: 1.25em;
+    -fx-background-radius: 16px 16px 0 0;
 }
 
 #gradientBox {
@@ -16,6 +17,7 @@
     #2B2D30 33.0%,
     #2B2D30 100%);
     -fx-pref-height: 40px;
+    -fx-background-radius: 16px 0 0 0;
 }
 
 .circle-close {
@@ -69,7 +71,7 @@
     -fx-flex-shrink: 0;
 }
 
-#projectPanel {
+.projectPanel {
     -fx-background-color: #2B2D30;
     -fx-pref-width: 400px;
     -fx-pref-height: 40px;
@@ -79,6 +81,10 @@
     -fx-background-color: #1E1F22;
 }
 
+#mainScreen {
+    -fx-background-radius: 16px;
+    -fx-background-color: #1E1F22;
+}
 
 .defaultText {
     -fx-text-fill: #DFE1E5;
@@ -155,3 +161,19 @@
     -fx-background-radius: 0.0em;
     -fx-background-size: 50px;
 }
+
+.dialog-pane {
+    -fx-background-color: #2B2D30;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+
+.label {
+    -fx-text-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+}
+
+/** {*/
+/*    -fx-border-width: 1px;*/
+/*    -fx-border-color: red;*/
+/*}*/

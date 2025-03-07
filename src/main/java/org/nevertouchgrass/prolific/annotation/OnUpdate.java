@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@OnAction(ActionTypes.SAVE)
-public @interface OnSave {
+@OnAction(ActionTypes.UPDATE)
+public @interface OnUpdate {
     Class<?> value();
 }
