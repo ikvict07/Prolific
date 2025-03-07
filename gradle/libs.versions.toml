@@ -8,7 +8,8 @@ log4j = "2.24.3"
 jackson = "2.18.2"
 jscksonTypes = "2.18.2"
 mock = "5.14.0"
-
+sqlite = "3.49.1.0"
+hikari = "6.2.1"
 [libraries]
 springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
 springBoot = { module = "org.springframework.boot:spring-boot-starter" }
@@ -20,11 +21,14 @@ mockito = { module = "org.mockito:mockito-core", version.ref = "mock" }
 jacksonXml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
 jacksonTypes = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jscksonTypes" }
 logging = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
-
+sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite"}
+springAop = { module = "org.springframework.boot:spring-boot-starter-aop" }
+hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 [bundles]
 spring = [
     "springBootParent",
     "springBoot",
+    "springAop",
 ]
 testing = [
     "springBootTest",

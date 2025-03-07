@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.shape.Circle?>
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="svgGraphic" prefWidth="28" prefHeight="28">
+    <Circle fx:id="circle" centerX="14" centerY="14" radius="12" fill="#DB5C5C"/>
+
+    <SVGPath fx:id="svgPath1"
+             content="M15 8C15 7.44772 14.5523 7 14 7C13.4477 7 13 7.44771 13 8L13 14C13 14.5523 13.4477 15 14 15C14.5523 15 15 14.5523 15 14L15 8Z"
+             fill="white"
+             translateY="-3"/>
+
+    <SVGPath fx:id="svgPath2"
+             content="M14 21C14.8284 21 15.5 20.3284 15.5 19.5C15.5 18.6716 14.8284 18 14 18C13.1716 18 12.5 18.6716 12.5 19.5C12.5 20.3284 13.1716 21 14 21Z"
+             fill="white"
+             translateY="5"
+    />
+</StackPane>
