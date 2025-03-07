@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -12,20 +13,32 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
 import org.nevertouchgrass.prolific.annotation.Constraints;
 import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
+
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 
 @AnchorPaneController
 @StageComponent("primaryStage")
+@Log4j2
 @SuppressWarnings("unused")
 public class HeaderController {
+
+    private ApplicationContext applicationContext;
     @FXML
     public StackPane settingsButton;
     @FXML
@@ -33,7 +46,7 @@ public class HeaderController {
     @FXML
     public Circle maximizeButton;
     @FXML
-    @ConstraintsIgnoreElementSize(right = 0.66)
+    @ConstraintsIgnoreElementSize(right = 0.48)
     public HBox leftSection;
     @FXML
     @Constraints(right = 0.5, left = 0.5)
@@ -47,8 +60,15 @@ public class HeaderController {
 
     @FXML
     private Circle closeButton;
+    private ProjectsService projectsService;
+
+    private ObjectFactory<Alert> alertFactory;
 
     @Autowired
+    public void setSettingsPopup(Popup settingsPopup) {
+        this.settingsPopup = settingsPopup;
+    }
+
     private Popup settingsPopup;
 
     private double xOffset = 0;
@@ -106,6 +126,10 @@ public class HeaderController {
         double width = stage.getWidth();
         double height = stage.getHeight();
 
+        if (stage.isMaximized()) {
+            return;
+        }
+
         if (x < border && y > height - border) {
             stage.getScene().setCursor(Cursor.SW_RESIZE);
         } else if (x > width - border && y > height - border) {
@@ -122,67 +146,63 @@ public class HeaderController {
     }
 
     private void resizeWindow(MouseEvent event) {
-        if (stage.getScene().getCursor() == Cursor.SW_RESIZE) {
-            double newWidth = endX - event.getScreenX();
-            double newHeight = event.getScreenY() - stage.getY();
-            widthBeforeMaximizing = newWidth;
-            heightBeforeMaximizing = newHeight;
-            if (newWidth >= minWidth && event.getScreenX() >= visualBounds.getMinX()) {
-                stage.setX(event.getScreenX());
-                stage.setWidth(endX - event.getScreenX());
-                stage.setHeight(stage.getHeight());
+        double deltaX = event.getScreenX();
+        double deltaY = event.getScreenY();
+        switch (org.nevertouchgrass.prolific.constants.Cursor.getCursor(stage.getScene().getCursor())) {
+            case SW_RESIZE -> {
+                resizeWidth(endX - deltaX, deltaX, true);
+                double newHeight = deltaY - stage.getY();
+                resizeHeight(newHeight);
             }
-            if (newHeight >= minHeight && event.getScreenY() <= visualBounds.getMaxY()) {
-                stage.setHeight(newHeight);
-                stage.setWidth(stage.getWidth());
+            case SE_RESIZE -> {
+                resizeWidth(deltaX - stage.getX(), deltaX, false);
+                double newHeight = deltaY - stage.getY();
+                resizeHeight(newHeight);
+            }
+            case W_RESIZE -> resizeWidth(endX - deltaX, deltaX, true);
+            case E_RESIZE -> resizeWidth(deltaX - stage.getX(), deltaX, false);
+            case S_RESIZE -> {
+                double newHeight = deltaY - stage.getY();
+                resizeHeight(newHeight);
             }
 
-        } else if (stage.getScene().getCursor() == Cursor.SE_RESIZE) {
-            double newWidth = event.getScreenX() - stage.getX();
-            double newHeight = event.getScreenY() - stage.getY();
-            widthBeforeMaximizing = newWidth;
-            heightBeforeMaximizing = newHeight;
-            if (newWidth >= minWidth && event.getScreenX() <= visualBounds.getMaxX()) {
-                stage.setWidth(newWidth);
-                stage.setHeight(stage.getHeight());
-                endX = stage.getX() + stage.getWidth();
-            }
-            if (newHeight >= minHeight && event.getScreenY() <= visualBounds.getMaxY()) {
-                stage.setHeight(newHeight);
-                stage.setWidth(stage.getWidth());
-            }
-        } else if (stage.getScene().getCursor() == Cursor.W_RESIZE) {
-            double newWidth = endX - event.getScreenX();
-            widthBeforeMaximizing = newWidth;
-            if (newWidth >= minWidth && event.getScreenX() >= visualBounds.getMinX()) {
-                stage.setX(event.getScreenX());
-                stage.setWidth(newWidth);
-                stage.setHeight(stage.getHeight());
-            }
-        } else if (stage.getScene().getCursor() == Cursor.E_RESIZE) {
-            double newWidth = event.getScreenX() - stage.getX();
-            widthBeforeMaximizing = newWidth;
-            if (newWidth >= minWidth && event.getScreenX() <= visualBounds.getMaxX()) {
-                stage.setWidth(newWidth);
-                stage.setHeight(stage.getHeight());
-                endX = stage.getX() + stage.getWidth();
-            }
-        } else if (stage.getScene().getCursor() == Cursor.S_RESIZE) {
-            double newHeight = event.getScreenY() - stage.getY();
-
-            if (newHeight >= minHeight && event.getScreenY() <= visualBounds.getMaxY()) {
-                stage.setHeight(newHeight);
-                stage.setWidth(stage.getWidth());
+            case null -> throw new IllegalStateException("Unexpected value: " + null);
+            case N_RESIZE, NE_RESIZE, NW_RESIZE, DEFAULT -> {
+                // No action
             }
         }
     }
 
+
+    private void resizeWidth(double newWidth, double deltaX, boolean adjustX) {
+        widthBeforeMaximizing = newWidth;
+
+        if (newWidth >= minWidth && deltaX >= visualBounds.getMinX() && deltaX <= visualBounds.getMaxX()) {
+            if (adjustX) {
+                stage.setX(deltaX);
+            }
+            stage.setWidth(newWidth);
+        }
+    }
+
+    private void resizeHeight(double newHeight) {
+        heightBeforeMaximizing = newHeight;
+
+        if (newHeight >= minHeight && stage.getY() + newHeight <= visualBounds.getMaxY()) {
+            stage.setHeight(newHeight);
+        }
+    }
+
+
     public void handleClose(MouseEvent mouseEvent) {
+        log.info("Closing application");
         if (Platform.isFxApplicationThread()) {
             stage.close();
         } else {
             Platform.runLater(() -> stage.close());
         }
+        SpringApplication.exit(applicationContext);
+        log.info("Application closed");
     }
 
     public void handleMinimize(MouseEvent mouseEvent) {
@@ -221,5 +241,36 @@ public class HeaderController {
         settingsPopup.show(stage);
     }
 
-    public void projects(MouseEvent mouseEvent) {}
+    public void projects() {
+        DirectoryChooser fileChooser = new DirectoryChooser();
+        fileChooser.setTitle("Open Project");
+        try {
+            String f = fileChooser.showDialog(stage).getPath();
+            Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
+            projectsService.manuallyAddProject(p);
+        } catch (Exception e) {
+            showAlert();
+        }
+    }
+
+    @Autowired
+    public void set(ApplicationContext applicationContext, ProjectsService projectsService, ObjectFactory<Alert> alert) {
+        this.applicationContext = applicationContext;
+        this.projectsService = projectsService;
+        this.alertFactory = alert;
+    }
+
+    @Autowired
+    public void setProjectsService(ProjectsService projectsService) {
+        this.projectsService = projectsService;
+    }
+
+    private void showAlert() {
+        var alert = alertFactory.getObject();
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText("Unknown project type");
+        alert.showAndWait();
+    }
+
 }

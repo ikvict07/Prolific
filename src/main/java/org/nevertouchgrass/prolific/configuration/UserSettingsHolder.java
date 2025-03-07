@@ -19,6 +19,7 @@ public class UserSettingsHolder {
     private Integer rescanEveryHours;
     private List<Project> userProjects;
     private Integer maximumProjectDepth;
+    private List<String> excludedDirs;
 
     public void load(UserSettingsHolder userSettingsHolder) {
         if (userSettingsHolder.getBaseScanDirectory() != null && !userSettingsHolder.getBaseScanDirectory().isEmpty()) {
@@ -35,6 +36,9 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.maximumProjectDepth != null) {
             this.maximumProjectDepth = userSettingsHolder.getMaximumProjectDepth();
+        }
+        if (userSettingsHolder.excludedDirs != null && !userSettingsHolder.excludedDirs.isEmpty()) {
+            this.excludedDirs = userSettingsHolder.excludedDirs;
         }
     }
 }

@@ -37,17 +37,20 @@ val mockitoAgent = configurations.create("mockitoAgent")
 dependencies {
     implementation(libs.bundles.spring)
     implementation(libs.oshiCore)
-    compileOnly(libs.lombok)
-    annotationProcessor(libs.lombok)
     implementation(libs.logging)
     implementation(libs.jacksonXml)
     implementation(libs.jacksonTypes)
+    implementation(libs.sqlite)
+    implementation(libs.hikari)
+
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
 
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)
     testImplementation(libs.bundles.testing)
-    testRuntimeOnly(libs.junitJupiter)
     testImplementation(libs.mockito)
+    testRuntimeOnly(libs.junitJupiter)
     mockitoAgent("org.mockito:mockito-core:5.14.0") { isTransitive = false }
 }
 
@@ -77,14 +80,27 @@ jlink {
 }
 
 tasks.register<Exec>("runLinux") {
+    description = "Run the application on Linux"
+    group = "application"
     dependsOn(tasks.bootJar)
     workingDir = rootDir
     environment("GDK_BACKEND", "x11")
-    commandLine("java", "-Dprism.order=sw", "-jar", "build/libs/Prolific-0.0.1.jar")
+    commandLine("java", "-Dprism.order=sw", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
 }
 
 tasks.register<Exec>("runWindows") {
+    description = "Run the application on Windows"
+    group = "application"
     dependsOn(tasks.bootJar)
     workingDir = rootDir
-    commandLine("java", "-Dprism.order=sw", "-jar", "build/libs/Prolific-0.0.1.jar")
+    commandLine("java", "-Dprism.order=sw", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
 }
+
+tasks.register<Exec>("runMac") {
+    description = "Run the application on Mac"
+    group = "application"
+    dependsOn(tasks.bootJar)
+    workingDir = rootDir
+    commandLine("java", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
+}
+
