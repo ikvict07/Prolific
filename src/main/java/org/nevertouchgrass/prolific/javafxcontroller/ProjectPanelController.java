@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class ProjectPanelController {
     @FXML
-    public VBox star;
+    public StackPane star;
     @FXML
     private HBox projectIcon;
     @FXML
@@ -62,15 +62,17 @@ public class ProjectPanelController {
         String baseColor = extractPrimaryColor(iconColorStyle);
         projectInfo.setStyle(generateGradientBoxStyle(baseColor));
         anchorPaneConstraintsService.setStage(primaryStage);
-        projectPanel.minWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
-        projectPanel.maxWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
-        projectPanel.prefWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.98));
+        projectPanel.minWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
+        projectPanel.maxWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
+        projectPanel.prefWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
         anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(projectInfo, 0.48);
         anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(projectInfo, 0.01);
-        AnchorPane.setRightAnchor(star, 8d);
+        AnchorPane.setRightAnchor(star, 16d);
 
         anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(run, 0.50);
         anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(config, 0.52);
+        anchorPaneConstraintsService.setAnchorConstraintsBottom(star, 0.45);
+        anchorPaneConstraintsService.setAnchorConstraintsTop(star, 0.45);
 
         var starImage = (SVGPath) star.lookup("SVGPath");
         starImage.hoverProperty().addListener((_, _, newVal) -> {
