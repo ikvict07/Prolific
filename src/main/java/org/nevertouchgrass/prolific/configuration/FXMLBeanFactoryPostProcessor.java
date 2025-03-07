@@ -1,6 +1,8 @@
 package org.nevertouchgrass.prolific.configuration;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.util.FxmlUtilService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -16,6 +18,8 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class FXMLBeanFactoryPostProcessor
@@ -43,6 +47,8 @@ public class FXMLBeanFactoryPostProcessor
             registry.registerBeanDefinition(beanName, beanDefinition);
         });
     }
+
+
 
 
     @Override
