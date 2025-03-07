@@ -4,9 +4,8 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.MainScreenController"
-            stylesheets="@../css/styles.css"
-            styleClass="mainBG"
+            stylesheets="@/css/styles.css"
             fx:id="mainScreen">
-    <fx:include fx:id="headerComponent" source="../components/header.fxml"/>
+    <fx:include fx:id="headerComponent" source="/components/header.fxml"/>
     <fx:include source="projectsPanel.fxml" fx:id="projectsPanel"/>
 </AnchorPane>

@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Log4j2
 @SpringBootTest(classes = TestConfiguration.class)
-public class ProjectScannerServiceTests {
+class ProjectScannerServiceTests {
     @Autowired
     private ProjectScannerService projectScannerService;
 
@@ -23,10 +23,11 @@ public class ProjectScannerServiceTests {
 
         long startTime = System.currentTimeMillis();
         Set<Path> actual = projectScannerService.scanForProjects(path);
+        log.info("Running time: {}", System.currentTimeMillis() - startTime);
 
         log.info("Path: {}", path);
         log.info("Actual set: {}", actual);
-        log.info("Running time: {}", System.currentTimeMillis() - startTime);
+        log.info("Expected set: {}", expected);
 
         Assertions.assertNotNull(actual);
 

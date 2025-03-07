@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.service;
 
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.stereotype.Service;
@@ -15,64 +16,71 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.*;
+import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.FILE;
+import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.FOLDER;
+import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.NAME;
+import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.PROJECT;
 
-@Log4j2
+/**
+ * Service for loading user's plugins, that will be used in a project finding process
+ */
 @Service
 public class XmlProjectScannerConfigLoaderService {
 
-	private final PluginConfigProvider pluginConfigProvider;
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	public XmlProjectScannerConfigLoaderService(PluginConfigProvider pluginConfigProvider) {
-		this.pluginConfigProvider = pluginConfigProvider;
-	}
+    private final PluginConfigProvider pluginConfigProvider;
 
-	public List<ProjectTypeModel> loadProjectTypes() {
-		Path path = pluginConfigProvider.getPluginConfigPath();
-		List<ProjectTypeModel> projectTypeModels = new ArrayList<>();
+    public XmlProjectScannerConfigLoaderService(PluginConfigProvider pluginConfigProvider) {
+        this.pluginConfigProvider = pluginConfigProvider;
+    }
 
-		try {
-			File file = path.toFile();
-			if (!file.exists()) {
-				throw new RuntimeException("Plugin configuration file does not exist " + path);
-			}
+    public List<ProjectTypeModel> loadProjectTypes() {
+        Path path = pluginConfigProvider.getPluginConfigPath();
+        List<ProjectTypeModel> projectTypeModels = new ArrayList<>();
 
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-			Document document = documentBuilder.parse(file);
+        try {
+            File file = path.toFile();
+            if (!file.exists()) {
+                throw new RuntimeException("Plugin configuration file does not exist " + path);
+            }
 
-			document.getDocumentElement().normalize();
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(file);
 
-			NodeList projectTypeNodes = document.getElementsByTagName(PROJECT);
+            document.getDocumentElement().normalize();
 
-			for (int i = 0; i < projectTypeNodes.getLength(); i++) {
-				Element projectTypeElement = (Element) projectTypeNodes.item(i);
-				String projectName = projectTypeElement.getElementsByTagName(NAME).item(0).getTextContent();
-				List<String> identifiers = getIdentifiers(projectTypeElement);
+            NodeList projectTypeNodes = document.getElementsByTagName(PROJECT);
 
-				projectTypeModels.add(new ProjectTypeModel(projectName, identifiers));
-			}
-		} catch (Exception e) {
-			log.error("Error loading plugins from XML file: {}", e.getMessage());
-		}
+            for (int i = 0; i < projectTypeNodes.getLength(); i++) {
+                Element projectTypeElement = (Element) projectTypeNodes.item(i);
+                String projectName = projectTypeElement.getElementsByTagName(NAME).item(0).getTextContent();
+                List<String> identifiers = getIdentifiers(projectTypeElement);
 
-		return projectTypeModels;
-	}
+                projectTypeModels.add(new ProjectTypeModel(projectName, identifiers));
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error loading plugins from XML file", e);
+        }
 
-	private static List<String> getIdentifiers(Element projectTypeElement) {
-		List<String> identifiers = new ArrayList<>();
+        return projectTypeModels;
+    }
 
-		NodeList fileNodes = projectTypeElement.getElementsByTagName(FILE);
-		for (int j = 0; j < fileNodes.getLength(); j++) {
-			Element fileElement = (Element) fileNodes.item(j);
-			identifiers.add(fileElement.getTextContent());
-		}
+    private static List<String> getIdentifiers(Element projectTypeElement) {
+        List<String> identifiers = new ArrayList<>();
 
-		NodeList folderNodes = projectTypeElement.getElementsByTagName(FOLDER);
-		for (int j = 0; j < folderNodes.getLength(); j++) {
-			Element folderElement = (Element) folderNodes.item(j);
-			identifiers.add(folderElement.getTextContent());
-		}
-		return identifiers;
-	}
+        NodeList fileNodes = projectTypeElement.getElementsByTagName(FILE);
+        for (int j = 0; j < fileNodes.getLength(); j++) {
+            Element fileElement = (Element) fileNodes.item(j);
+            identifiers.add(fileElement.getTextContent());
+        }
+
+        NodeList folderNodes = projectTypeElement.getElementsByTagName(FOLDER);
+        for (int j = 0; j < folderNodes.getLength(); j++) {
+            Element folderElement = (Element) folderNodes.item(j);
+            identifiers.add(folderElement.getTextContent());
+        }
+        return identifiers;
+    }
 }

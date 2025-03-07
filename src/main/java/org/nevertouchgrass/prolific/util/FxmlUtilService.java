@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Util class for more convenient fxml operations
+ */
 public class FxmlUtilService {
     private FxmlUtilService() {
     }
@@ -35,7 +38,9 @@ public class FxmlUtilService {
     public static Parent loadFxml(String fxmlName, SpringFXConfigurationProperties projectConfigurationProperties, ApplicationContext applicationContext) {
         FXMLLoader loader = getFxmlLoader(fxmlName, projectConfigurationProperties, applicationContext);
         loader.setControllerFactory(applicationContext::getBean);
-        return loader.load();
+        Parent p = loader.load();
+        p.getProperties().put("controller", loader.getController());
+        return p;
     }
 
     @SneakyThrows
