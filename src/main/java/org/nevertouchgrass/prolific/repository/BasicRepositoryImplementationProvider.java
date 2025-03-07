@@ -44,7 +44,7 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
     @Override
     @SneakyThrows
     @SuppressWarnings("java:S3011")
-    public void save(T t) {
+    public T save(T t) {
         var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
         var fieldPairs = getFieldPairs(t.getClass());
         String query = getInsertQuery(tableName, fieldPairs);
@@ -68,15 +68,16 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
             }
         }
         log.info("Saved: {}", t);
+        return t;
     }
 
 
     @Override
     @SneakyThrows
-    public void saveAll(Iterable<T> t) {
+    public Iterable<T> saveAll(Iterable<T> t) {
         var iter = t.iterator();
         if (!iter.hasNext()) {
-            return;
+            return t;
         }
         var first = iter.next();
         var tableName = first.getClass().getSimpleName().toLowerCase() + "s";
@@ -95,6 +96,7 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
             connection.commit();
         }
         log.info("Saved: {}", t);
+        return t;
     }
 
     @Override

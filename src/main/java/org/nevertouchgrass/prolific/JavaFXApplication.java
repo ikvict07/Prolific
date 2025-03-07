@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -13,7 +12,6 @@ import org.nevertouchgrass.prolific.events.JavaFxStartEvent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.javafxcontroller.HeaderController;
-import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -41,18 +39,16 @@ public class JavaFXApplication implements ApplicationRunner {
 
 
     private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
-    private final ProjectsRepository projectsRepository;
 
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public JavaFXApplication(Stage primaryStage, Parent mainScreenParent, HeaderController headerController,
-                             ApplicationEventPublisher applicationEventPublisher, UserSettingsService userSettingsService, ProjectsRepository projectsRepository) {
+                             ApplicationEventPublisher applicationEventPublisher, UserSettingsService userSettingsService) {
         this.primaryStage = primaryStage;
         this.mainScreenParent = mainScreenParent;
         this.headerController = headerController;
         this.applicationEventPublisher = applicationEventPublisher;
         this.userSettingsService = userSettingsService;
-        this.projectsRepository = projectsRepository;
     }
 
     @Override
