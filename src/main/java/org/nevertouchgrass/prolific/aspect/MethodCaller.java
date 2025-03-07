@@ -2,6 +2,7 @@ package org.nevertouchgrass.prolific.aspect;
 
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.annotation.OnAction;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.stereotype.Component;
@@ -12,10 +13,9 @@ import java.lang.reflect.Method;
 @Component
 @Log4j2
 public class MethodCaller {
-
     @SneakyThrows
     @SuppressWarnings("all")
-    public void invokeAnnotatedMethods(Class<?> entityClass, Object entity, ConfigurableBeanFactory beanFactory, Class<? extends Annotation> annotationToCall) {
+    public void invokeAnnotatedMethods(Class<?> entityClass, Object entity, ConfigurableBeanFactory beanFactory, Class<? extends Annotation> annotationToCall, AnnotationValueExtractor<Annotation, Class<?>> valueExtractor) {
         if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
             String[] beanNames = listableBeanFactory.getBeanNamesForAnnotation(Component.class);
 
@@ -25,18 +25,14 @@ public class MethodCaller {
                 if (beanType != null) {
                     for (Method method : beanType.getDeclaredMethods()) {
                         if (method.isAnnotationPresent(annotationToCall)) {
-                            var annotation = method.getAnnotation(annotationToCall);
-                            Method valueMethod = annotationToCall.getDeclaredMethod("value");
+                            Class<?> value = valueExtractor.extract(method.getAnnotation(annotationToCall));
 
-                            Object value = valueMethod.invoke(annotation);
-                            Class<?> targetEntityClass = (Class<?>) value;
 
-                            if (targetEntityClass.isAssignableFrom(entityClass)) {
+                            if (value.isAssignableFrom(entityClass)) {
                                 Object bean = null;
 
-                                ConfigurableBeanFactory configurableBeanFactory = beanFactory;
-                                if (configurableBeanFactory.containsSingleton(beanName)) {
-                                    bean = configurableBeanFactory.getSingleton(beanName);
+                                if (beanFactory.containsSingleton(beanName)) {
+                                    bean = beanFactory.getSingleton(beanName);
                                 }
                                 if (bean != null) {
                                     try {
@@ -56,5 +52,9 @@ public class MethodCaller {
             }
 
         }
+    }
+
+    public AnnotationValueExtractor<Annotation, Class<?>> getValueExtractor(Class<? extends Annotation> annotation) {
+        return annotation.getAnnotation(OnAction.class).value().extractor;
     }
 }
