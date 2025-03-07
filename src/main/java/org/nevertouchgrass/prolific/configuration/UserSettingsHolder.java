@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.configuration;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 import org.nevertouchgrass.prolific.model.Project;
@@ -12,6 +13,7 @@ import java.util.List;
 @Service
 @Data
 @JacksonXmlRootElement(localName = "settings")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserSettingsHolder {
     private String baseScanDirectory;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd['T'HH:mm:ss]")
