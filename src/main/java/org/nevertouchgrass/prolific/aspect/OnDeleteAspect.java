@@ -4,11 +4,9 @@ import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.nevertouchgrass.prolific.annotation.OnDelete;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 @Aspect
@@ -17,9 +15,12 @@ import java.util.List;
 public class OnDeleteAspect {
 
     private final ConfigurableBeanFactory beanFactory;
+    private final MethodCaller methodCaller;
 
-    public OnDeleteAspect(ConfigurableBeanFactory beanFactory) {
+
+    public OnDeleteAspect(ConfigurableBeanFactory beanFactory, MethodCaller methodCaller) {
         this.beanFactory = beanFactory;
+        this.methodCaller = methodCaller;
     }
 
     @AfterReturning(
@@ -30,51 +31,11 @@ public class OnDeleteAspect {
         if (result instanceof List<?> list) {
             for (Object entity : list) {
                 if (entity != null) {
-                    invokeAnnotatedMethods(entity.getClass(), entity);
+                    methodCaller.invokeAnnotatedMethods(entity.getClass(), entity, beanFactory, OnDelete.class);
                 }
             }
         } else {
-            invokeAnnotatedMethods(result.getClass(), result);
-        }
-    }
-
-    @SuppressWarnings("java:S3011")
-    private void invokeAnnotatedMethods(Class<?> entityClass, Object entity) {
-        if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
-            String[] beanNames = listableBeanFactory.getBeanNamesForAnnotation(Component.class);
-
-            for (String beanName : beanNames) {
-                Class<?> beanType = listableBeanFactory.getType(beanName);
-
-                if (beanType != null) {
-                    for (Method method : beanType.getDeclaredMethods()) {
-                        if (method.isAnnotationPresent(OnDelete.class)) {
-                            Class<?> targetEntityClass = method.getAnnotation(OnDelete.class).value();
-
-                            if (targetEntityClass.isAssignableFrom(entityClass)) {
-                                Object bean = null;
-
-                                ConfigurableBeanFactory configurableBeanFactory = beanFactory;
-                                if (configurableBeanFactory.containsSingleton(beanName)) {
-                                    bean = configurableBeanFactory.getSingleton(beanName);
-                                }
-                                if (bean != null) {
-                                    try {
-                                        method.setAccessible(true);
-                                        method.invoke(bean, entity);
-                                        log.info("Called method {} in bean {} for entity {}",
-                                                method.getName(), bean.getClass().getSimpleName(), entityClass.getSimpleName());
-                                    } catch (Exception e) {
-                                        log.error("Failed to invoke @OnDelete method {} in bean {} caused by {}",
-                                                method.getName(), bean.getClass().getSimpleName(), e.getCause());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
+            methodCaller.invokeAnnotatedMethods(result.getClass(), result, beanFactory, OnDelete.class);
         }
     }
 
