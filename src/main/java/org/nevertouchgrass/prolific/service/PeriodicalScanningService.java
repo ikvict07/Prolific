@@ -3,22 +3,18 @@ package org.nevertouchgrass.prolific.service;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
-import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Service for periodical project scanning
@@ -53,19 +49,25 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
         new Thread(() -> {
             LocalDateTime lastScanDate = userSettingsHolder.getLastScanDate();
             int rescanEvery = userSettingsHolder.getRescanEveryHours();
-            String baseScanDirectory = userSettingsHolder.getBaseScanDirectory();
             log.info("Last scan date: {}", lastScanDate);
             if (lastScanDate.isBefore(LocalDateTime.now().minus(Duration.ofHours(rescanEvery)))) {
-                log.info("Scanning for projects in {}", baseScanDirectory);
-                findProjects(baseScanDirectory);
+                rescan();
             }
         }).start();
     }
 
-    private void findProjects(String baseScanDirectory) {
-        Set<Path> paths = projectScannerService.scanForProjects(baseScanDirectory, this::resolveAndSave);
+    public void rescan() {
+        String baseScanDirectory = userSettingsHolder.getBaseScanDirectory();
+        log.info("Deleting projects that are not starred and not manually added");
+        projectsRepository.deleteWhereIsStarredIsFalseAndIsManuallyAddedIsFalse();
+        log.info("Scanning for projects in {}", baseScanDirectory);
+        new Thread(() -> findProjects(baseScanDirectory)).start();
         userSettingsHolder.setLastScanDate(LocalDateTime.now());
         userSettingsService.saveSettings();
+    }
+
+    private synchronized void findProjects(String baseScanDirectory) {
+        projectScannerService.scanForProjects(baseScanDirectory, this::resolveAndSave);
     }
 
     @SneakyThrows

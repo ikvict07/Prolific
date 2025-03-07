@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
-
-<AnchorPane id="header" fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController">
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+<AnchorPane id="header" fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
+            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController">
 
     <!-- Left section with controls -->
-    <HBox id="gradientBox" fx:id="gradientBox" alignment="CENTER_LEFT" layoutX="1.0" spacing="16"
+    <HBox id="gradientBox" fx:id="leftSection" alignment="CENTER_LEFT" layoutX="1.0" spacing="16"
           AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0">
         <padding>
-            <Insets bottom="4" left="16" top="4"/>
+            <Insets left="16" top="4" bottom="4"/>
         </padding>
-        <HBox alignment="CENTER_LEFT" spacing="10">
+        <HBox spacing="10" alignment="CENTER_LEFT">
             <Circle fx:id="closeButton" fill="transparent" onMouseClicked="#handleClose" radius="5"
                     styleClass="circle-close"/>
             <Circle fx:id="minimizeButton" fill="transparent" onMouseClicked="#handleMinimize" radius="5"
@@ -22,18 +26,19 @@
                     styleClass="circle-maximize"/>
         </HBox>
         <HBox>
-            <StackPane onMouseClicked="#projects" styleClass="icon-button">
+            <StackPane styleClass="icon-button" onMouseClicked="#projects">
                 <fx:include source="/icons/fxml/folder.fxml"/>
             </StackPane>
-            <StackPane fx:id="settingsButton" onMouseClicked="#dropdownForSettings" styleClass="icon-button">
+            <StackPane fx:id="settingsButton" styleClass="icon-button" onMouseClicked="#dropdownForSettings">
                 <fx:include source="/icons/fxml/settings.fxml"/>
             </StackPane>
         </HBox>
     </HBox>
 
     <!-- Center section with title -->
-    <Text fx:id="titleText" fill="#ebecf0" strokeType="OUTSIDE" strokeWidth="0.0" text="Projects Manager" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="10.0" />
+    <Text fx:id="titleText" fill="#ebecf0" strokeType="OUTSIDE" strokeWidth="0.0" text="Projects Manager"
+          AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="684.61376953125" AnchorPane.topAnchor="10.0"/>
 
     <!-- Right section as an empty Region -->
-    <Region fx:id="rightSection" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" />
+    <Region fx:id="rightSection" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
 </AnchorPane>

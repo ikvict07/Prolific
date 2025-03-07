@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Project {
+    private Integer id;
     private String title;
     private String type;
     private String path;
     private Boolean isManuallyAdded = false;
+    private Boolean isStarred = false;
 }

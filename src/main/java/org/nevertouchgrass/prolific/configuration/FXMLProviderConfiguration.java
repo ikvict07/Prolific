@@ -36,6 +36,7 @@ public class FXMLProviderConfiguration {
             FXMLLoader loader = FxmlUtilService.getFxmlLoader(parentName, configurationProperties, context);
             loader.setControllerFactory(context::getBean);
             Parent parent = loader.load();
+            parent.getProperties().put("controller", loader.getController());
             T controller = loader.getController();
             return new FxmlLoadedResource<>(parent, controller);
         }

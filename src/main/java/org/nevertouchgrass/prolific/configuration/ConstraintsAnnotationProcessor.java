@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.configuration;
 
 import javafx.scene.Node;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
 import org.nevertouchgrass.prolific.annotation.Constraints;
@@ -87,7 +88,7 @@ public class ConstraintsAnnotationProcessor implements ApplicationListener<Stage
         }
         if (constraints.left() != -1) {
             anchorPaneConstraintsService.setAnchorConstraintsLeft(node, constraints.left());
-        };
+        }
 
     }
 

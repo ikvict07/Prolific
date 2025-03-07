@@ -53,4 +53,15 @@ public class RepositoryUtils {
     public static String getFindByIdQuery(List<AbstractMap.SimpleEntry<Field, String>> fieldPairs, String tableName) {
         return "SELECT " + StringUtils.collectionToCommaDelimitedString(fieldPairs.stream().map(AbstractMap.SimpleEntry::getValue).toList()) + " FROM " + tableName + " WHERE id = ?";
     }
+
+    public static String getUpdateQuery(List<AbstractMap.SimpleEntry<Field, String>> fieldPairs, String tableName) {
+        return "UPDATE " + tableName + " SET "
+                + StringUtils.collectionToCommaDelimitedString(
+                fieldPairs.stream()
+                        .map(entry -> entry.getValue() + " = ?")
+                        .toList()
+        )
+                + " WHERE id = ?";
+    }
+
 }
