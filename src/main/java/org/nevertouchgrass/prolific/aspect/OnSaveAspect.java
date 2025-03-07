@@ -1,5 +1,6 @@
 package org.nevertouchgrass.prolific.aspect;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
@@ -47,7 +48,14 @@ public class OnSaveAspect {
     }
 
     @SuppressWarnings("java:S3011")
+    @SneakyThrows
     private void invokeAnnotatedMethods(Class<?> entityClass, Object entity) {
+        var idField = entityClass.getDeclaredField("id");
+        idField.setAccessible(true);
+        if (idField.get(entity) == null) {
+            log.info("Id is null {}", entity);
+            return;
+        }
         if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
             String[] beanNames = listableBeanFactory.getBeanNamesForAnnotation(Component.class);
 

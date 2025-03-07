@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane fx:id="root" id="projectSettingsDropdown" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectSettingDropdownController">
+    <VBox spacing="5.0" styleClass="popup" stylesheets="@../css/styles.css">
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+        </padding>
+        <Button maxWidth="Infinity" fx:id="starButton" onMouseClicked="#starProject" mnemonicParsing="false" text="Star ☆" textAlignment="JUSTIFY">
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+        </Button>
+
+    </VBox>
+</AnchorPane>

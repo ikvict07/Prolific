@@ -3,7 +3,7 @@ package org.nevertouchgrass.prolific.aspect;
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.nevertouchgrass.prolific.annotation.OnDelete;
+import org.nevertouchgrass.prolific.annotation.OnUpdate;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.stereotype.Component;
@@ -14,16 +14,15 @@ import java.util.List;
 @Aspect
 @Component
 @Log4j2
-public class OnDeleteAspect {
-
+public class OnUpdateAspect {
     private final ConfigurableBeanFactory beanFactory;
 
-    public OnDeleteAspect(ConfigurableBeanFactory beanFactory) {
+    public OnUpdateAspect(ConfigurableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
     @AfterReturning(
-            pointcut = "execution(* delete*(..)) && @within(org.springframework.stereotype.Repository)",
+            pointcut = "execution(* update*(..)) && @within(org.springframework.stereotype.Repository)",
             returning = "result"
     )
     public void afterDelete(Object result) {
@@ -48,8 +47,8 @@ public class OnDeleteAspect {
 
                 if (beanType != null) {
                     for (Method method : beanType.getDeclaredMethods()) {
-                        if (method.isAnnotationPresent(OnDelete.class)) {
-                            Class<?> targetEntityClass = method.getAnnotation(OnDelete.class).value();
+                        if (method.isAnnotationPresent(OnUpdate.class)) {
+                            Class<?> targetEntityClass = method.getAnnotation(OnUpdate.class).value();
 
                             if (targetEntityClass.isAssignableFrom(entityClass)) {
                                 Object bean = null;
@@ -65,7 +64,7 @@ public class OnDeleteAspect {
                                         log.info("Called method {} in bean {} for entity {}",
                                                 method.getName(), bean.getClass().getSimpleName(), entityClass.getSimpleName());
                                     } catch (Exception e) {
-                                        log.error("Failed to invoke @OnDelete method {} in bean {} caused by {}",
+                                        log.error("Failed to invoke @OnUpdate method {} in bean {} caused by {}",
                                                 method.getName(), bean.getClass().getSimpleName(), e.getCause());
                                     }
                                 }

@@ -38,7 +38,7 @@
         </HBox.margin>
         <fx:include source="../icons/fxml/runButton.fxml" />
     </VBox>
-    <VBox fx:id="config" alignment="CENTER" prefHeight="40.0" prefWidth="67.0">
+    <VBox fx:id="config" onMouseClicked="#showProjectSetting" alignment="CENTER" prefHeight="40.0" prefWidth="67.0">
         <fx:include source="../icons/fxml/configurationButton.fxml" HBox.hgrow="ALWAYS" />
     </VBox>
     <VBox fx:id="star" alignment="CENTER" prefHeight="40.0" prefWidth="67.0">

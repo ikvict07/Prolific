@@ -63,6 +63,8 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
                 } else {
                     log.warn("No ID obtained for {}", t);
                 }
+            } catch (Exception e) {
+                log.error("Error while saving entity: {}", t, e);
             }
         }
         log.info("Saved: {}", t);
@@ -111,7 +113,7 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
                 results.add(clazz.getConstructor(values.stream().map(Object::getClass).toArray(Class[]::new)).newInstance(values.toArray()));
             }
         }
-
+        results.forEach(r -> log.info("Found: {}", r));
         log.info("Found {} projects", results.size());
         return results;
     }
