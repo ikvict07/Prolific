@@ -4,12 +4,13 @@ import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.nevertouchgrass.prolific.events.JavaFxStartEvent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
+import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.javafxcontroller.HeaderController;
 import org.nevertouchgrass.prolific.service.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,17 +55,16 @@ public class JavaFXApplication implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         Platform.runLater(() -> {
             applicationEventPublisher.publishEvent(new JavaFxStartEvent(this));
-            primaryStage.initStyle(StageStyle.UNDECORATED);
+            primaryStage.initStyle(StageStyle.TRANSPARENT);
 
-            VBox root = new VBox();
-            root.getChildren().addAll(mainScreenParent);
-
-            Scene scene = new Scene(root, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
+            Scene scene = new Scene(mainScreenParent, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
 
             primaryStage.setScene(scene);
+            scene.setFill(Color.TRANSPARENT);
             applicationEventPublisher.publishEvent(new StageInitializeEvent("primaryStage"));
             primaryStage.show();
+            applicationEventPublisher.publishEvent(new StageShowEvent("primaryStage"));
         });
     }
 }

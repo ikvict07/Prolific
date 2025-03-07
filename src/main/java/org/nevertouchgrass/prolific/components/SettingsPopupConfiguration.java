@@ -18,4 +18,15 @@ public class SettingsPopupConfiguration {
         popup.getContent().add(settingsDropdownParent);
         return popup;
     }
+
+    @Bean
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    public Popup projectSettingsPopup(Parent projectSettingDropdownParent) {
+        Popup popup = new Popup();
+        popup.setAutoHide(true);
+        popup.setAutoFix(true);
+        popup.getContent().add(projectSettingDropdownParent);
+        popup.getProperties().put("content", projectSettingDropdownParent);
+        return popup;
+    }
 }
