@@ -1,5 +1,6 @@
 package org.nevertouchgrass.prolific.service;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
@@ -12,6 +13,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.PROJECT;
  * Service for loading user's plugins, that will be used in a project finding process
  */
 @Service
+@Log4j2
 public class XmlProjectScannerConfigLoaderService {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -37,14 +40,13 @@ public class XmlProjectScannerConfigLoaderService {
 
     public List<ProjectTypeModel> loadProjectTypes() {
         Path path = pluginConfigProvider.getPluginConfigPath();
+        if (path == null) {
+            log.warn("Plugin configuration file does not exist");
+            return new ArrayList<>();
+        }
         List<ProjectTypeModel> projectTypeModels = new ArrayList<>();
 
-        try {
-            File file = path.toFile();
-            if (!file.exists()) {
-                throw new RuntimeException("Plugin configuration file does not exist " + path);
-            }
-
+        try (var file = Files.newInputStream(path)) {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(file);

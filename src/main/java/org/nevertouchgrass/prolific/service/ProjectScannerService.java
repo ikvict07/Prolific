@@ -56,7 +56,7 @@ public class ProjectScannerService {
         List<String> matchers = new ArrayList<>();
         projectTypeModels = configLoaderService.loadProjectTypes();
         for (ProjectTypeModel projectTypeModel : projectTypeModels) {
-            matchers.addAll(projectTypeModel.getIdentifiers());
+            matchers.addAll(projectTypeModel.identifiers());
         }
         List<String> exclude = userSettingsHolder.getExcludedDirs();
         String excludePattern = String.format("glob:**/{%s}", String.join(",", exclude));

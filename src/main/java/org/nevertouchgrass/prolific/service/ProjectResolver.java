@@ -78,7 +78,7 @@ class Visitor extends SimpleFileVisitor<Path> {
         this.projectTypeModel = projectTypeModel;
         this.userSettingsHolder = userSettingsHolder;
         this.excludeMatcher = excludeMatcher;
-        List<String> identifiers = projectTypeModel.getIdentifiers();
+        List<String> identifiers = projectTypeModel.identifiers();
         String pattern = String.format("glob:**/{%s}", String.join(",", identifiers));
         pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
     }
@@ -90,7 +90,7 @@ class Visitor extends SimpleFileVisitor<Path> {
         }
         if (Files.isReadable(file)) {
             if (pathMatcher.matches(file)) {
-                project.setType(projectTypeModel.getName());
+                project.setType(projectTypeModel.name());
                 return FileVisitResult.SKIP_SIBLINGS;
             }
         }
@@ -110,7 +110,7 @@ class Visitor extends SimpleFileVisitor<Path> {
         }
         if (Files.isReadable(dir)) {
             if (pathMatcher.matches(dir)) {
-                project.setType(projectTypeModel.getName());
+                project.setType(projectTypeModel.name());
                 return FileVisitResult.SKIP_SUBTREE;
             }
             return FileVisitResult.CONTINUE;

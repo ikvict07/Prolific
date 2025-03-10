@@ -8,12 +8,17 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
-import org.nevertouchgrass.prolific.annotation.*;
+import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.OnDelete;
+import org.nevertouchgrass.prolific.annotation.OnSave;
+import org.nevertouchgrass.prolific.annotation.OnUpdate;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
@@ -31,6 +36,10 @@ import java.util.Comparator;
 @Setter
 public class ProjectsPanelController {
     @FXML
+    public Region scrollShadow;
+    @FXML
+    public Region scrollShadowTop;
+    @FXML
     private ScrollPane scrollPane;
     @FXML
     private VBox content;
@@ -47,6 +56,10 @@ public class ProjectsPanelController {
 
     @Initialize
     private void init() {
+        scrollPane.vvalueProperty().addListener((_, _, newValue) -> scrollShadow.setVisible(newValue.doubleValue() < 1.0));
+        scrollPane.vvalueProperty().addListener((_, _, newValue) -> {
+            scrollShadowTop.setVisible(newValue.doubleValue() > 0d);
+        });
         content.minWidthProperty().bind(scrollPane.widthProperty());
         content.prefWidthProperty().bind(scrollPane.widthProperty());
         content.maxWidthProperty().bind(scrollPane.widthProperty());
@@ -112,7 +125,7 @@ public class ProjectsPanelController {
     }
 
     private int findInsertionIndex(Project project) {
-        var index =  Collections.binarySearch(projects, project, projectComparator);
+        var index = Collections.binarySearch(projects, project, projectComparator);
         return index < 0 ? -index - 1 : index;
     }
 
