@@ -91,6 +91,7 @@ public class HeaderController {
 
         header.setOnMousePressed(event -> {
             if (draggablePanes.contains(event.getTarget())) {
+                System.out.println("Header pressed");
                 xOffset = event.getSceneX();
                 yOffset = event.getSceneY();
             }
@@ -98,8 +99,8 @@ public class HeaderController {
 
         header.setOnMouseDragged(event -> {
             if (draggablePanes.contains(event.getTarget())) {
-                stage.setX(event.getScreenX() - xOffset);
-                stage.setY(event.getScreenY() - yOffset);
+                stage.setX(event.getScreenX() - event.getSceneX());
+                stage.setY(event.getScreenY() - event.getSceneY());
                 endX = stage.getX() + stage.getWidth();
             }
         });
