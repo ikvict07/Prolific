@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.MainScreenController"
             stylesheets="@/css/styles.css"
             fx:id="mainScreen">
-    <fx:include fx:id="headerComponent" source="/components/header.fxml"/>
-    <fx:include source="projectsPanel.fxml" fx:id="projectsPanel"/>
+    <fx:include fx:id="headerComponent" source="/components/header.fxml" AnchorPane.leftAnchor="0"
+                AnchorPane.rightAnchor="0"/>
+
+    <Region style="-fx-background: linear-gradient(from 0% 0% to 0% 100%, transparent, rgba(0, 0, 0, 0.1));"
+            prefHeight="20" AnchorPane.topAnchor="110" AnchorPane.leftAnchor="16" />
+    <fx:include source="projectsPanel.fxml" fx:id="projectsPanel" AnchorPane.topAnchor="128"
+                AnchorPane.leftAnchor="16" AnchorPane.bottomAnchor="64"/>
 </AnchorPane>
