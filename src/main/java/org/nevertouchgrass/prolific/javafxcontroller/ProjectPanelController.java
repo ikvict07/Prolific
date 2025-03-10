@@ -73,20 +73,6 @@ public class ProjectPanelController {
         anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(config, 0.52);
         anchorPaneConstraintsService.setAnchorConstraintsBottom(star, 0.45);
         anchorPaneConstraintsService.setAnchorConstraintsTop(star, 0.45);
-
-        var starImage = (SVGPath) star.lookup("SVGPath");
-        starImage.hoverProperty().addListener((_, _, newVal) -> {
-            if (star != null) {
-                if (newVal) {
-                    starImage.setFillRule(FillRule.EVEN_ODD);
-                    starImage.setFill(Color.valueOf("#9e9e9e"));
-                } else {
-                    starImage.setFillRule(FillRule.NON_ZERO);
-                    starImage.setFill(Color.valueOf("#F2C55C"));
-                }
-            }
-        });
-
     }
 
 
