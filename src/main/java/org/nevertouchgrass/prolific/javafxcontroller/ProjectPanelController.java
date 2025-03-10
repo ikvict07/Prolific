@@ -20,6 +20,7 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
 import org.nevertouchgrass.prolific.service.ColorService;
+import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,13 @@ public class ProjectPanelController {
     private Text projectIconText;
     @FXML
     private Label projectTitleText;
+
+    private ProjectTypeIconRegistry projectTypeIconRegistry;
+
+    @Autowired
+    public void setProjectTypeIconRegistry(ProjectTypeIconRegistry projectTypeIconRegistry) {
+        this.projectTypeIconRegistry = projectTypeIconRegistry;
+    }
 
     private Project project;
 
@@ -86,9 +94,7 @@ public class ProjectPanelController {
                 }
             }
         });
-
     }
-
 
 
     private String generateGradientBoxStyle(String baseColor) {
@@ -143,4 +149,14 @@ public class ProjectPanelController {
         controller.setProject(project);
         projectSettingsPopup.show(stage);
     }
+
+    // TODO:
+//    private void setProjectIcon() {
+//        var node = projectTypeIconRegistry.configure(project);
+//        projectPanel.getChildren().add(node);
+//        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(node, 0.60);
+//        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(node, 0.30);
+//        anchorPaneConstraintsService.setAnchorConstraintsTop(node, 0.45);
+//        anchorPaneConstraintsService.setAnchorConstraintsBottom(node, 0.45);
+//    }
 }
