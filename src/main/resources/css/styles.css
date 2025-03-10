@@ -10,6 +10,14 @@
     -fx-background-radius: 16px 16px 0 0;
 }
 
+.rounded {
+    -fx-background-radius: 16px;
+}
+
+.non-rounded {
+    -fx-background-radius: 0;
+}
+
 #gradientBox {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 0%,
     transparent 0%,

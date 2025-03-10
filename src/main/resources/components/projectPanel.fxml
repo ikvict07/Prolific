@@ -1,44 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 <AnchorPane id="gradienBox" styleClass="projectPanel" fx:id="projectPanel" prefWidth="100.0"
-            stylesheets="@/css/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            stylesheets="@/css/styles.css" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectPanelController">
-    <HBox fx:id="projectInfo" alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0" stylesheets="@/css/styles.css">
-        <VBox.margin>
-            <Insets left="5.0" right="10.0"/>
-        </VBox.margin>
-        <HBox.margin>
-            <Insets/>
-        </HBox.margin>
-        <HBox id="projectIcon" fx:id="projectIcon" alignment="CENTER" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"
-              styleClass="projectIcon" stylesheets="@/css/styles.css" HBox.hgrow="NEVER">
-            <HBox.margin>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-            </HBox.margin>
-            <Text fx:id="projectIconText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="IJ"
+    <HBox fx:id="projectInfo" alignment="CENTER_LEFT" spacing="20.0" stylesheets="@/css/styles.css" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox id="projectIcon" fx:id="projectIcon" alignment="CENTER" styleClass="projectIcon"
+              stylesheets="@/css/styles.css" HBox.hgrow="NEVER">
+            <Label fx:id="projectIconText" textFill="WHITE"
                   textAlignment="CENTER">
                 <font>
                     <Font name="JetBrainsMono NF Regular" size="13.0"/>
                 </font>
-            </Text>
+            </Label>
         </HBox>
-        <Label fx:id="projectTitleText" text="f" textFill="WHITE">
+        <Label fx:id="projectTitleText" textFill="WHITE">
             <HBox.margin>
                 <Insets right="10.0"/>
             </HBox.margin>
         </Label>
     </HBox>
     <VBox fx:id="run" alignment="CENTER" prefHeight="40.0" prefWidth="40.0">
-        <HBox.margin>
-            <Insets/>
-        </HBox.margin>
         <fx:include source="/icons/fxml/runButton.fxml"/>
     </VBox>
     <VBox fx:id="config" onMouseClicked="#showProjectSetting" alignment="CENTER" prefHeight="40.0" prefWidth="67.0">
