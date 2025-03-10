@@ -44,7 +44,7 @@ public class HeaderController {
     @FXML
     public Circle maximizeButton;
     @FXML
-    public HBox leftSection;
+    public HBox gradientBox;
     @FXML
     public Label titleText;
 
@@ -91,7 +91,6 @@ public class HeaderController {
 
         header.setOnMousePressed(event -> {
             if (draggablePanes.contains(event.getTarget())) {
-                System.out.println("Header pressed");
                 xOffset = event.getSceneX();
                 yOffset = event.getSceneY();
             }
@@ -99,8 +98,8 @@ public class HeaderController {
 
         header.setOnMouseDragged(event -> {
             if (draggablePanes.contains(event.getTarget())) {
-                stage.setX(event.getScreenX() - event.getSceneX());
-                stage.setY(event.getScreenY() - event.getSceneY());
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
                 endX = stage.getX() + stage.getWidth();
             }
         });
@@ -114,8 +113,18 @@ public class HeaderController {
             heightBeforeMaximizing = stage.getHeight();
         });
 
+        stage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                stage.getScene().getRoot().setStyle("-fx-background-radius: 0;");
+                header.setStyle("-fx-background-radius: 0;");
+            } else {
+                stage.getScene().getRoot().setStyle("-fx-background-radius: 16;");
+                header.setStyle("-fx-background-radius: 16 16 0 0;");
+            }
+        });
+
         draggablePanes.add(header);
-        draggablePanes.add(leftSection);
+        draggablePanes.add(gradientBox);
         draggablePanes.add(titleText);
     }
 
@@ -231,7 +240,7 @@ public class HeaderController {
     }
 
     public void handleHeaderMaximize(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && (mouseEvent.getTarget().equals(header) || mouseEvent.getTarget().equals(leftSection))) {
+        if (mouseEvent.getClickCount() == 2 && draggablePanes.contains(mouseEvent.getTarget())) {
             handleMaximize(mouseEvent);
         }
     }
@@ -250,7 +259,7 @@ public class HeaderController {
             String f = fileChooser.showDialog(stage).getPath();
             Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
             projectsService.manuallyAddProject(p);
-        } catch (Exception e) {
+        } catch (NullPointerException ignore) {} catch (Exception e) {
             showAlert();
         }
     }

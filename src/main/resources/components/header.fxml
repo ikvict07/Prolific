@@ -12,7 +12,7 @@
 
         <Label fx:id="titleText" textFill="#ebecf0" text="Projects Manager" textAlignment="CENTER"/>
 
-        <HBox id="gradientBox" fx:id="leftSection" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
+        <HBox id="gradientBox" fx:id="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>
                 <Insets left="16"/>
             </padding>

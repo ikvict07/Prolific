@@ -41,7 +41,7 @@ public class ProjectPanelController {
     @FXML
     private AnchorPane projectPanel;
     @FXML
-    private Text projectIconText;
+    private Label projectIconText;
     @FXML
     private Label projectTitleText;
 
