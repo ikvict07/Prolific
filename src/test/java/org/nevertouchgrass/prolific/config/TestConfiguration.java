@@ -10,7 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @Configuration
@@ -20,13 +19,6 @@ public class TestConfiguration {
     public XmlProjectScannerConfigLoaderService xmlProjectScannerConfigLoaderService(
             PluginConfigProvider pluginConfigProvider) {
         return new XmlProjectScannerConfigLoaderService(pluginConfigProvider);
-    }
-
-    @Bean
-    public PluginConfigProvider pluginConfigProvider() {
-        PluginConfigProvider pluginConfigProvider = new PluginConfigProvider();
-        pluginConfigProvider.setPluginConfigPath(Path.of("src/test/resources/plugin/plugins.xml"));
-        return pluginConfigProvider;
     }
 
     @Bean
