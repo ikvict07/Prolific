@@ -199,20 +199,20 @@ runtime {
 }
 
 tasks.jre {
-    setDependsOn(listOf<Task>())
-    dependsOn(tasks.startScripts)
+//    setDependsOn(listOf<Task>())
+//    dependsOn(tasks.startScripts)
 }
 tasks.jpackageImage {
-    setDependsOn(listOf<Task>())
-    dependsOn(tasks.jre)
+//    setDependsOn(listOf<Task>())
+//    dependsOn(tasks.jre)
     dependsOn(tasks.installBootDist)
     dependsOn(tasks.bootJar)
 }
 
 tasks.jpackage {
-    setDependsOn(listOf<Task>())
-    dependsOn(tasks.jre)
-    dependsOn(tasks.jpackageImage)
+//    setDependsOn(listOf<Task>())
+//    dependsOn(tasks.jre)
+//    dependsOn(tasks.jpackageImage)
     dependsOn(tasks.installBootDist)
     dependsOn(tasks.bootJar)
 }
