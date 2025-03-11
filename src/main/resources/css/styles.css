@@ -70,12 +70,12 @@
 .projectIcon {
     -fx-background-color: linear-gradient(to bottom, #E08855 0%, #E9806F 100%);
     -fx-background-radius: 4px;
-    -fx-pref-height: 20px;
-    -fx-pref-width: 20px;
-    -fx-max-height: 20px;
-    -fx-max-wight: 20px;
-    -fx-min-height: 20px;
-    -fx-min-width: 20px;
+    -fx-pref-height: 25px;
+    -fx-pref-width: 25px;
+    -fx-max-height: 25px;
+    -fx-max-wight: 25px;
+    -fx-min-height: 25px;
+    -fx-min-width: 25px;
     -fx-flex-shrink: 0;
 }
 
@@ -179,10 +179,11 @@
 .label {
     -fx-text-fill: #DFE1E5;
     -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 1.15em;
 }
 
 .star:hover {
-    -fx-fill: #9e9e9e;
+    -fx-fill: #A6B3C1;
 }
 
 /** {*/
