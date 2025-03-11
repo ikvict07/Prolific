@@ -263,6 +263,7 @@ public class HeaderController {
             Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
             projectsService.manuallyAddProject(p);
         } catch (NullPointerException ignore) {} catch (Exception e) {
+            log.error("Exception trying to open the project: {}", e.getMessage());
             showAlert();
         }
     }
