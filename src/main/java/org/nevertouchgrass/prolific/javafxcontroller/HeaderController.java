@@ -106,6 +106,9 @@ public class HeaderController {
 
         stage.getScene().setOnMouseMoved(this::resizeCursor);
         stage.getScene().setOnMouseDragged(this::resizeWindow);
+        stage.getScene().setOnMousePressed(event -> {
+            settingsPopup.hide();
+        });
 
         stage.setOnShown(_ -> {
             endX = stage.getX() + stage.getWidth();
