@@ -187,16 +187,21 @@
 }
 
 .upper-shadow {
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 15%,
-    #1E1F22 0%,
-    transparent 100%);
+    -fx-background-color: linear-gradient(to bottom, #1E1F22 0%, rgba(30, 31, 34, 0.5) 50%, transparent 100%);
+    -fx-pref-height: 30px;
+    -fx-max-height: 30px;
+    -fx-min-height: 30px;
+    -fx-background-insets: 0 10%;
 }
 
 .lower-shadow {
-    -fx-background-color: linear-gradient(from 0% 100% to 0% 85%,
-    #1E1F22 0%,
-    transparent 100%);
+    -fx-background-color: linear-gradient(to top, #1E1F22 0%, rgba(30, 31, 34, 0.5) 50%, transparent 100%);
+    -fx-pref-height: 30px;
+    -fx-max-height: 30px;
+    -fx-min-height: 30px;
+    -fx-background-insets: 0 10%;
 }
+
 /** {*/
 /*    -fx-border-width: 1px;*/
 /*    -fx-border-color: red;*/
