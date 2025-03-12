@@ -179,13 +179,24 @@
 .label {
     -fx-text-fill: #DFE1E5;
     -fx-font-family: "JetBrains Mono";
-    -fx-font-size: 1.15em;
+    -fx-font-size: 1.1em;
 }
 
 .star:hover {
     -fx-fill: #A6B3C1;
 }
 
+.upper-shadow {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 15%,
+    #1E1F22 0%,
+    transparent 100%);
+}
+
+.lower-shadow {
+    -fx-background-color: linear-gradient(from 0% 100% to 0% 85%,
+    #1E1F22 0%,
+    transparent 100%);
+}
 /** {*/
 /*    -fx-border-width: 1px;*/
 /*    -fx-border-color: red;*/

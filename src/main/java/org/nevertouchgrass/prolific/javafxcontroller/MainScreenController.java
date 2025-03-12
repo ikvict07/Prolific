@@ -2,8 +2,8 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @SuppressWarnings("unused")
 public class MainScreenController {
     @FXML
-    public ScrollPane projectsPanel;
+    public StackPane projectsPanel;
     private Stage stage;
 
     @FXML

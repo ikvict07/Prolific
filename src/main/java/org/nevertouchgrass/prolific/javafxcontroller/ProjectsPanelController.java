@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -35,6 +36,10 @@ public class ProjectsPanelController {
     @FXML
     private VBox content;
     private Stage stage;
+    @FXML
+    private Region upperShadow;
+    @FXML
+    private Region lowerShadow;
 
     private FxmlProvider fxmlProvider;
     private UserSettingsHolder userSettingsHolder;
@@ -52,6 +57,9 @@ public class ProjectsPanelController {
         content.maxWidthProperty().bind(scrollPane.widthProperty());
         setupScrollBarFadeEffect();
         projectsRepository.findAll(Project.class).forEach(this::addProjectToList);
+
+        upperShadow.visibleProperty().bind(scrollPane.vvalueProperty().greaterThan(0));
+        lowerShadow.visibleProperty().bind(scrollPane.vvalueProperty().lessThan(1));
     }
 
     private void setupScrollBarFadeEffect() {
