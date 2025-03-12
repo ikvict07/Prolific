@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
@@ -14,7 +15,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
-import org.nevertouchgrass.prolific.annotation.*;
+import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.OnDelete;
+import org.nevertouchgrass.prolific.annotation.OnSave;
+import org.nevertouchgrass.prolific.annotation.OnUpdate;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
@@ -58,8 +63,17 @@ public class ProjectsPanelController {
         setupScrollBarFadeEffect();
         projectsRepository.findAll(Project.class).forEach(this::addProjectToList);
 
-        upperShadow.visibleProperty().bind(scrollPane.vvalueProperty().greaterThan(0));
-        lowerShadow.visibleProperty().bind(scrollPane.vvalueProperty().lessThan(1));
+        scrollPane.vvalueProperty().addListener((_, _, newValue) -> {
+            lowerShadow.setVisible(newValue.doubleValue() < 1.0);
+            try {
+                var panelHeight = content.getChildren().getFirst().getBoundsInParent().getHeight();
+                var coefficient = 2 / 4;
+                var value = newValue.doubleValue() * panelHeight * coefficient;
+                content.setPadding(new Insets(value, 0, panelHeight * coefficient - value, 0));
+            } catch (Exception _) {//ignore
+            }
+        });
+        scrollPane.vvalueProperty().addListener((_, _, newValue) -> upperShadow.setVisible(newValue.doubleValue() > 0d));
     }
 
     private void setupScrollBarFadeEffect() {
@@ -120,7 +134,7 @@ public class ProjectsPanelController {
     }
 
     private int findInsertionIndex(Project project) {
-        var index =  Collections.binarySearch(projects, project, projectComparator);
+        var index = Collections.binarySearch(projects, project, projectComparator);
         return index < 0 ? -index - 1 : index;
     }
 
