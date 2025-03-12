@@ -14,7 +14,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
-import org.nevertouchgrass.prolific.annotation.*;
+import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.OnDelete;
+import org.nevertouchgrass.prolific.annotation.OnSave;
+import org.nevertouchgrass.prolific.annotation.OnUpdate;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
@@ -58,9 +62,63 @@ public class ProjectsPanelController {
         setupScrollBarFadeEffect();
         projectsRepository.findAll(Project.class).forEach(this::addProjectToList);
 
-        upperShadow.visibleProperty().bind(scrollPane.vvalueProperty().greaterThan(0));
-        lowerShadow.visibleProperty().bind(scrollPane.vvalueProperty().lessThan(1));
+        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(lowerShadow, newValue.doubleValue(), false));
+
+        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(upperShadow, newValue.doubleValue(), true));
+
+
     }
+
+    private void handleShadow(Region shadow, double newValue, boolean isUpperShadow) {
+        try {
+            double elementHeight;
+            double halfScroll;
+
+            if (isUpperShadow) {
+                elementHeight = content.getChildren().getFirst().getBoundsInLocal().getHeight();
+                halfScroll = elementHeight / (content.getChildren().size() * elementHeight);
+
+                if (newValue <= halfScroll) {
+                    double shadowHeight = (newValue / halfScroll) * (elementHeight / 2);
+                    shadowHeight = Math.max(0, Math.min(elementHeight / 2, shadowHeight));
+
+                    shadow.setPrefHeight(shadowHeight);
+                    shadow.setMinHeight(shadowHeight);
+                    shadow.setMaxHeight(shadowHeight);
+                } else {
+                    double maxShadowHeight = elementHeight / 2;
+                    shadow.setPrefHeight(maxShadowHeight);
+                    shadow.setMinHeight(maxShadowHeight);
+                    shadow.setMaxHeight(maxShadowHeight);
+                }
+
+                shadow.setVisible(true);
+
+            } else {
+                elementHeight = content.getChildren().getLast().getBoundsInLocal().getHeight();
+                halfScroll = 1.0 - (elementHeight / (content.getChildren().size() * elementHeight));
+
+                if (newValue < halfScroll) {
+                    double maxShadowHeight = elementHeight / 2;
+                    shadow.setPrefHeight(maxShadowHeight);
+                    shadow.setMinHeight(maxShadowHeight);
+                    shadow.setMaxHeight(maxShadowHeight);
+                } else {
+                    double shadowHeight = ((1.0 - newValue) / (1.0 - halfScroll)) * (elementHeight / 2);
+                    shadowHeight = Math.max(0, Math.min(elementHeight / 2, shadowHeight));
+
+                    shadow.setPrefHeight(shadowHeight);
+                    shadow.setMinHeight(shadowHeight);
+                    shadow.setMaxHeight(shadowHeight);
+                }
+
+                shadow.setVisible(newValue < 1.0);
+            }
+        } catch (Exception _) {
+            // ignore
+        }
+    }
+
 
     private void setupScrollBarFadeEffect() {
         scrollPane.skinProperty().addListener((obs, oldSkin, newSkin) -> {
@@ -120,7 +178,7 @@ public class ProjectsPanelController {
     }
 
     private int findInsertionIndex(Project project) {
-        var index =  Collections.binarySearch(projects, project, projectComparator);
+        var index = Collections.binarySearch(projects, project, projectComparator);
         return index < 0 ? -index - 1 : index;
     }
 
