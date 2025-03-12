@@ -13,7 +13,12 @@ public class SettingsPopupConfiguration {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public Popup settingsPopup(Parent settingsDropdownParent) {
         Popup popup = new Popup();
-        popup.setAutoHide(true);
+        popup.setAutoHide(false);
+        popup.focusedProperty().addListener((_, _, newValue) -> {
+            if (!newValue) {
+                popup.hide();
+            }
+        });
         popup.setAutoFix(true);
         popup.getContent().add(settingsDropdownParent);
         return popup;

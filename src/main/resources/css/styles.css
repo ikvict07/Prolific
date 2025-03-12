@@ -10,16 +10,23 @@
     -fx-background-radius: 16px 16px 0 0;
 }
 
+.rounded {
+    -fx-background-radius: 16px;
+}
+
+.non-rounded {
+    -fx-background-radius: 0;
+}
+
 #gradientBox {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 0%,
-    #2B2D30 0%,
+    transparent 0%,
     #344C7D 16.5%,
-    #2B2D30 33.0%,
-    #2B2D30 100%);
+    transparent 33.0%,
+    transparent 100%);
     -fx-pref-height: 40px;
     -fx-background-radius: 16px 0 0 0;
 }
-
 
 .circle-close {
     -fx-fill: #FF3B30;
@@ -63,12 +70,12 @@
 .projectIcon {
     -fx-background-color: linear-gradient(to bottom, #E08855 0%, #E9806F 100%);
     -fx-background-radius: 4px;
-    -fx-pref-height: 20px;
-    -fx-pref-width: 20px;
-    -fx-max-height: 20px;
-    -fx-max-wight: 20px;
-    -fx-min-height: 20px;
-    -fx-min-width: 20px;
+    -fx-pref-height: 25px;
+    -fx-pref-width: 25px;
+    -fx-max-height: 25px;
+    -fx-max-wight: 25px;
+    -fx-min-height: 25px;
+    -fx-min-width: 25px;
     -fx-flex-shrink: 0;
 }
 
@@ -133,12 +140,6 @@
     -fx-background-color: #3466B8;
 }
 
-.scroll-bar .increment-arrow,
-.scroll-bar .decrement-arrow {
-    -fx-shape: " ";
-    -fx-padding: 0.15em 0.0;
-}
-
 .scroll-bar:vertical .increment-arrow,
 .scroll-bar:vertical .decrement-arrow {
     -fx-shape: " ";
@@ -154,14 +155,6 @@
     -fx-opacity: 0;
 }
 
-.scroll-pane > .scroll-bar .thumb {
-    -fx-background-color: #505050;
-    -fx-background-radius: 5px;
-    -fx-pref-width: 8px;
-    -fx-pref-height: 5px;
-    -fx-max-height: 5px;
-}
-
 .scroll-pane > .scroll-bar .track {
     -fx-background-color: transparent;
 }
@@ -174,15 +167,7 @@
     -fx-background-color: rgba(255, 255, 255, 0.2);
     -fx-background-insets: 2.0, 0.0, 0.0;
     -fx-background-radius: 0.0em;
-    -fx-pref-height: 5px;
-    -fx-max-height: 5px;
-    -fx-pref-width: 20px;
-}
-
-.scroll-bar:horizontal .thumb:hover,
-.scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.3);
-    -fx-background-insets: 2.0, 0.0, 0.0;
+    -fx-background-size: 50px;
 }
 
 .dialog-pane {
@@ -194,8 +179,24 @@
 .label {
     -fx-text-fill: #DFE1E5;
     -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 1.1em;
 }
 
+.star:hover {
+    -fx-fill: #A6B3C1;
+}
+
+.upper-shadow {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 15%,
+    #1E1F22 0%,
+    transparent 100%);
+}
+
+.lower-shadow {
+    -fx-background-color: linear-gradient(from 0% 100% to 0% 85%,
+    #1E1F22 0%,
+    transparent 100%);
+}
 /** {*/
 /*    -fx-border-width: 1px;*/
 /*    -fx-border-color: red;*/
