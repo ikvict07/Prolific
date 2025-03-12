@@ -5,7 +5,7 @@ permissions:
 on:
   push:
     branches:
-      - *
+      - '*'
 
 jobs:
   merge-to-docs:
