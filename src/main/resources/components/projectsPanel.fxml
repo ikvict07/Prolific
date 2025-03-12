@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Region?>
-<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectsPanelController"
+<?import javafx.geometry.Insets?>
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectsPanelController"
            stylesheets="@/css/styles.css">
     <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" hmax="0.0"
                 nodeOrientation="RIGHT_TO_LEFT" styleClass="mainBG">
-        <VBox fx:id="content" alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0" styleClass="mainBG"/>
+        <VBox fx:id="content" alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0"
+              styleClass="mainBG">
+            <padding>
+                <Insets top="30" bottom="30"/>
+            </padding>
+        </VBox>
     </ScrollPane>
-    <Region fx:id="upperShadow" styleClass="upper-shadow" mouseTransparent="true"/>
-    <Region fx:id="lowerShadow" styleClass="lower-shadow" mouseTransparent="true"/>
+    <Region fx:id="upperShadow" prefHeight="40" styleClass="upper-shadow" mouseTransparent="true" StackPane.alignment="TOP_CENTER" visible="false"/>
+    <Region fx:id="lowerShadow" prefHeight="40" styleClass="lower-shadow" mouseTransparent="true" StackPane.alignment="BOTTOM_CENTER"/>
 </StackPane>
