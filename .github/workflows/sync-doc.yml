@@ -5,7 +5,7 @@ permissions:
 on:
   push:
     branches:
-      - main
+      - 'main'
 
 jobs:
   merge-to-docs:
@@ -34,6 +34,10 @@ jobs:
     needs: merge-to-docs
     runs-on: ubuntu-latest
     steps:
+      - name: Make required dirs
+        run: |
+          mkdir -p docs
+          touch docs/.gitkeep
       - name: Checkout documentation branch
         uses: actions/checkout@v4
         with:
