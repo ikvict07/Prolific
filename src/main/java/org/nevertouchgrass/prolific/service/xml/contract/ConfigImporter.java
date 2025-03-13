@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ConfigImporter {
     List<RunConfig> importConfig(Project project);
+    boolean supports(Project project);
 }

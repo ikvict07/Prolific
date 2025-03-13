@@ -22,6 +22,9 @@ public class GradleConfigImporter implements ConfigImporter {
     @Override
     public List<RunConfig> importConfig(Project project) {
         var workspacePath = getWorkspacePath(project);
+        if (!workspacePath.toFile().exists()) {
+            return List.of();
+        }
         try {
             Document document = parseXmlDocument(workspacePath);
             NodeList configurations = document.getElementsByTagName("configuration");
@@ -31,6 +34,11 @@ public class GradleConfigImporter implements ConfigImporter {
             log.error("Failed to import run configurations for project {}", project.getTitle(), e);
             return List.of();
         }
+    }
+
+    @Override
+    public boolean supports(Project project) {
+        return project.getType().equalsIgnoreCase("gradle");
     }
 
     private Path getWorkspacePath(Project project) {
@@ -65,6 +73,7 @@ public class GradleConfigImporter implements ConfigImporter {
 
     public void normalize(RunConfig runConfig) {
         runConfig.getCommand().addFirst("./gradlew");
+        runConfig.setType("gradle");
     }
 
     private boolean isGradleConfig(Element config) {
