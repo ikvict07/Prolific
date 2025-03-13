@@ -3,7 +3,6 @@ package org.nevertouchgrass.prolific.configuration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.nevertouchgrass.prolific.service.PathService;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;

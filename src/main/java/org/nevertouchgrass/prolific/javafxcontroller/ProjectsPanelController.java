@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,6 +40,10 @@ public class ProjectsPanelController {
     @FXML
     private VBox content;
     private Stage stage;
+    @FXML
+    private Region upperShadow;
+    @FXML
+    private Region lowerShadow;
 
     private FxmlProvider fxmlProvider;
     private UserSettingsHolder userSettingsHolder;
@@ -56,7 +61,64 @@ public class ProjectsPanelController {
         content.maxWidthProperty().bind(scrollPane.widthProperty());
         setupScrollBarFadeEffect();
         projectsRepository.findAll(Project.class).forEach(this::addProjectToList);
+
+        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(lowerShadow, newValue.doubleValue(), false));
+
+        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(upperShadow, newValue.doubleValue(), true));
+
+
     }
+
+    private void handleShadow(Region shadow, double newValue, boolean isUpperShadow) {
+        try {
+            double elementHeight;
+            double halfScroll;
+
+            if (isUpperShadow) {
+                elementHeight = content.getChildren().getFirst().getBoundsInLocal().getHeight();
+                halfScroll = elementHeight / (content.getChildren().size() * elementHeight);
+
+                if (newValue <= halfScroll) {
+                    double shadowHeight = (newValue / halfScroll) * (elementHeight / 2);
+                    shadowHeight = Math.max(0, Math.min(elementHeight / 2, shadowHeight));
+
+                    shadow.setPrefHeight(shadowHeight);
+                    shadow.setMinHeight(shadowHeight);
+                    shadow.setMaxHeight(shadowHeight);
+                } else {
+                    double maxShadowHeight = elementHeight / 2;
+                    shadow.setPrefHeight(maxShadowHeight);
+                    shadow.setMinHeight(maxShadowHeight);
+                    shadow.setMaxHeight(maxShadowHeight);
+                }
+
+                shadow.setVisible(true);
+
+            } else {
+                elementHeight = content.getChildren().getLast().getBoundsInLocal().getHeight();
+                halfScroll = 1.0 - (elementHeight / (content.getChildren().size() * elementHeight));
+
+                if (newValue < halfScroll) {
+                    double maxShadowHeight = elementHeight / 2;
+                    shadow.setPrefHeight(maxShadowHeight);
+                    shadow.setMinHeight(maxShadowHeight);
+                    shadow.setMaxHeight(maxShadowHeight);
+                } else {
+                    double shadowHeight = ((1.0 - newValue) / (1.0 - halfScroll)) * (elementHeight / 2);
+                    shadowHeight = Math.max(0, Math.min(elementHeight / 2, shadowHeight));
+
+                    shadow.setPrefHeight(shadowHeight);
+                    shadow.setMinHeight(shadowHeight);
+                    shadow.setMaxHeight(shadowHeight);
+                }
+
+                shadow.setVisible(newValue < 1.0);
+            }
+        } catch (Exception _) {
+            // ignore
+        }
+    }
+
 
     private void setupScrollBarFadeEffect() {
         scrollPane.skinProperty().addListener((obs, oldSkin, newSkin) -> {
