@@ -22,6 +22,16 @@
         </HBox>
         <Label fx:id="projectTitleText" textFill="WHITE" styleClass="label"/>
         <HBox alignment="CENTER_RIGHT" spacing="4.0" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER" spacing="10" styleClass="icon-button" onMouseClicked="#showProjectConfigurations">
+                <padding>
+                    <Insets top="4" bottom="4" left="6" right="6"/>
+                </padding>
+                <StackPane>
+                    <fx:include source="/icons/fxml/gradle_icon.fxml"/>
+                </StackPane>
+                <Label>Gradle</Label>
+                <fx:include fx:id="configurationButton" source="/icons/fxml/unfold_button.fxml"/>
+            </HBox>
             <StackPane fx:id="run" styleClass="icon-button">
                 <fx:include source="/icons/fxml/runButton.fxml"/>
             </StackPane>
