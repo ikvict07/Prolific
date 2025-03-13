@@ -4,10 +4,11 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
 import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.service.DocumentParser;
 import org.nevertouchgrass.prolific.service.PathService;
 import org.nevertouchgrass.prolific.service.ProjectScannerService;
 import org.nevertouchgrass.prolific.service.XmlProjectScannerConfigLoaderService;
-import org.nevertouchgrass.prolific.service.xml.GradleConfigImporter;
+import org.nevertouchgrass.prolific.service.importers.GradleConfigImporter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,9 +57,13 @@ public class TestConfiguration {
         return new XmlMapper();
     }
 
+    @Bean
+    public DocumentParser documentParser() {
+        return new DocumentParser();
+    }
 
     @Bean
-    public GradleConfigImporter gradleConfigImporter() {
-        return new GradleConfigImporter();
+    public GradleConfigImporter gradleConfigImporter(PathService pathService, DocumentParser documentParser) {
+        return new GradleConfigImporter(pathService, documentParser);
     }
 }

@@ -1,10 +1,10 @@
-package org.nevertouchgrass.prolific.service.xml;
+package org.nevertouchgrass.prolific.service.importers;
 
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
-import org.nevertouchgrass.prolific.service.xml.contract.ConfigImporter;
+import org.nevertouchgrass.prolific.service.importers.contract.ConfigImporter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

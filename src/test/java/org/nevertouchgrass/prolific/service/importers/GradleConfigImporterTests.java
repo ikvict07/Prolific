@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service.xml;
+package org.nevertouchgrass.prolific.service.importers;
 
 import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.config.TestConfiguration;
