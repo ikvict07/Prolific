@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.service;
 
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.model.Project;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -25,6 +26,10 @@ public class PathService {
         log.info("Working in directory: {}", url);
 
         return normalizeUrl(URI.create(url));
+    }
+
+    public Path getWorkspacePath(Project project) {
+        return Path.of(project.getPath()).resolve(".idea").resolve("workspace.xml");
     }
 
     public Path normalizeUrl(URI uri) {

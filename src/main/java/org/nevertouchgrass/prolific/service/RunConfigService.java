@@ -9,7 +9,7 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
 import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.model.RunConfigFileModel;
-import org.nevertouchgrass.prolific.service.xml.ConfigImporterStrategy;
+import org.nevertouchgrass.prolific.service.importers.ConfigImporterStrategy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
