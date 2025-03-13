@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class ProjectsService {
@@ -50,7 +49,7 @@ public class ProjectsService {
 
     @OnSave(Project.class)
     public void onSave(Project project) {
-        if (projects.contains(project)) {
+        if (projects.stream().map(Project::getId).collect(Collectors.toSet()).contains(project.getId())) {
             return;
         }
         projects.add(project);
@@ -59,7 +58,7 @@ public class ProjectsService {
 
     @OnDelete(Project.class)
     public void onDelete(Project project) {
-        if (!projects.contains(project)) {
+        if (!projects.stream().map(Project::getId).collect(Collectors.toSet()).contains(project.getId())) {
             return;
         }
         projects.remove(project);
