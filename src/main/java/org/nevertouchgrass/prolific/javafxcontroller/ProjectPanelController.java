@@ -1,21 +1,17 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.FillRule;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
@@ -24,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
+@Slf4j
 @Component
 @Scope("prototype")
 @Data
@@ -44,6 +43,8 @@ public class ProjectPanelController {
     private Label projectIconText;
     @FXML
     private Label projectTitleText;
+    @FXML
+    private HBox configurationButton;
 
     private Project project;
 
@@ -61,7 +62,7 @@ public class ProjectPanelController {
 
         String baseColor = extractPrimaryColor(iconColorStyle);
         projectInfo.setStyle(generateGradientBoxStyle(baseColor));
-        projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.6));
+        projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.7));
     }
 
 
@@ -117,5 +118,17 @@ public class ProjectPanelController {
         ProjectSettingDropdownController controller = (ProjectSettingDropdownController) projectSettingDropdownParent.getProperties().get("controller");
         controller.setProject(project);
         projectSettingsPopup.show(stage);
+    }
+
+    public void showProjectConfigurations() {
+        try {
+            HBox substituteIcon = "unfoldButton".equals(configurationButton.getChildren().getFirst().getId()) ?
+                    new FXMLLoader(getClass().getResource("/icons/fxml/fold_button.fxml")).load() :
+                    new FXMLLoader(getClass().getResource("/icons/fxml/unfold_button.fxml")).load();
+            configurationButton.getChildren().clear();
+            configurationButton.getChildren().add(substituteIcon.getChildren().getFirst());
+        } catch (IOException e) {
+            log.error("Error retrieving fxml resource: {}", e.getMessage());
+        }
     }
 }
