@@ -3,12 +3,12 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
-<VBox alignment="CENTER" fillWidth="false" prefHeight="20.0" prefWidth="5.0" spacing="5.0"
+<VBox alignment="CENTER" fillWidth="false" spacing="5.0"
       xmlns="http://javafx.com/javafx/23.0.1">
-    <Circle centerX="2.0" centerY="1.6" fill="white" radius="1.2"/>
-    <Circle centerX="2.0" centerY="7.0" fill="white" radius="1.2"/>
-    <Circle centerX="2.0" centerY="12.4" fill="white" radius="1.2"/>
+    <Circle centerX="8" centerY="3" fill="white" radius="1"/>
+    <Circle centerX="8" centerY="8" fill="white" radius="1"/>
+    <Circle centerX="8" centerY="13" fill="white" radius="1"/>
     <padding>
-        <Insets bottom="5.0" top="5.0"/>
+        <Insets bottom="6" top="6" left="10" right="10"/>
     </padding>
 </VBox>

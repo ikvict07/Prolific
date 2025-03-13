@@ -33,15 +33,15 @@ public class ProjectPanelController {
     @FXML
     private HBox projectIcon;
     @FXML
-    private VBox config;
+    private StackPane config;
     @FXML
     private HBox projectInfo;
     @FXML
-    private VBox run;
+    private StackPane run;
     @FXML
     private AnchorPane projectPanel;
     @FXML
-    private Text projectIconText;
+    private Label projectIconText;
     @FXML
     private Label projectTitleText;
 
@@ -61,32 +61,7 @@ public class ProjectPanelController {
 
         String baseColor = extractPrimaryColor(iconColorStyle);
         projectInfo.setStyle(generateGradientBoxStyle(baseColor));
-        anchorPaneConstraintsService.setStage(primaryStage);
-        projectPanel.minWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
-        projectPanel.maxWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
-        projectPanel.prefWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(projectInfo, 0.48);
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(projectInfo, 0.01);
-        AnchorPane.setRightAnchor(star, 16d);
-
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(run, 0.50);
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(config, 0.52);
-        anchorPaneConstraintsService.setAnchorConstraintsBottom(star, 0.45);
-        anchorPaneConstraintsService.setAnchorConstraintsTop(star, 0.45);
-
-        var starImage = (SVGPath) star.lookup("SVGPath");
-        starImage.hoverProperty().addListener((_, _, newVal) -> {
-            if (star != null) {
-                if (newVal) {
-                    starImage.setFillRule(FillRule.EVEN_ODD);
-                    starImage.setFill(Color.valueOf("#9e9e9e"));
-                } else {
-                    starImage.setFillRule(FillRule.NON_ZERO);
-                    starImage.setFill(Color.valueOf("#F2C55C"));
-                }
-            }
-        });
-
+        projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.6));
     }
 
 
@@ -95,7 +70,7 @@ public class ProjectPanelController {
         String highlightColor = colorService.generateSimilarBrightPastelColor(baseColor);
 
         return String.format(
-                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, #2B2D30 0%%, %s 50%%, #2B2D30 100%%);",
+                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, transparent 0%%, %4s99 30%%, transparent 100%%);",
                 highlightColor);
     }
 

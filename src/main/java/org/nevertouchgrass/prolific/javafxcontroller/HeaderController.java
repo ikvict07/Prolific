@@ -6,21 +6,17 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
-import org.nevertouchgrass.prolific.annotation.Constraints;
-import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.service.ProjectsService;
@@ -28,11 +24,13 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.HashSet;
 
-@AnchorPaneController
+@Component
 @StageComponent("primaryStage")
 @Log4j2
 @SuppressWarnings("unused")
@@ -46,14 +44,9 @@ public class HeaderController {
     @FXML
     public Circle maximizeButton;
     @FXML
-    @ConstraintsIgnoreElementSize(right = 0.48)
-    public HBox leftSection;
+    public HBox gradientBox;
     @FXML
-    @Constraints(right = 0.5, left = 0.5)
-    public Text titleText;
-    @FXML
-    @ConstraintsIgnoreElementSize(right = 0.33)
-    public Region rightSection;
+    public Label titleText;
 
     @FXML
     private AnchorPane header;
@@ -88,6 +81,8 @@ public class HeaderController {
 
     private double endX = 0;
 
+    private final HashSet<Object> draggablePanes = new HashSet<>();
+
     @Initialize
     public void init() {
         closeButton.setOnMouseClicked(this::handleClose);
@@ -95,14 +90,14 @@ public class HeaderController {
         maximizeButton.setOnMouseClicked(this::handleMaximize);
 
         header.setOnMousePressed(event -> {
-            if (event.getTarget().equals(header)) {
+            if (draggablePanes.contains(event.getTarget())) {
                 xOffset = event.getSceneX();
                 yOffset = event.getSceneY();
             }
         });
 
         header.setOnMouseDragged(event -> {
-            if (event.getTarget().equals(header)) {
+            if (draggablePanes.contains(event.getTarget())) {
                 stage.setX(event.getScreenX() - xOffset);
                 stage.setY(event.getScreenY() - yOffset);
                 endX = stage.getX() + stage.getWidth();
@@ -111,12 +106,29 @@ public class HeaderController {
 
         stage.getScene().setOnMouseMoved(this::resizeCursor);
         stage.getScene().setOnMouseDragged(this::resizeWindow);
+        stage.getScene().setOnMousePressed(event -> {
+            settingsPopup.hide();
+        });
 
         stage.setOnShown(_ -> {
             endX = stage.getX() + stage.getWidth();
             widthBeforeMaximizing = stage.getWidth();
             heightBeforeMaximizing = stage.getHeight();
         });
+
+        stage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                stage.getScene().getRoot().setStyle("-fx-background-radius: 0;");
+                header.setStyle("-fx-background-radius: 0;");
+            } else {
+                stage.getScene().getRoot().setStyle("-fx-background-radius: 16;");
+                header.setStyle("-fx-background-radius: 16 16 0 0;");
+            }
+        });
+
+        draggablePanes.add(header);
+        draggablePanes.add(gradientBox);
+        draggablePanes.add(titleText);
     }
 
     private void resizeCursor(MouseEvent event) {
@@ -182,6 +194,7 @@ public class HeaderController {
                 stage.setX(deltaX);
             }
             stage.setWidth(newWidth);
+            stage.setHeight(stage.getHeight()); // GTK bug workaround
         }
     }
 
@@ -190,6 +203,7 @@ public class HeaderController {
 
         if (newHeight >= minHeight && stage.getY() + newHeight <= visualBounds.getMaxY()) {
             stage.setHeight(newHeight);
+            stage.setWidth(stage.getWidth()); // GTK bug workaround
         }
     }
 
@@ -229,7 +243,7 @@ public class HeaderController {
     }
 
     public void handleHeaderMaximize(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && (mouseEvent.getTarget().equals(header) || mouseEvent.getTarget().equals(leftSection))) {
+        if (mouseEvent.getClickCount() == 2 && draggablePanes.contains(mouseEvent.getTarget())) {
             handleMaximize(mouseEvent);
         }
     }
@@ -248,7 +262,8 @@ public class HeaderController {
             String f = fileChooser.showDialog(stage).getPath();
             Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
             projectsService.manuallyAddProject(p);
-        } catch (Exception e) {
+        } catch (NullPointerException ignore) {} catch (Exception e) {
+            log.error("Exception trying to open the project: {}", e.getMessage());
             showAlert();
         }
     }
