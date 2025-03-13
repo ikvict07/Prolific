@@ -6,13 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.FillRule;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import lombok.Data;
@@ -63,7 +57,6 @@ public class ProjectPanelController {
         projectInfo.setStyle(generateGradientBoxStyle(baseColor));
         projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.6));
     }
-
 
 
     private String generateGradientBoxStyle(String baseColor) {
