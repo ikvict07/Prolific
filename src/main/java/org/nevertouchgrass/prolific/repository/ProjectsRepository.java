@@ -20,6 +20,44 @@ public class ProjectsRepository extends BasicRepositoryImplementationProvider<Pr
         super(dataSource);
     }
 
+
+    @SneakyThrows
+    public Project findByPath(String path) {
+        try {
+            String sql = "SELECT * FROM projects WHERE path = ?";
+
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, path);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        Project project = new Project();
+                        project.setId(resultSet.getInt("id"));
+                        project.setTitle(resultSet.getString("title"));
+                        project.setType(resultSet.getString("type"));
+                        project.setPath(resultSet.getString("path"));
+                        project.setIsManuallyAdded(resultSet.getBoolean("is_manually_added"));
+                        project.setIsStarred(resultSet.getBoolean("is_starred"));
+                        return project;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while finding project by path", e);
+            throw e;
+        }
+        return null;
+    }
+
+    @Override
+    public Project save(Project project) {
+        var existingProject = findByPath(project.getPath());
+        if (existingProject != null) {
+            return existingProject;
+        }
+        return super.save(project);
+    }
+
     @SneakyThrows
     public List<Project> deleteWhereIsStarredIsFalseAndIsManuallyAddedIsFalse() {
         String sql = "DELETE FROM projects WHERE is_starred = 0 AND is_manually_added = 0 RETURNING *";
