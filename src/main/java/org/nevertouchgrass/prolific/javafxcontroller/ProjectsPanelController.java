@@ -13,7 +13,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
-import org.nevertouchgrass.prolific.annotation.*;
+import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.OnDelete;
+import org.nevertouchgrass.prolific.annotation.OnSave;
+import org.nevertouchgrass.prolific.annotation.OnUpdate;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
@@ -112,7 +116,7 @@ public class ProjectsPanelController {
     }
 
     private int findInsertionIndex(Project project) {
-        var index =  Collections.binarySearch(projects, project, projectComparator);
+        var index = Collections.binarySearch(projects, project, projectComparator);
         return index < 0 ? -index - 1 : index;
     }
 

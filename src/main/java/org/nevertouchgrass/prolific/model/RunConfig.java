@@ -8,4 +8,5 @@ import java.util.List;
 public class RunConfig {
     private List<String> command;
     private String configName;
+    private String type;
 }
