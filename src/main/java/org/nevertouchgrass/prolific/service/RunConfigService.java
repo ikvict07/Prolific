@@ -29,17 +29,9 @@ public class RunConfigService {
     private final ConfigImporterStrategy configImporter;
 
     @SneakyThrows
-    public Path getRunConfigsDirectory() {
-        var jarPath = pathService.getProjectPath();
-        var dir = jarPath.getParent().resolve(properties.getRunConfigsLocation());
-        Files.createDirectories(dir);
-        return dir;
-    }
-
-    @SneakyThrows
     public List<RunConfig> getRunConfigsFromDir(Project project) {
         var projectPath = project.getPath();
-        var runConfigsDirectory = getRunConfigsDirectory();
+        var runConfigsDirectory = pathService.getRunConfigsDirectory();
         try (var files = Files.list(runConfigsDirectory)) {
             var candidates = files.filter(path -> Arrays.stream(projectPath.split("/")).toList().getLast().contains(getFileNameWithoutExtension(path)));
             var mappedCandidates = candidates.map(f -> {
@@ -60,7 +52,7 @@ public class RunConfigService {
     }
 
     public void saveRunConfigs(Project project, List<RunConfig> configs) {
-        var runConfigsDirectory = getRunConfigsDirectory();
+        var runConfigsDirectory = pathService.getRunConfigsDirectory();
         var projectPath = project.getPath();
         var runConfigFileModel = new RunConfigFileModel(projectPath, configs);
         var runConfigFile = runConfigsDirectory.resolve(project.getTitle() + ".xml");

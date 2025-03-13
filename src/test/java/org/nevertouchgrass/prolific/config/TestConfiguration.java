@@ -48,8 +48,8 @@ public class TestConfiguration {
     }
 
     @Bean
-    public PathService pathService() {
-        return new PathService();
+    public PathService pathService(SpringFXConfigurationProperties properties, XmlMapper xmlMapper) {
+        return new PathService(properties, xmlMapper);
     }
 
     @Bean

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.nevertouchgrass.prolific.config.TestConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.net.URI;
@@ -14,7 +15,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = TestConfiguration.class)
 class PathServiceTests {
-    private final PathService ps = new PathService();
+    @Autowired
+    private PathService ps;
 
     @ParameterizedTest
     @CsvSource({"jar:/usr/local/bin, /usr/local/bin, linux", "jar:/C:/Users/user, C:/Users/user, Windows", "jar:/Users/user, /Users/user, macOS"})
