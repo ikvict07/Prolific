@@ -28,7 +28,7 @@
                 </padding>
                 <StackPane fx:id="configTypeIcon">
                     <HBox.margin>
-                        <Insets top="4" bottom="4" left="6" right="6"/>
+                        <Insets topRightBottomLeft="4"/>
                     </HBox.margin>
                 </StackPane>
                 <Label fx:id="configurationName" styleClass="label" textOverrun="CENTER_ELLIPSIS"/>
@@ -42,5 +42,10 @@
             </StackPane>
         </HBox>
     </HBox>
-    <fx:include fx:id="star" source="star.fxml" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"/>
+    <StackPane AnchorPane.rightAnchor="16" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+        <padding>
+            <Insets topRightBottomLeft="8"/>
+        </padding>
+        <fx:include fx:id="star" scaleX="1.5" scaleY="1.5" source="star.fxml"/>
+    </StackPane>
 </AnchorPane>

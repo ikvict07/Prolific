@@ -4,15 +4,14 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,7 @@ import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
 import org.nevertouchgrass.prolific.service.ColorService;
+import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.RunConfigService;
 import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +70,16 @@ public class ProjectPanelController {
     private ProjectsRepository projectsRepository;
     private ProjectTypeIconRegistry projectTypeIconRegistry;
 
-    private Popup projectSettingsPopup;
+    private ContextMenu projectSettingsPopup;
+    private ProjectSettingDropdownController projectSettingsDropdownController;
 
     private RunConfigService runConfigService;
 
     private ContextMenu contextMenu;
     private ProjectRunConfigs projectRunConfigs;
+    private FxmlProvider fxmlProvider;
+
+    private RunConfig chosenConfig = null;
 
     public void init() {
         String iconColorStyle = generateRandomColorStyle();
@@ -94,12 +98,6 @@ public class ProjectPanelController {
 
         generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), "Your configurations");
         generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
-
-        if (contextMenu.getItems().isEmpty()) {
-            configurationName.setText("");
-            configTypeIcon.getChildren().clear();
-            configTypeIcon.getChildren().add(projectTypeIconRegistry.getConfigTypeIcon(""));
-        }
     }
 
 
@@ -125,12 +123,13 @@ public class ProjectPanelController {
     }
 
     @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Popup projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry) {
+    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Pair<ProjectSettingDropdownController, ContextMenu> projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
         this.anchorPaneConstraintsService = anchorPaneConstraintsService;
         this.projectsRepository = projectsRepository;
-        this.projectSettingsPopup = projectSettingsPopup;
+        this.projectSettingsPopup = projectSettingsPopup.getValue();
+        this.projectSettingsDropdownController = projectSettingsPopup.getKey();
         this.runConfigService = runConfigService;
         this.projectTypeIconRegistry = projectTypeIconRegistry;
     }
@@ -152,9 +151,7 @@ public class ProjectPanelController {
         projectSettingsPopup.setX(bounds.getCenterX());
         projectSettingsPopup.setY(bounds.getMaxY());
         Stage stage = (Stage) projectPanel.getScene().getWindow();
-        Parent projectSettingDropdownParent = (Parent) projectSettingsPopup.getProperties().get("content");
-        ProjectSettingDropdownController controller = (ProjectSettingDropdownController) projectSettingDropdownParent.getProperties().get("controller");
-        controller.setProject(project);
+        projectSettingsDropdownController.setProject(project, projectSettingsPopup);
         projectSettingsPopup.show(stage);
     }
 
@@ -198,6 +195,7 @@ public class ProjectPanelController {
                 configurationName.setText(runConfig.getConfigName());
                 configTypeIcon.getChildren().clear();
                 configTypeIcon.getChildren().addAll(projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+                chosenConfig = runConfig;
             });
             menuItems.add(menuItem);
         }
