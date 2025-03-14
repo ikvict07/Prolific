@@ -19,11 +19,13 @@ import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
+import org.nevertouchgrass.prolific.service.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Objects;
 
 @Controller
 @StageComponent("primaryStage")
@@ -44,25 +46,32 @@ public class ProjectsPanelController {
     private FxmlProvider fxmlProvider;
     private UserSettingsHolder userSettingsHolder;
     private ProjectsRepository projectsRepository;
+    private ProjectsService projectsService;
 
-    private final ObservableList<Project> projects = FXCollections.observableArrayList();
     private final Comparator<Project> projectComparator = Comparator
             .comparing(Project::getIsStarred).reversed()
             .thenComparing(p -> p.getTitle().toLowerCase());
 
     @Initialize
     private void init() {
+        registerListeners();
+        projectsService.getProjects().forEach(this::addProjectToList);
         content.minWidthProperty().bind(scrollPane.widthProperty());
         content.prefWidthProperty().bind(scrollPane.widthProperty());
         content.maxWidthProperty().bind(scrollPane.widthProperty());
         setupScrollBarFadeEffect();
-        projectsRepository.findAll(Project.class).forEach(this::addProjectToList);
 
         scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(lowerShadow, newValue.doubleValue(), false));
 
         scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(upperShadow, newValue.doubleValue(), true));
 
 
+    }
+
+    private void registerListeners() {
+        projectsService.registerOnAddListener(this::addProjectToList);
+        projectsService.registerOnRemoveListener(this::deleteProjectFromList);
+        projectsService.registerOnUpdateListener(this::updateProject);
     }
 
     private void handleShadow(Region shadow, double newValue, boolean isUpperShadow) {
@@ -137,44 +146,32 @@ public class ProjectsPanelController {
         });
     }
 
-    @OnSave(Project.class)
+
     private void addProjectToList(Project project) {
         Platform.runLater(() -> {
-            if (!projects.contains(project)) {
-                int index = findInsertionIndex(project);
-                projects.add(index, project);
-                insertProjectPanelAt(index, project);
-            }
+            int index = findInsertionIndex(project);
+            insertProjectPanelAt(index, project);
         });
     }
 
-    @OnDelete(Project.class)
     private void deleteProjectFromList(Project project) {
         Platform.runLater(() -> {
-            int index = projects.indexOf(project);
-            if (index != -1) {
-                projects.remove(index);
-                content.getChildren().remove(index);
-            }
+            var toDelete = content.getChildren().filtered(node -> node.getProperties().get("project").equals(project));
+            content.getChildren().removeAll(toDelete);
         });
     }
 
-    @OnUpdate(Project.class)
     public void updateProject(Project project) {
         Platform.runLater(() -> {
-            int oldIndex = projects.indexOf(project);
-            if (oldIndex != -1) {
-                projects.remove(oldIndex);
-                content.getChildren().remove(oldIndex);
-            }
-            int newIndex = findInsertionIndex(project);
-            projects.add(newIndex, project);
+            var toDelete = content.getChildren().filtered(node -> node.getProperties().get("project").equals(project));
+            content.getChildren().removeAll(toDelete);
+            var newIndex = findInsertionIndex(project);
             insertProjectPanelAt(newIndex, project);
         });
     }
 
     private int findInsertionIndex(Project project) {
-        var index = Collections.binarySearch(projects, project, projectComparator);
+        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get("project")).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
         return index < 0 ? -index - 1 : index;
     }
 
@@ -184,7 +181,9 @@ public class ProjectsPanelController {
         controller.getProjectTitleText().setText(project.getTitle());
         controller.getProjectIconText().setText(getIconTextFromTitle(project.getTitle()));
         controller.setProject(project);
-        content.getChildren().add(index, resource.getParent());
+        var parent = resource.getParent();
+        parent.getProperties().put("project", project);
+        content.getChildren().add(index, parent);
         controller.init();
     }
 
@@ -198,9 +197,10 @@ public class ProjectsPanelController {
     }
 
     @Autowired
-    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder, ProjectsRepository projectsRepository) {
+    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder, ProjectsRepository projectsRepository, ProjectsService projectsService) {
         this.fxmlProvider = fxmlProvider;
         this.userSettingsHolder = userSettingsHolder;
         this.projectsRepository = projectsRepository;
+        this.projectsService = projectsService;
     }
 }

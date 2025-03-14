@@ -92,7 +92,6 @@ public class ProjectPanelController {
         contextMenu = new ContextMenu();
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
 
-
         generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), "Your configurations");
         generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
 
@@ -102,6 +101,7 @@ public class ProjectPanelController {
             configTypeIcon.getChildren().add(projectTypeIconRegistry.getConfigTypeIcon(""));
         }
     }
+
 
     private String generateGradientBoxStyle(String baseColor) {
         String highlightColor = colorService.generateSimilarBrightPastelColor(baseColor);
