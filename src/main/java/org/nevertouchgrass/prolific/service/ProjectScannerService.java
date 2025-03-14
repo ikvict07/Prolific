@@ -59,8 +59,9 @@ public class ProjectScannerService {
     }
 
     public Set<Path> scanForProjects(String rootDirectory, Consumer<Path> onFind) {
+        log.info("Scanning for projects in {}", rootDirectory);
         var result = startSearching(Path.of(rootDirectory), onFind);
-        log.info("Scanning finished");
+        log.info("Scanning finished, found {} projects", result.size());
         return result;
     }
 
