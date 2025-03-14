@@ -3,8 +3,6 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
@@ -14,7 +12,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
-import org.nevertouchgrass.prolific.annotation.*;
+import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
@@ -61,67 +60,14 @@ public class ProjectsPanelController {
         content.maxWidthProperty().bind(scrollPane.widthProperty());
         setupScrollBarFadeEffect();
 
-        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(lowerShadow, newValue.doubleValue(), false));
-
-        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(upperShadow, newValue.doubleValue(), true));
-
-
+        upperShadow.visibleProperty().bind(scrollPane.vvalueProperty().greaterThan(0));
+        lowerShadow.visibleProperty().bind(scrollPane.vvalueProperty().lessThan(1));
     }
 
     private void registerListeners() {
         projectsService.registerOnAddListener(this::addProjectToList);
         projectsService.registerOnRemoveListener(this::deleteProjectFromList);
         projectsService.registerOnUpdateListener(this::updateProject);
-    }
-
-    private void handleShadow(Region shadow, double newValue, boolean isUpperShadow) {
-        try {
-            double elementHeight;
-            double halfScroll;
-
-            if (isUpperShadow) {
-                elementHeight = content.getChildren().getFirst().getBoundsInLocal().getHeight();
-                halfScroll = elementHeight / (content.getChildren().size() * elementHeight);
-
-                if (newValue <= halfScroll) {
-                    double shadowHeight = (newValue / halfScroll) * (elementHeight / 2);
-                    shadowHeight = Math.max(0, Math.min(elementHeight / 2, shadowHeight));
-
-                    shadow.setPrefHeight(shadowHeight);
-                    shadow.setMinHeight(shadowHeight);
-                    shadow.setMaxHeight(shadowHeight);
-                } else {
-                    double maxShadowHeight = elementHeight / 2;
-                    shadow.setPrefHeight(maxShadowHeight);
-                    shadow.setMinHeight(maxShadowHeight);
-                    shadow.setMaxHeight(maxShadowHeight);
-                }
-
-                shadow.setVisible(true);
-
-            } else {
-                elementHeight = content.getChildren().getLast().getBoundsInLocal().getHeight();
-                halfScroll = 1.0 - (elementHeight / (content.getChildren().size() * elementHeight));
-
-                if (newValue < halfScroll) {
-                    double maxShadowHeight = elementHeight / 2;
-                    shadow.setPrefHeight(maxShadowHeight);
-                    shadow.setMinHeight(maxShadowHeight);
-                    shadow.setMaxHeight(maxShadowHeight);
-                } else {
-                    double shadowHeight = ((1.0 - newValue) / (1.0 - halfScroll)) * (elementHeight / 2);
-                    shadowHeight = Math.max(0, Math.min(elementHeight / 2, shadowHeight));
-
-                    shadow.setPrefHeight(shadowHeight);
-                    shadow.setMinHeight(shadowHeight);
-                    shadow.setMaxHeight(shadowHeight);
-                }
-
-                shadow.setVisible(newValue < 1.0);
-            }
-        } catch (Exception _) {
-            // ignore
-        }
     }
 
 
