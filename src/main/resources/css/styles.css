@@ -182,6 +182,28 @@
     -fx-font-size: 1.1em;
 }
 
+.context-menu {
+    -fx-background-radius: 8;
+    -fx-background-color: #2B2D30;
+    -fx-border-color: #444;
+    -fx-border-radius: 8;
+}
+
+.root.popup {
+    -fx-background-color: transparent;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DFE1E5;
+    -fx-padding: 8;
+    -fx-background-radius: 4;
+}
+
+.menu-item:hover {
+    -fx-background-color: #444;
+}
+
 .star:hover {
     -fx-fill: #A6B3C1;
 }

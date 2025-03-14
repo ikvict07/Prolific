@@ -1,26 +1,34 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Parent;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
+import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
 import org.nevertouchgrass.prolific.service.ColorService;
+import org.nevertouchgrass.prolific.service.RunConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -45,6 +53,10 @@ public class ProjectPanelController {
     private Label projectTitleText;
     @FXML
     private HBox configurationButton;
+    @FXML
+    private Label configurationName;
+    @FXML
+    private HBox controlPanel;
 
     private Project project;
 
@@ -56,13 +68,31 @@ public class ProjectPanelController {
 
     private Popup projectSettingsPopup;
 
+    private RunConfigService runConfigService;
+
+    private ContextMenu contextMenu;
+    private ProjectRunConfigs projectRunConfigs;
+
     public void init() {
         String iconColorStyle = generateRandomColorStyle();
         projectIcon.setStyle(iconColorStyle);
 
         String baseColor = extractPrimaryColor(iconColorStyle);
         projectInfo.setStyle(generateGradientBoxStyle(baseColor));
-        projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.7));
+        projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.8));
+        configurationName.maxWidthProperty().bind(projectInfo.widthProperty().multiply(0.3));
+
+        projectRunConfigs = runConfigService.getAllRunConfigs(project);
+
+
+        contextMenu = new ContextMenu();
+        contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
+
+
+        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), "Your configurations");
+        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
+
+        configurationName.setText(contextMenu.getItems().isEmpty() ? "" : contextMenu.getItems().filtered(item -> !item.isDisable()).getFirst().getText());
     }
 
 
@@ -89,12 +119,13 @@ public class ProjectPanelController {
     }
 
     @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Popup projectSettingsPopup) {
+    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Popup projectSettingsPopup, RunConfigService runConfigService) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
         this.anchorPaneConstraintsService = anchorPaneConstraintsService;
         this.projectsRepository = projectsRepository;
         this.projectSettingsPopup = projectSettingsPopup;
+        this.runConfigService = runConfigService;
     }
 
     public void setProject(Project project) {
@@ -121,6 +152,15 @@ public class ProjectPanelController {
     }
 
     public void showProjectConfigurations() {
+        if (contextMenu.isShowing()) {
+            contextMenu.hide();
+        } else {
+            Bounds bounds = controlPanel.localToScreen(controlPanel.getBoundsInLocal());
+            contextMenu.show(controlPanel, bounds.getMinX(), bounds.getMaxY());
+        }
+    }
+
+    private void switchConfigurationButtonIcon() {
         try {
             HBox substituteIcon = "unfoldButton".equals(configurationButton.getChildren().getFirst().getId()) ?
                     new FXMLLoader(getClass().getResource("/icons/fxml/fold_button.fxml")).load() :
@@ -129,6 +169,22 @@ public class ProjectPanelController {
             configurationButton.getChildren().add(substituteIcon.getChildren().getFirst());
         } catch (IOException e) {
             log.error("Error retrieving fxml resource: {}", e.getMessage());
+        }
+    }
+
+
+    private void generateContextMenuItems(@NonNull List<RunConfig> runConfigs, String label) {
+        ObservableList<MenuItem> menuItems = contextMenu.getItems();
+        if (label != null && !runConfigs.isEmpty()) {
+            MenuItem menuItem = new MenuItem(label);
+            menuItem.setDisable(true);
+            menuItems.add(menuItem);
+        }
+
+        for (RunConfig runConfig : runConfigs) {
+            MenuItem menuItem = new MenuItem(runConfig.getConfigName());
+            menuItem.setOnAction( _ -> configurationName.setText(runConfig.getConfigName()));
+            menuItems.add(menuItem);
         }
     }
 }
