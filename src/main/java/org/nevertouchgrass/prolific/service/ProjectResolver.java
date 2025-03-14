@@ -11,13 +11,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
@@ -78,7 +72,7 @@ class Visitor extends SimpleFileVisitor<Path> {
         this.projectTypeModel = projectTypeModel;
         this.userSettingsHolder = userSettingsHolder;
         this.excludeMatcher = excludeMatcher;
-        List<String> identifiers = projectTypeModel.identifiers();
+        List<String> identifiers = projectTypeModel.getIdentifiers();
         String pattern = String.format("glob:**/{%s}", String.join(",", identifiers));
         pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
     }
@@ -90,7 +84,7 @@ class Visitor extends SimpleFileVisitor<Path> {
         }
         if (Files.isReadable(file)) {
             if (pathMatcher.matches(file)) {
-                project.setType(projectTypeModel.name());
+                project.setType(projectTypeModel.getName());
                 return FileVisitResult.SKIP_SIBLINGS;
             }
         }
@@ -110,7 +104,7 @@ class Visitor extends SimpleFileVisitor<Path> {
         }
         if (Files.isReadable(dir)) {
             if (pathMatcher.matches(dir)) {
-                project.setType(projectTypeModel.name());
+                project.setType(projectTypeModel.getName());
                 return FileVisitResult.SKIP_SUBTREE;
             }
             return FileVisitResult.CONTINUE;

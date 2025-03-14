@@ -23,6 +23,7 @@ import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
 import org.nevertouchgrass.prolific.service.ColorService;
 import org.nevertouchgrass.prolific.service.RunConfigService;
+import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -57,6 +58,8 @@ public class ProjectPanelController {
     private Label configurationName;
     @FXML
     private HBox controlPanel;
+    @FXML
+    private StackPane configTypeIcon;
 
     private Project project;
 
@@ -65,6 +68,7 @@ public class ProjectPanelController {
 
     private AnchorPaneConstraintsService anchorPaneConstraintsService;
     private ProjectsRepository projectsRepository;
+    private ProjectTypeIconRegistry projectTypeIconRegistry;
 
     private Popup projectSettingsPopup;
 
@@ -92,10 +96,12 @@ public class ProjectPanelController {
         generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), "Your configurations");
         generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
 
-        configurationName.setText(contextMenu.getItems().isEmpty() ? "" : contextMenu.getItems().filtered(item -> !item.isDisable()).getFirst().getText());
+        if (contextMenu.getItems().isEmpty()) {
+            configurationName.setText("");
+            configTypeIcon.getChildren().clear();
+            configTypeIcon.getChildren().add(projectTypeIconRegistry.getConfigTypeIcon(""));
+        }
     }
-
-
 
     private String generateGradientBoxStyle(String baseColor) {
         String highlightColor = colorService.generateSimilarBrightPastelColor(baseColor);
@@ -119,13 +125,14 @@ public class ProjectPanelController {
     }
 
     @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Popup projectSettingsPopup, RunConfigService runConfigService) {
+    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Popup projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
         this.anchorPaneConstraintsService = anchorPaneConstraintsService;
         this.projectsRepository = projectsRepository;
         this.projectSettingsPopup = projectSettingsPopup;
         this.runConfigService = runConfigService;
+        this.projectTypeIconRegistry = projectTypeIconRegistry;
     }
 
     public void setProject(Project project) {
@@ -182,8 +189,16 @@ public class ProjectPanelController {
         }
 
         for (RunConfig runConfig : runConfigs) {
-            MenuItem menuItem = new MenuItem(runConfig.getConfigName());
-            menuItem.setOnAction( _ -> configurationName.setText(runConfig.getConfigName()));
+            if (configTypeIcon.getChildren().isEmpty()) {
+                configTypeIcon.getChildren().add(projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+                configurationName.setText(runConfig.getConfigName());
+            }
+            MenuItem menuItem = new MenuItem(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+            menuItem.setOnAction( _ -> {
+                configurationName.setText(runConfig.getConfigName());
+                configTypeIcon.getChildren().clear();
+                configTypeIcon.getChildren().addAll(projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+            });
             menuItems.add(menuItem);
         }
     }
