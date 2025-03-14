@@ -1,30 +1,36 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Parent;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.FillRule;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import lombok.Data;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
+import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
 import org.nevertouchgrass.prolific.service.ColorService;
-import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
+import org.nevertouchgrass.prolific.service.RunConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.List;
+
+@Slf4j
 @Component
 @Scope("prototype")
 @Data
@@ -34,24 +40,23 @@ public class ProjectPanelController {
     @FXML
     private HBox projectIcon;
     @FXML
-    private VBox config;
+    private StackPane config;
     @FXML
     private HBox projectInfo;
     @FXML
-    private VBox run;
+    private StackPane run;
     @FXML
     private AnchorPane projectPanel;
     @FXML
-    private Text projectIconText;
+    private Label projectIconText;
     @FXML
     private Label projectTitleText;
-
-    private ProjectTypeIconRegistry projectTypeIconRegistry;
-
-    @Autowired
-    public void setProjectTypeIconRegistry(ProjectTypeIconRegistry projectTypeIconRegistry) {
-        this.projectTypeIconRegistry = projectTypeIconRegistry;
-    }
+    @FXML
+    private HBox configurationButton;
+    @FXML
+    private Label configurationName;
+    @FXML
+    private HBox controlPanel;
 
     private Project project;
 
@@ -63,45 +68,40 @@ public class ProjectPanelController {
 
     private Popup projectSettingsPopup;
 
+    private RunConfigService runConfigService;
+
+    private ContextMenu contextMenu;
+    private ProjectRunConfigs projectRunConfigs;
+
     public void init() {
         String iconColorStyle = generateRandomColorStyle();
         projectIcon.setStyle(iconColorStyle);
 
         String baseColor = extractPrimaryColor(iconColorStyle);
         projectInfo.setStyle(generateGradientBoxStyle(baseColor));
-        anchorPaneConstraintsService.setStage(primaryStage);
-        projectPanel.minWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
-        projectPanel.maxWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
-        projectPanel.prefWidthProperty().bind(((Region) projectPanel.getParent()).widthProperty().multiply(0.96));
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(projectInfo, 0.48);
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(projectInfo, 0.01);
-        AnchorPane.setRightAnchor(star, 16d);
+        projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.8));
+        configurationName.maxWidthProperty().bind(projectInfo.widthProperty().multiply(0.3));
 
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(run, 0.50);
-        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(config, 0.52);
-        anchorPaneConstraintsService.setAnchorConstraintsBottom(star, 0.45);
-        anchorPaneConstraintsService.setAnchorConstraintsTop(star, 0.45);
+        projectRunConfigs = runConfigService.getAllRunConfigs(project);
 
-        var starImage = (SVGPath) star.lookup("SVGPath");
-        starImage.hoverProperty().addListener((_, _, newVal) -> {
-            if (star != null) {
-                if (newVal) {
-                    starImage.setFillRule(FillRule.EVEN_ODD);
-                    starImage.setFill(Color.valueOf("#9e9e9e"));
-                } else {
-                    starImage.setFillRule(FillRule.NON_ZERO);
-                    starImage.setFill(Color.valueOf("#F2C55C"));
-                }
-            }
-        });
+
+        contextMenu = new ContextMenu();
+        contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
+
+
+        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), "Your configurations");
+        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
+
+        configurationName.setText(contextMenu.getItems().isEmpty() ? "" : contextMenu.getItems().filtered(item -> !item.isDisable()).getFirst().getText());
     }
+
 
 
     private String generateGradientBoxStyle(String baseColor) {
         String highlightColor = colorService.generateSimilarBrightPastelColor(baseColor);
 
         return String.format(
-                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, #2B2D30 0%%, %s 50%%, #2B2D30 100%%);",
+                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, transparent 0%%, %4s99 30%%, transparent 100%%);",
                 highlightColor);
     }
 
@@ -119,12 +119,13 @@ public class ProjectPanelController {
     }
 
     @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Popup projectSettingsPopup) {
+    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Popup projectSettingsPopup, RunConfigService runConfigService) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
         this.anchorPaneConstraintsService = anchorPaneConstraintsService;
         this.projectsRepository = projectsRepository;
         this.projectSettingsPopup = projectSettingsPopup;
+        this.runConfigService = runConfigService;
     }
 
     public void setProject(Project project) {
@@ -150,13 +151,40 @@ public class ProjectPanelController {
         projectSettingsPopup.show(stage);
     }
 
-    // TODO:
-//    private void setProjectIcon() {
-//        var node = projectTypeIconRegistry.configure(project);
-//        projectPanel.getChildren().add(node);
-//        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeLeft(node, 0.60);
-//        anchorPaneConstraintsService.setAnchorConstraintsIgnoreElementSizeRight(node, 0.30);
-//        anchorPaneConstraintsService.setAnchorConstraintsTop(node, 0.45);
-//        anchorPaneConstraintsService.setAnchorConstraintsBottom(node, 0.45);
-//    }
+    public void showProjectConfigurations() {
+        if (contextMenu.isShowing()) {
+            contextMenu.hide();
+        } else {
+            Bounds bounds = controlPanel.localToScreen(controlPanel.getBoundsInLocal());
+            contextMenu.show(controlPanel, bounds.getMinX(), bounds.getMaxY());
+        }
+    }
+
+    private void switchConfigurationButtonIcon() {
+        try {
+            HBox substituteIcon = "unfoldButton".equals(configurationButton.getChildren().getFirst().getId()) ?
+                    new FXMLLoader(getClass().getResource("/icons/fxml/fold_button.fxml")).load() :
+                    new FXMLLoader(getClass().getResource("/icons/fxml/unfold_button.fxml")).load();
+            configurationButton.getChildren().clear();
+            configurationButton.getChildren().add(substituteIcon.getChildren().getFirst());
+        } catch (IOException e) {
+            log.error("Error retrieving fxml resource: {}", e.getMessage());
+        }
+    }
+
+
+    private void generateContextMenuItems(@NonNull List<RunConfig> runConfigs, String label) {
+        ObservableList<MenuItem> menuItems = contextMenu.getItems();
+        if (label != null && !runConfigs.isEmpty()) {
+            MenuItem menuItem = new MenuItem(label);
+            menuItem.setDisable(true);
+            menuItems.add(menuItem);
+        }
+
+        for (RunConfig runConfig : runConfigs) {
+            MenuItem menuItem = new MenuItem(runConfig.getConfigName());
+            menuItem.setOnAction( _ -> configurationName.setText(runConfig.getConfigName()));
+            menuItems.add(menuItem);
+        }
+    }
 }
