@@ -26,7 +26,11 @@
                 <padding>
                     <Insets top="4" bottom="4" left="6" right="6"/>
                 </padding>
-                <fx:include source="/icons/fxml/gradle_icon.fxml"/>
+                <StackPane fx:id="configTypeIcon">
+                    <HBox.margin>
+                        <Insets top="4" bottom="4" left="6" right="6"/>
+                    </HBox.margin>
+                </StackPane>
                 <Label fx:id="configurationName" styleClass="label" textOverrun="CENTER_ELLIPSIS"/>
                 <fx:include fx:id="configurationButton" source="/icons/fxml/unfold_button.fxml"/>
             </HBox>

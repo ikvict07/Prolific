@@ -1,6 +1,6 @@
 package org.nevertouchgrass.prolific.service.icons;
 
-import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.FillRule;
@@ -18,7 +18,6 @@ public class GradleProjectIconFactory extends AbstractIconFactory {
     @Override
     public StackPane configure() {
         var svgPath = new SVGPath();
-        svgPath.setFillRule(FillRule.EVEN_ODD);
         svgPath.setContent(
                 "M18.9016 2.6532C18.4322 1.6737 16.8861 0.516188 15.1539 2.02988M18.9016 2.6532C" +
                         "19.5006 3.79447 18.4726 5.92331 16.4004 5.92331C13.6672 5.92331 10.7983 1.34244 " +
@@ -36,12 +35,20 @@ public class GradleProjectIconFactory extends AbstractIconFactory {
                         "9.49017C7.93671 9.02951 8.72209 8.48399 9.44376 7.83393"
         );
         svgPath.setStrokeWidth(1.5);
-        svgPath.setStroke(Color.WHITE);
+        svgPath.setStroke(Color.web("#CED0D6"));
         svgPath.setStrokeLineCap(StrokeLineCap.ROUND);
-        svgPath.setFill(Color.WHITE);
-        var stackPane = new StackPane();
-        stackPane.getChildren().add(svgPath);
-        StackPane.setAlignment(svgPath, Pos.CENTER);
-        return stackPane;
+        svgPath.setFill(Color.TRANSPARENT);
+
+        SVGPath svgPath2 = new SVGPath();
+        svgPath2.setContent("M11.5569 7.51317C11.4617 7.45196 11.4054 7.34109 11.4369 7.23233C11.5518 6.83589 " +
+                "11.8961 6.53859 12.3182 6.49271C12.8024 6.44009 13.2577 6.73263 13.4111 7.19497C13.5448 7.59798 " +
+                "13.4175 8.03469 13.1046 8.3039C13.0188 8.37776 12.8946 8.37265 12.7993 8.31144L11.5569 7.51317Z");
+        svgPath2.setFill(Color.TRANSPARENT);
+        svgPath2.setStroke(Color.web("#CED0D6"));
+        svgPath2.setFillRule(FillRule.EVEN_ODD);
+
+        Group group = new Group(svgPath, svgPath2);
+
+        return new StackPane(group);
     }
 }

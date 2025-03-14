@@ -158,9 +158,6 @@
 .scroll-pane > .scroll-bar .track {
     -fx-background-color: transparent;
 }
-.scroll-pane > .scroll-bar:vertical {
-    -fx-padding: 30 0 30 0;
-}
 
 .scroll-shadow {
     -fx-background-color: linear-gradient(to bottom, rgba(30, 31, 34, 0.5), rgb(30, 31, 34));
