@@ -159,9 +159,24 @@
     -fx-background-color: transparent;
 }
 
-.scroll-pane {
-    -fx-pref-height: 40em;
+.scroll-shadow {
+    -fx-background-color: linear-gradient(to bottom, rgba(30, 31, 34, 0.5), rgb(30, 31, 34));
+    -fx-pref-height: 30px;
+    -fx-max-height: 30px;
+    -fx-min-height: 30px;
+    -fx-background-insets: 0 10%;
+    -fx-background-radius: 0 0 16 16;
 }
+.scroll-shadow-top {
+    -fx-background-color: linear-gradient(to top, rgba(30, 31, 34, 0.5), rgb(30, 31, 34));
+    -fx-pref-height: 30px;
+    -fx-max-height: 30px;
+    -fx-min-height: 30px;
+    -fx-background-insets: 0 10%;
+    -fx-background-radius: 0 0 16 16;
+}
+
+
 
 .scroll-bar:vertical .thumb {
     -fx-background-color: rgba(255, 255, 255, 0.2);
@@ -180,6 +195,28 @@
     -fx-text-fill: #DFE1E5;
     -fx-font-family: "JetBrains Mono";
     -fx-font-size: 1.1em;
+}
+
+.context-menu {
+    -fx-background-radius: 8;
+    -fx-background-color: #2B2D30;
+    -fx-border-color: #444;
+    -fx-border-radius: 8;
+}
+
+.root.popup {
+    -fx-background-color: transparent;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DFE1E5;
+    -fx-padding: 8;
+    -fx-background-radius: 4;
+}
+
+.menu-item:hover {
+    -fx-background-color: #444;
 }
 
 .star:hover {

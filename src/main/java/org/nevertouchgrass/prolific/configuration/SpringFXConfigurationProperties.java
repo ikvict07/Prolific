@@ -10,4 +10,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SpringFXConfigurationProperties {
 	private String fxmlLocation;
 	private String settingsLocation;
+	private String runConfigsLocation;
 }

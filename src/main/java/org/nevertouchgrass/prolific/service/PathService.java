@@ -1,10 +1,17 @@
 package org.nevertouchgrass.prolific.service;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
+import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.Project;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.NoSuchElementException;
@@ -14,7 +21,10 @@ import java.util.NoSuchElementException;
  */
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class PathService {
+    private final SpringFXConfigurationProperties properties;
+    private final XmlMapper xmlMapper;
     public Path getProjectPath() {
         Class<?> clazz = PathService.class;
         URL classResource = clazz.getResource(clazz.getSimpleName() + ".class");
@@ -25,6 +35,31 @@ public class PathService {
         log.info("Working in directory: {}", url);
 
         return normalizeUrl(URI.create(url));
+    }
+
+    @SneakyThrows
+    public Path getRunConfigsDirectory() {
+        var jarPath = getProjectPath();
+        var dir = jarPath.getParent().resolve(properties.getRunConfigsLocation());
+        Files.createDirectories(dir);
+        return dir;
+    }
+
+    @SneakyThrows
+    public Path getSettingsPath() {
+        Path jarPath = getProjectPath();
+        Path settingsPath = jarPath.getParent().resolve(properties.getSettingsLocation());
+        Path settingsFilePath = settingsPath.resolve("settings.xml");
+        Files.createDirectories(settingsPath);
+        if (!Files.exists(settingsFilePath)) {
+            Files.createFile(settingsFilePath);
+            var settings = new UserSettingsHolder();
+            xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), settings);
+        }
+        return settingsFilePath;
+    }
+    public Path getWorkspacePath(Project project) {
+        return Path.of(project.getPath()).resolve(".idea").resolve("workspace.xml");
     }
 
     public Path normalizeUrl(URI uri) {
