@@ -43,9 +43,9 @@ public class ProjectResolver {
     }
 
     @SneakyThrows
-    public Project resolveProject(Path path) {
+    public Project resolveProject(Path path, int depth) {
         for (var projectTypeModel : projectTypeModels) {
-            Visitor visitor = new Visitor(projectTypeModel, userSettingsHolder, excludeMatcher);
+            Visitor visitor = new Visitor(projectTypeModel, userSettingsHolder, excludeMatcher, depth);
             Files.walkFileTree(path, visitor);
             if (visitor.getProject().getType() != null) {
                 Project project = visitor.getProject();
@@ -57,6 +57,10 @@ public class ProjectResolver {
         throw new IllegalStateException("Project type not found for path: " + path);
     }
 
+    public Project resolveProject(Path path) {
+        return resolveProject(path, Integer.MAX_VALUE);
+    }
+
 }
 
 @Getter
@@ -65,16 +69,16 @@ class Visitor extends SimpleFileVisitor<Path> {
     private final ProjectTypeModel projectTypeModel;
     private final Project project = new Project();
     private final PathMatcher pathMatcher;
-    private final UserSettingsHolder userSettingsHolder;
     private final PathMatcher excludeMatcher;
+    private final int maxDepth;
 
-    Visitor(ProjectTypeModel projectTypeModel, UserSettingsHolder userSettingsHolder, PathMatcher excludeMatcher) {
+    Visitor(ProjectTypeModel projectTypeModel, UserSettingsHolder userSettingsHolder, PathMatcher excludeMatcher, int maxDepth) {
         this.projectTypeModel = projectTypeModel;
-        this.userSettingsHolder = userSettingsHolder;
         this.excludeMatcher = excludeMatcher;
         List<String> identifiers = projectTypeModel.getIdentifiers();
         String pattern = String.format("glob:**/{%s}", String.join(",", identifiers));
         pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
+        this.maxDepth = maxDepth;
     }
 
     @Override
@@ -82,13 +86,12 @@ class Visitor extends SimpleFileVisitor<Path> {
         if (excludeMatcher.matches(file) && !pathMatcher.matches(file)) {
             return FileVisitResult.SKIP_SUBTREE;
         }
-        if (Files.isReadable(file)) {
-            if (pathMatcher.matches(file)) {
+        if (Files.isReadable(file) && pathMatcher.matches(file)) {
                 project.setType(projectTypeModel.getName());
                 return FileVisitResult.SKIP_SIBLINGS;
             }
-        }
-        if (file.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
+
+        if (file.getNameCount() > maxDepth) {
             return FileVisitResult.SKIP_SIBLINGS;
         }
         return FileVisitResult.CONTINUE;
@@ -99,7 +102,7 @@ class Visitor extends SimpleFileVisitor<Path> {
         if (excludeMatcher.matches(dir) && !pathMatcher.matches(dir)) {
             return FileVisitResult.SKIP_SUBTREE;
         }
-        if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {
+        if (dir.getNameCount() > maxDepth) {
             return FileVisitResult.SKIP_SUBTREE;
         }
         if (Files.isReadable(dir)) {
