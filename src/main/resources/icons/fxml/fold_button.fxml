@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.SVGPath?>
+<HBox alignment="CENTER" xmlns="http://javafx.com/javafx/23.0.1" stylesheets="/css/styles.css">
+    <SVGPath content="M8 1L4.5 4.5L1 1" stroke="#6F737A" fill="TRANSPARENT" strokeWidth="2" id="foldButton"/>
+</HBox>

@@ -6,6 +6,7 @@ import org.nevertouchgrass.prolific.annotation.OnSave;
 import org.nevertouchgrass.prolific.annotation.OnUpdate;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -17,6 +18,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
+@DependsOn("databaseService")
 public class ProjectsService {
 
     private final ProjectResolver projectResolver;
