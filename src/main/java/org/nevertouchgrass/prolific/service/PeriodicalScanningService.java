@@ -73,7 +73,7 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     @SneakyThrows
     private void resolveAndSave(Path path) {
         Path p = path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS);
-        Project project = projectResolver.resolveProject(p);
+        Project project = projectResolver.resolveProject(p, userSettingsHolder.getMaximumProjectDepth());
         projectsRepository.save(project);
     }
 
