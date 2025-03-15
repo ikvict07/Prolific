@@ -2,9 +2,9 @@ package org.nevertouchgrass.prolific.service;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.springframework.stereotype.Service;
 
@@ -19,24 +19,16 @@ import java.util.List;
 
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class UserSettingsService {
     private final UserSettingsHolder userSettingsHolder;
-    private final SpringFXConfigurationProperties configuration;
     private final PathService pathService;
     private final XmlMapper xmlMapper;
-
-
-    public UserSettingsService(UserSettingsHolder userSettingsHolder, SpringFXConfigurationProperties springFXConfigurationProperties, PathService pathService, XmlMapper xmlMapper) {
-        this.userSettingsHolder = userSettingsHolder;
-        this.configuration = springFXConfigurationProperties;
-        this.pathService = pathService;
-        this.xmlMapper = xmlMapper;
-    }
 
     @PostConstruct
     @SneakyThrows
     public void loadSettings() {
-        Path settingsFilePath = getSettingsPath();
+        Path settingsFilePath = pathService.getSettingsPath();
         UserSettingsHolder sett = xmlMapper.readValue(Files.newInputStream(settingsFilePath), UserSettingsHolder.class);
         log.info("Loaded settings: {}", sett);
         if (sett.getBaseScanDirectory() == null || sett.getBaseScanDirectory().isEmpty()) {
@@ -64,24 +56,9 @@ public class UserSettingsService {
     @SneakyThrows
     public synchronized void saveSettings() {
         log.info("Saving settings: {}", userSettingsHolder);
-        Path settingsFilePath = getSettingsPath();
+        Path settingsFilePath = pathService.getSettingsPath();
         xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), userSettingsHolder);
     }
-
-    @SneakyThrows
-    private Path getSettingsPath() {
-        Path jarPath = pathService.getProjectPath();
-        Path settingsPath = jarPath.getParent().resolve(configuration.getSettingsLocation());
-        Path settingsFilePath = settingsPath.resolve("settings.xml");
-        Files.createDirectories(settingsPath);
-        if (!Files.exists(settingsFilePath)) {
-            Files.createFile(settingsFilePath);
-            var settings = new UserSettingsHolder();
-            xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), settings);
-        }
-        return settingsFilePath;
-    }
-
 
     public void setDefaultBaseScanDirectory() {
         userSettingsHolder.setBaseScanDirectory(System.getProperty("user.home"));

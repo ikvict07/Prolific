@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectsPanelController"
            stylesheets="@/css/styles.css">
@@ -13,8 +11,8 @@
               styleClass="mainBG">
         </VBox>
     </ScrollPane>
-    <Region fx:id="upperShadow" prefHeight="40" styleClass="upper-shadow" mouseTransparent="true"
-            StackPane.alignment="TOP_CENTER" visible="false"/>
-    <Region fx:id="lowerShadow" prefHeight="40" styleClass="lower-shadow" mouseTransparent="true"
+    <Region fx:id="upperShadow" styleClass="upper-shadow" mouseTransparent="true"
+            StackPane.alignment="TOP_CENTER"/>
+    <Region fx:id="lowerShadow" styleClass="lower-shadow" mouseTransparent="true"
             StackPane.alignment="BOTTOM_CENTER"/>
 </StackPane>
