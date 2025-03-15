@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.LogsAndMetricsPanelController"
+            stylesheets="@/css/styles.css">
+    <top>
+        <HBox spacing="4" style="-fx-background-color: #2B2D30; -fx-border-width: 0 0 2 0; -fx-border-color: #1E1F22">
+            <padding>
+                <Insets top="4" bottom="4" right="8" left="8"/>
+            </padding>
+            <Label text="You have 0 running projects"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="V Prolific(1)"/>
+        </HBox>
+    </top>
+    <center>
+        <TextArea fx:id="logsAndMetrics" editable="false"/>
+    </center>
+    <bottom>
+        <HBox spacing="8" style="-fx-background-color: #2B2D30; -fx-border-width: 2 0 0 0; -fx-border-color: #1E1F22">
+            <padding>
+                <Insets top="4" bottom="4" right="8" left="8"/>
+            </padding>
+            <Label text="Logs" styleClass="icon-button"/>
+            <Separator orientation="VERTICAL"/>
+            <Label text="Metrics" styleClass="icon-button"/>
+        </HBox>
+    </bottom>
+</BorderPane>
