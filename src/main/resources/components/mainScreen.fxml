@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.MainScreenController"
@@ -7,6 +8,9 @@
             fx:id="mainScreen">
     <fx:include fx:id="headerComponent" source="/components/header.fxml" AnchorPane.leftAnchor="0"
                 AnchorPane.rightAnchor="0"/>
-    <fx:include source="projectsPanel.fxml" fx:id="projectsPanel" AnchorPane.topAnchor="128"
-                AnchorPane.leftAnchor="16" AnchorPane.bottomAnchor="64"/>
+    <SplitPane AnchorPane.rightAnchor="16" AnchorPane.leftAnchor="16" AnchorPane.bottomAnchor="64"
+               AnchorPane.topAnchor="128" dividerPositions="0.5">
+        <fx:include source="projectsPanel.fxml" fx:id="projectsPanel" HBox.hgrow="ALWAYS"/>
+        <fx:include source="logsAndMetricsPanel.fxml" fx:id="logsAndMetricsPanel"/>
+    </SplitPane>
 </AnchorPane>
