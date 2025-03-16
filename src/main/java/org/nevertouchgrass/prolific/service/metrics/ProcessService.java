@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -40,10 +41,13 @@ public class ProcessService {
 
     public List<OSProcess> getRunningProcesses(Project project) {
         var processes = os.getProcesses();
-        var result = processes.stream().filter(p -> p.getCommandLine().contains(project.getPath())).toList();
+        var result = processes.stream().filter(p -> p.getCommandLine().contains(project.getPath())).filter(p -> {
+            var pattern = Pattern.compile("(^|/)" + Pattern.quote(project.getTitle()) + "(\\s|$|/|])");
+            return pattern.matcher(p.getCommandLine()).find();
+        }).toList();
         if (!result.isEmpty()) {
-            log.debug("For project {} found {} running processes", project.getPath(), result.size());
-            log.trace("{} Running processes: {}", project, result);
+            log.info("For project {} found {} running processes", project.getPath(), result.size());
+            log.info("{} Running processes: {}", project, result.stream().map(OSProcess::getCommandLine).toList());
         }
         return result;
     }
@@ -72,17 +76,19 @@ public class ProcessService {
 
     public void scheduleProcessObserving() {
         executorService.scheduleAtFixedRate(() -> {
-            while (observing) {
-                var toRemove = new ArrayList<OSProcess>();
-                live.forEach(p -> {
-                    if (os.getProcess(p.getProcessID()) == null) {
-                        dead.add(p);
-                        onKillListeners.forEach(c -> c.accept(p));
-                        toRemove.add(p);
-                    }
-                });
-                live.removeAll(toRemove);
+            if (!observing) {
+                return;
             }
+            var toRemove = new ArrayList<OSProcess>();
+            live.forEach(p -> {
+                if (os.getProcess(p.getProcessID()) == null) {
+                    dead.add(p);
+                    onKillListeners.forEach(c -> c.accept(p));
+                    toRemove.add(p);
+                }
+            });
+            live.removeAll(toRemove);
+
         }, 0, 3, TimeUnit.SECONDS);
     }
 

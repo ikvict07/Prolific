@@ -42,27 +42,28 @@ public class MetricsService {
 
     public void startObserving() {
         executorService.scheduleAtFixedRate(() -> {
-            while (observing) {
-                observableProcesses.forEach(p -> {
-                    if (os.getProcess(p.getProcessID()) == null) {
-                        return;
-                    }
-                    var metric = new Metric();
-                    var cpu = os.getProcess(p.getProcessID()).getProcessCpuLoadCumulative();
-                    var memory = os.getProcess(p.getProcessID()).getResidentSetSize();
-                    var threadCount = os.getProcess(p.getProcessID()).getThreadCount();
-                    var timestamp = LocalDateTime.now();
-                    metric.setCpuUsage(cpu);
-                    metric.setMemoryUsage(memory);
-                    metric.setThreadCount(threadCount);
-                    metric.setTimeStamp(timestamp);
-                    metrics.computeIfAbsent(p, p1 -> {
-                        var newMetrics = new ProcessMetrics();
-                        newMetrics.setStartTime(p1.getStartTime());
-                        return newMetrics;
-                    }).addMetric(metric);
-                });
+            if (!observing) {
+                return;
             }
+            observableProcesses.forEach(p -> {
+                if (os.getProcess(p.getProcessID()) == null) {
+                    return;
+                }
+                var metric = new Metric();
+                var cpu = os.getProcess(p.getProcessID()).getProcessCpuLoadCumulative();
+                var memory = os.getProcess(p.getProcessID()).getResidentSetSize();
+                var threadCount = os.getProcess(p.getProcessID()).getThreadCount();
+                var timestamp = LocalDateTime.now();
+                metric.setCpuUsage(cpu);
+                metric.setMemoryUsage(memory);
+                metric.setThreadCount(threadCount);
+                metric.setTimeStamp(timestamp);
+                metrics.computeIfAbsent(p, p1 -> {
+                    var newMetrics = new ProcessMetrics();
+                    newMetrics.setStartTime(p1.getStartTime());
+                    return newMetrics;
+                }).addMetric(metric);
+            });
         }, 0, 3, TimeUnit.SECONDS);
     }
 
@@ -71,7 +72,9 @@ public class MetricsService {
     }
 
     public void observeProcess(OSProcess process) {
+        System.out.println("Will observe process: " + process + " with path: " + process.getPath());
         observableProcesses.add(process);
+        metrics.computeIfAbsent(process, p -> new ProcessMetrics());
     }
 
     @PreDestroy
