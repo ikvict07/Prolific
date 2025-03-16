@@ -10,6 +10,7 @@ import org.nevertouchgrass.prolific.service.importers.contract.ConfigImporter;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -17,23 +18,27 @@ import java.util.List;
 public abstract class BuildToolConfigImporter implements ConfigImporter {
     private final PathService pathService;
     private final DocumentParser documentParser;
+
     @Override
     public List<RunConfig> importConfig(Project project) {
-        var workspacePath = pathService.getWorkspacePath(project);
-        if (!workspacePath.toFile().exists()) {
-            return List.of();
-        }
-        try {
-            Document document = documentParser.parseXmlDocument(workspacePath);
-            NodeList configurations = document.getElementsByTagName("configuration");
+        var workspacePaths = pathService.getWorkspacePaths(project);
+        var configs = new ArrayList<RunConfig>();
+        workspacePaths.forEach((workspacePath) -> {
+            if (!workspacePath.toFile().exists()) {
+                return;
+            }
+            try {
+                Document document = documentParser.parseXmlDocument(workspacePath);
+                NodeList configurations = document.getElementsByTagName("configuration");
 
-            var configs = documentParser.getNamedRunConfigs(configurations, getType(), getOptionsAttribute());
-            configs.forEach(this::normalize);
-            return configs;
-        } catch (Exception e) {
-            log.error("Failed to import run configurations for project {}", project.getTitle(), e);
-            return List.of();
-        }
+                var c = documentParser.getNamedRunConfigs(configurations, getType(), getOptionsAttribute());
+                c.forEach(this::normalize);
+                configs.addAll(c);
+            } catch (Exception e) {
+                log.error("Failed to import run configurations for project {}", project.getTitle(), e);
+            }
+        });
+        return configs;
     }
 
     protected abstract String getOptionsAttribute();
