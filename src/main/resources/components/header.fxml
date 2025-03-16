@@ -26,9 +26,15 @@
             </HBox>
             <HBox>
                 <StackPane styleClass="icon-button" onMouseClicked="#projects">
+                    <padding>
+                        <Insets top="6" bottom="6" left="10" right="10"/>
+                    </padding>
                     <fx:include source="/icons/fxml/folder.fxml"/>
                 </StackPane>
                 <StackPane fx:id="settingsButton" styleClass="icon-button" onMouseClicked="#dropdownForSettings">
+                    <padding>
+                        <Insets top="6" bottom="6" left="10" right="10"/>
+                    </padding>
                     <fx:include source="/icons/fxml/settings.fxml"/>
                 </StackPane>
             </HBox>

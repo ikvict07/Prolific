@@ -76,7 +76,7 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
         if (p.equals(Path.of(userSettingsHolder.getBaseScanDirectory()))) {
             return;
         }
-        Project project = projectResolver.resolveProject(p);
+        Project project = projectResolver.resolveProject(p, userSettingsHolder.getMaximumProjectDepth());
         projectsRepository.save(project);
     }
 
