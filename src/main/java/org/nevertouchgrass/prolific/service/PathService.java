@@ -32,7 +32,6 @@ public class PathService {
             throw new IllegalStateException("class resource is null");
         }
         String url = classResource.toString();
-        log.info("Working in directory: {}", url);
 
         return normalizeUrl(URI.create(url));
     }
@@ -83,7 +82,6 @@ public class PathService {
             }
             int startIndex = System.getProperty("os.name").toLowerCase().contains("win") ? 1 : 0;
             String path = fixed.substring(startIndex, index);
-            log.info("Working in directory: {}", path);
             return Paths.get(path);
         }
         return Paths.get(uri);
