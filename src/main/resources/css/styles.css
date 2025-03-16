@@ -219,6 +219,10 @@
     -fx-background-color: #444;
 }
 
+.menu-item-disabled:hover {
+    -fx-background-color: transparent;
+}
+
 .star:hover {
     -fx-fill: #A6B3C1;
 }

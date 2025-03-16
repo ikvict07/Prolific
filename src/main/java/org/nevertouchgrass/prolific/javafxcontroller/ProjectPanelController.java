@@ -1,6 +1,8 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
@@ -181,14 +183,17 @@ public class ProjectPanelController {
         ObservableList<MenuItem> menuItems = contextMenu.getItems();
         if (label != null && !runConfigs.isEmpty()) {
             MenuItem menuItem = new MenuItem(label);
-            menuItem.setDisable(true);
+            menuItem.addEventFilter(ActionEvent.ANY, Event::consume);
+            menuItem.getStyleClass().add("menu-item-disabled");
             menuItems.add(menuItem);
         }
 
         for (RunConfig runConfig : runConfigs) {
-            if (configTypeIcon.getChildren().isEmpty()) {
+            if (chosenConfig == null) {
+                configTypeIcon.getChildren().clear();
                 configTypeIcon.getChildren().add(projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
                 configurationName.setText(runConfig.getConfigName());
+                chosenConfig = runConfig;
             }
             MenuItem menuItem = new MenuItem(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
             menuItem.setOnAction( _ -> {
