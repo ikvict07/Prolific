@@ -8,8 +8,6 @@ import org.nevertouchgrass.prolific.annotation.OnSave;
 import org.nevertouchgrass.prolific.annotation.OnUpdate;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
-import org.nevertouchgrass.prolific.service.metrics.MetricsService;
-import org.nevertouchgrass.prolific.service.metrics.ProcessService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +26,6 @@ public class ProjectsService {
 
     private final ProjectResolver projectResolver;
     private final ProjectsRepository projectsRepository;
-    private final ProcessService processService;
-    private final MetricsService metricsService;
 
     private final Set<Project> projects = ConcurrentHashMap.newKeySet();
 
@@ -41,9 +37,6 @@ public class ProjectsService {
     @SneakyThrows
     private void init() {
         projectsRepository.findAll(Project.class).forEach(projects::add);
-        projects.forEach(processService::observe);
-        processService.getLiveProcesses().forEach(metricsService::observeProcess);
-        metricsService.getMetrics().forEach((k,v) -> v.registerOnAddListener(System.out::println));
     }
 
     public Set<Project> getProjects() {
