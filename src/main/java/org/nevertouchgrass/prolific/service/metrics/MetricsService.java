@@ -71,7 +71,6 @@ public class MetricsService implements ProcessAware {
     }
 
     public void observeProcess(OSProcess process) {
-        System.out.println("Will observe process: " + process + " with path: " + process.getPath());
         observableProcesses.add(process);
         metrics.computeIfAbsent(process, p -> new ProcessMetrics());
     }
