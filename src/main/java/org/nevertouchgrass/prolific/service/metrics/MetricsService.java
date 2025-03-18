@@ -10,17 +10,16 @@ import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.*;
 
 @Service
 @RequiredArgsConstructor
-public class MetricsService {
+public class MetricsService implements ProcessAware {
     private final Map<OSProcess, ProcessMetrics> metrics = new ConcurrentHashMap<>();
-    private final List<OSProcess> observableProcesses = new CopyOnWriteArrayList<>();
+    private final Set<OSProcess> observableProcesses = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private final ProcessService processService;
     private final OperatingSystem os;
     private volatile boolean observing = true;
 
@@ -31,7 +30,6 @@ public class MetricsService {
 
     @PostConstruct
     private void init() {
-        processService.registerOnKillListener(this::onProcessKill);
         startObserving();
     }
 
@@ -67,12 +65,12 @@ public class MetricsService {
         }, 0, 3, TimeUnit.SECONDS);
     }
 
+    @Override
     public void onProcessKill(OSProcess process) {
         observableProcesses.remove(process);
     }
 
     public void observeProcess(OSProcess process) {
-        System.out.println("Will observe process: " + process + " with path: " + process.getPath());
         observableProcesses.add(process);
         metrics.computeIfAbsent(process, p -> new ProcessMetrics());
     }
