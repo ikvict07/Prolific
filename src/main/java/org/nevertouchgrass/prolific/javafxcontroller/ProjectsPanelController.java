@@ -19,12 +19,16 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.nevertouchgrass.prolific.service.searching.comparators.ProjectComparatorBuilder;
+import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 @Controller
 @StageComponent("primaryStage")
@@ -47,9 +51,9 @@ public class ProjectsPanelController {
     private ProjectsRepository projectsRepository;
     private ProjectsService projectsService;
 
-    private Comparator<Project> projectComparator = Comparator
-            .comparing(Project::getIsStarred).reversed()
-            .thenComparing(p -> p.getTitle().toLowerCase());
+    private Predicate<Project> filterFunction = ProjectFilterService.getDefaultFilter();
+    private Comparator<Project> projectComparator = ProjectComparatorBuilder.getDefault();
+    private Set<Project> beforeFiltering = Set.of();
 
     @Initialize
     private void init() {
@@ -69,7 +73,12 @@ public class ProjectsPanelController {
         projectsService.registerOnRemoveListener(this::deleteProjectFromList);
         projectsService.registerOnUpdateListener(this::updateProject);
     }
-    
+
+    public void filterProjects(Predicate<Project> filterFunction) {
+        content.getChildren().clear();
+        projectsService.getProjects().stream().filter(filterFunction).forEach(this::addProjectToList);
+    }
+
 
     public void changeComparator(Comparator<Project> comparator) {
         projectComparator = comparator;
