@@ -47,7 +47,7 @@ public class ProjectsPanelController {
     private ProjectsRepository projectsRepository;
     private ProjectsService projectsService;
 
-    private final Comparator<Project> projectComparator = Comparator
+    private Comparator<Project> projectComparator = Comparator
             .comparing(Project::getIsStarred).reversed()
             .thenComparing(p -> p.getTitle().toLowerCase());
 
@@ -68,6 +68,13 @@ public class ProjectsPanelController {
         projectsService.registerOnAddListener(this::addProjectToList);
         projectsService.registerOnRemoveListener(this::deleteProjectFromList);
         projectsService.registerOnUpdateListener(this::updateProject);
+    }
+    
+
+    public void changeComparator(Comparator<Project> comparator) {
+        projectComparator = comparator;
+        content.getChildren().clear();
+        projectsService.getProjects().forEach(this::addProjectToList);
     }
 
 
