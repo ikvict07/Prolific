@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service.importers;
+package org.nevertouchgrass.prolific.service.configurations.importers;
 
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.RunConfig;
