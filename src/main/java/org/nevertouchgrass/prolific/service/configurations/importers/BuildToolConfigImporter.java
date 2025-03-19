@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service.importers;
+package org.nevertouchgrass.prolific.service.configurations.importers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -6,7 +6,7 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.service.DocumentParser;
 import org.nevertouchgrass.prolific.service.PathService;
-import org.nevertouchgrass.prolific.service.importers.contract.ConfigImporter;
+import org.nevertouchgrass.prolific.service.configurations.importers.contract.ConfigImporter;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 

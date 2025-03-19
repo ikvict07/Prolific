@@ -9,7 +9,7 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
 import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.model.RunConfigFileModel;
-import org.nevertouchgrass.prolific.service.importers.ConfigImporterStrategy;
+import org.nevertouchgrass.prolific.service.configurations.importers.ConfigImporterStrategy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -64,12 +64,24 @@ public class RunConfigService {
     }
 
     public List<RunConfig> getRunConfigsFromIdea(Project project) {
-        return configImporter.getRunConfig(project);
+        return configImporter.getRunConfigs(project);
     }
 
     public ProjectRunConfigs getAllRunConfigs(Project project) {
         var importedConfigs = getRunConfigsFromIdea(project);
         var manuallyAddedConfigs = getRunConfigsFromDir(project);
         return new ProjectRunConfigs(importedConfigs, manuallyAddedConfigs);
+    }
+
+    public void deleteRunConfig(Project project, RunConfig runConfig) {
+        var runConfigsDirectory = pathService.getRunConfigsDirectory();
+        var runConfigFile = runConfigsDirectory.resolve(project.getTitle() + ".xml");
+        try {
+            var runConfigFileModel = xmlMapper.readValue(Files.newInputStream(runConfigFile), RunConfigFileModel.class);
+            runConfigFileModel.getConfigs().remove(runConfig);
+            xmlMapper.writeValue(Files.newOutputStream(runConfigFile), runConfigFileModel);
+        } catch (IOException e) {
+            log.error("Failed to delete run config {}", runConfig, e);
+        }
     }
 }
