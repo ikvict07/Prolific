@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service.searching;
+package org.nevertouchgrass.prolific.service.searching.comparators;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,7 +53,7 @@ public class ProjectComparatorBuilder {
         return result;
     }
 
-    public Comparator<Project> getDefault() {
+    public static Comparator<Project> getDefault() {
         return Comparator.comparing(Project::getIsStarred).reversed().thenComparing(p -> p.getTitle().toLowerCase());
     }
 
