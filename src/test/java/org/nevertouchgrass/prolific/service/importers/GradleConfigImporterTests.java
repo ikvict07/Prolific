@@ -3,6 +3,7 @@ package org.nevertouchgrass.prolific.service.importers;
 import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.config.TestConfiguration;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.service.configurations.importers.GradleConfigImporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
