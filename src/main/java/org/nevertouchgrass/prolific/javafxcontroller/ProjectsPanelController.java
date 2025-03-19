@@ -75,8 +75,9 @@ public class ProjectsPanelController {
     }
 
     public void filterProjects(Predicate<Project> filterFunction) {
+        this.filterFunction = filterFunction;
         content.getChildren().clear();
-        projectsService.getProjects().stream().filter(filterFunction).forEach(this::addProjectToList);
+        projectsService.getProjects().forEach(this::addProjectToList);
     }
 
 
@@ -110,6 +111,7 @@ public class ProjectsPanelController {
 
 
     private void addProjectToList(Project project) {
+        if (!filterFunction.test(project)) return;
         Platform.runLater(() -> {
             int index = findInsertionIndex(project);
             insertProjectPanelAt(index, project);
