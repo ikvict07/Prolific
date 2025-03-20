@@ -2,7 +2,7 @@
 
 ## Vision
 
-Vision Prolific is an application designed for convenient project management for developers. It allows users to quickly locate, launch, and manage their projects from a single access point. The application will be monetized through a commercial licensing model, with separate pricing plans for corporations while remaining free for individual users.
+Prolific is an application designed for convenient project management for developers. It allows users to quickly locate, launch, and manage their projects from a single access point. The application will be monetized through a commercial licensing model, with separate pricing plans for corporations while remaining free for individual users.
 
 ## Usage Scenario
 
