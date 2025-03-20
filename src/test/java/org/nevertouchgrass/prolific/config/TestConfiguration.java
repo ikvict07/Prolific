@@ -58,4 +58,8 @@ public class TestConfiguration {
     public GradleConfigImporter gradleConfigImporter(PathService pathService, DocumentParser documentParser) {
         return new GradleConfigImporter(pathService, documentParser);
     }
+
+    @Bean PluginConfigProvider pluginConfigProvider() {
+        return new PluginConfigProvider();
+    }
 }

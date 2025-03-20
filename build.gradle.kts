@@ -1,10 +1,11 @@
 plugins {
     java
+    alias(libs.plugins.jacoco)
     alias(libs.plugins.application)
     alias(libs.plugins.springBoot)
     alias(libs.plugins.springDependencyManagement)
     alias(libs.plugins.javaFx)
-    id("org.beryx.runtime") version "1.12.2"
+    alias(libs.plugins.beryx)
     alias(libs.plugins.maven.publish)
 }
 
@@ -59,6 +60,7 @@ tasks {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
         jvmArgs("-Xshare:off")
         useJUnitPlatform()
+        finalizedBy(jacocoTestCoverageVerification)
     }
 
     javadoc {
@@ -221,4 +223,18 @@ tasks.jar {
 }
 tasks.installDist {
     enabled = false
+}
+
+tasks.bootJar {
+    dependsOn(tasks.test)
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = BigDecimal.valueOf(0.7)
+            }
+        }
+    }
 }
