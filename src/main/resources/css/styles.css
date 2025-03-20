@@ -151,10 +151,6 @@
     -fx-transition: opacity 0.3s;
 }
 
-.scroll-pane > .scroll-bar:hover {
-    -fx-opacity: 0;
-}
-
 .scroll-pane > .scroll-bar .track {
     -fx-background-color: transparent;
 }
@@ -188,6 +184,11 @@
     -fx-background-color: rgba(255, 255, 255, 0.2);
     -fx-background-radius: 0;
     -fx-opacity: 1;
+}
+
+.text-area .scroll-pane .scroll-bar .thumb:pressed,
+.text-area .scroll-pane .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
 }
 
 .text-area .scroll-pane .scroll-bar:horizontal .increment-arrow,
@@ -291,6 +292,12 @@
     -fx-max-height: 30px;
     -fx-min-height: 30px;
     -fx-background-insets: 0 10%;
+}
+
+.metrics-hbox {
+    -fx-background-color: #2B2D30;
+    -fx-border-width: 2 0 0 0;
+    -fx-border-color: #1E1F22
 }
 
 /** {*/
