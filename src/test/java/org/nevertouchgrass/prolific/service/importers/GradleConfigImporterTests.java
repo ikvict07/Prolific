@@ -1,19 +1,16 @@
 package org.nevertouchgrass.prolific.service.importers;
 
 import org.junit.jupiter.api.Test;
-import org.nevertouchgrass.prolific.config.TestConfiguration;
+import org.nevertouchgrass.prolific.BackendTestBase;
 import org.nevertouchgrass.prolific.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@SpringBootTest(classes = TestConfiguration.class)
-class GradleConfigImporterTests {
-
+class GradleConfigImporterTests extends BackendTestBase {
     private final GradleConfigImporter importer;
 
     @Autowired

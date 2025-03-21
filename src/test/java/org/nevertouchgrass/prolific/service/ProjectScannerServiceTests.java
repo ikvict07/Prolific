@@ -3,21 +3,19 @@ package org.nevertouchgrass.prolific.service;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.nevertouchgrass.prolific.config.TestConfiguration;
+import org.nevertouchgrass.prolific.BackendTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.nio.file.Path;
 import java.util.Set;
 
 @Log4j2
-@SpringBootTest(classes = TestConfiguration.class)
-class ProjectScannerServiceTests {
+class ProjectScannerServiceTests extends BackendTestBase {
     @Autowired
     private ProjectScannerService projectScannerService;
 
     @Test
-    public void givenNothing_whenScanForProjects_returnProjects() {
+    void givenNothing_whenScanForProjects_returnProjects() {
         String path = System.getProperty("user.dir");
         Set<Path> expected = Set.of(Path.of(path));
 
