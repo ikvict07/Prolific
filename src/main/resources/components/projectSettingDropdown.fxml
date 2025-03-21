@@ -13,7 +13,7 @@
     </Label>
     <Label fx:id="openInExplorerButton" onMouseClicked="#openInExplorer" textAlignment="JUSTIFY">
         <graphic>
-            <fx:include disable="true" maxWidth="10" maxHeight="10" source="../icons/fxml/folder.fxml"/>
+            <fx:include disable="true" maxWidth="10" maxHeight="10" source="/icons/fxml/folder.fxml"/>
         </graphic>
         Open directory
     </Label>

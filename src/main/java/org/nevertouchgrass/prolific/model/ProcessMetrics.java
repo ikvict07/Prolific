@@ -5,13 +5,15 @@ import lombok.Data;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 @Data
 public class ProcessMetrics {
-    private List<Metric> metrics = new CopyOnWriteArrayList<>();
+    private List<Metric> metrics = Collections.synchronizedList(new ArrayList<>());
     private LocalDateTime startTime;
     private final List<Consumer<Metric>> onAddListeners = new CopyOnWriteArrayList<>();
 
