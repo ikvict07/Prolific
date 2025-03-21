@@ -36,6 +36,7 @@ import java.util.function.Predicate;
 @Getter
 @Setter
 public class ProjectsPanelController {
+    public static final String PROJECT_KEY = "project";
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -76,16 +77,19 @@ public class ProjectsPanelController {
 
     public void filterProjects(Predicate<Project> filterFunction) {
         this.filterFunction = filterFunction;
-        content.getChildren().clear();
-        projectsService.getProjects().forEach(this::addProjectToList);
+        updateContent();
     }
-
 
     public void changeComparator(Comparator<Project> comparator) {
         projectComparator = comparator;
-        content.getChildren().clear();
-        projectsService.getProjects().forEach(this::addProjectToList);
+        updateContent();
     }
+
+    private void updateContent() {
+        content.getChildren().clear();
+        beforeFiltering.forEach(this::addProjectToList);
+    }
+
 
 
     private void setupScrollBarFadeEffect() {
@@ -120,14 +124,14 @@ public class ProjectsPanelController {
 
     private void deleteProjectFromList(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().filtered(node -> node.getProperties().get("project").equals(project));
+            var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
         });
     }
 
     public void updateProject(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().filtered(node -> node.getProperties().get("project").equals(project));
+            var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
             var newIndex = findInsertionIndex(project);
             insertProjectPanelAt(newIndex, project);
@@ -135,7 +139,7 @@ public class ProjectsPanelController {
     }
 
     private int findInsertionIndex(Project project) {
-        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get("project")).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
+        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get(PROJECT_KEY)).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
         return index < 0 ? -index - 1 : index;
     }
 
@@ -146,7 +150,7 @@ public class ProjectsPanelController {
         controller.getProjectIconText().setText(getIconTextFromTitle(project.getTitle()));
         controller.setProject(project);
         var parent = resource.getParent();
-        parent.getProperties().put("project", project);
+        parent.getProperties().put(PROJECT_KEY, project);
         content.getChildren().add(index, parent);
         controller.init();
     }

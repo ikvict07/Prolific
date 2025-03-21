@@ -29,8 +29,11 @@ public class ProjectFilterService {
         var options = List.of(filterOptions);
         var result = new ArrayList<Function<Project, Boolean>>();
         for (var option : options) {
-            var matchingFilter = filters.stream().filter(f -> f.getFilterType().equals(option.filterType)).findFirst().orElseThrow(IllegalStateException::new);
-            result.add(matchingFilter.getFilter(option.value));
+            var matchingFilter = filters.stream().filter(f -> f.getFilterType().equals(option.filterType)).findFirst();
+            if (matchingFilter.isEmpty()) {
+                continue;
+            }
+            result.add(matchingFilter.get().getFilter(option.value));
         }
         return (project -> result.stream().allMatch(f -> f.apply(project)));
     }

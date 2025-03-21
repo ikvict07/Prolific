@@ -81,20 +81,15 @@ public class ProcessLogsService implements ProcessAware {
      * @param process the process whose readers should be closed
      */
     private void closeReaders(Process process) {
-        try {
-            BufferedReader reader = processInputStreamMap.remove(process);
-            if (reader != null) {
-                reader.close();
-            }
+
+        try (BufferedReader inputReader = processInputStreamMap.remove(process)) {
+            // closing
         } catch (IOException e) {
             log.error("Error closing input stream reader for process {}", process.pid(), e);
         }
 
-        try {
-            BufferedReader reader = processErrorStreamMap.remove(process);
-            if (reader != null) {
-                reader.close();
-            }
+        try (BufferedReader errorReader = processErrorStreamMap.remove(process)) {
+            // closing
         } catch (IOException e) {
             log.error("Error closing error stream reader for process {}", process.pid(), e);
         }

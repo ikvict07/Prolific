@@ -13,6 +13,8 @@ import org.w3c.dom.NodeList;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.CONFIGURATION;
+
 @RequiredArgsConstructor
 @Log4j2
 public abstract class BuildToolConfigImporter implements ConfigImporter {
@@ -23,13 +25,13 @@ public abstract class BuildToolConfigImporter implements ConfigImporter {
     public List<RunConfig> importConfig(Project project) {
         var workspacePaths = pathService.getWorkspacePaths(project);
         var configs = new ArrayList<RunConfig>();
-        workspacePaths.forEach((workspacePath) -> {
+        workspacePaths.forEach(workspacePath -> {
             if (!workspacePath.toFile().exists()) {
                 return;
             }
             try {
                 Document document = documentParser.parseXmlDocument(workspacePath);
-                NodeList configurations = document.getElementsByTagName("configuration");
+                NodeList configurations = document.getElementsByTagName(CONFIGURATION);
 
                 var c = documentParser.getNamedRunConfigs(configurations, getType(), getOptionsAttribute());
                 c.forEach(this::normalize);
