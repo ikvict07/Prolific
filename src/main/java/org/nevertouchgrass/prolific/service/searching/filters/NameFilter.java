@@ -11,7 +11,7 @@ import java.util.function.Function;
 public class NameFilter implements ProjectFilter {
     @Override
     public Function<Project, Boolean> getFilter(Object value) {
-        return project -> project.getTitle().contains((String) value);
+        return project -> project.getTitle().toLowerCase().contains(((String) value).toLowerCase());
     }
 
     @Override
