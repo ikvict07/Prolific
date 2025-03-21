@@ -19,12 +19,16 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.nevertouchgrass.prolific.service.searching.comparators.ProjectComparatorBuilder;
+import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 @Controller
 @StageComponent("primaryStage")
@@ -32,6 +36,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public class ProjectsPanelController {
+    public static final String PROJECT_KEY = "project";
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -47,9 +52,9 @@ public class ProjectsPanelController {
     private ProjectsRepository projectsRepository;
     private ProjectsService projectsService;
 
-    private final Comparator<Project> projectComparator = Comparator
-            .comparing(Project::getIsStarred).reversed()
-            .thenComparing(p -> p.getTitle().toLowerCase());
+    private Predicate<Project> filterFunction = ProjectFilterService.getDefaultFilter();
+    private Comparator<Project> projectComparator = ProjectComparatorBuilder.getDefault();
+    private Set<Project> beforeFiltering = Set.of();
 
     @Initialize
     private void init() {
@@ -69,6 +74,22 @@ public class ProjectsPanelController {
         projectsService.registerOnRemoveListener(this::deleteProjectFromList);
         projectsService.registerOnUpdateListener(this::updateProject);
     }
+
+    public void filterProjects(Predicate<Project> filterFunction) {
+        this.filterFunction = filterFunction;
+        updateContent();
+    }
+
+    public void changeComparator(Comparator<Project> comparator) {
+        projectComparator = comparator;
+        updateContent();
+    }
+
+    private void updateContent() {
+        content.getChildren().clear();
+        beforeFiltering.forEach(this::addProjectToList);
+    }
+
 
 
     private void setupScrollBarFadeEffect() {
@@ -94,6 +115,7 @@ public class ProjectsPanelController {
 
 
     private void addProjectToList(Project project) {
+        if (!filterFunction.test(project)) return;
         Platform.runLater(() -> {
             int index = findInsertionIndex(project);
             insertProjectPanelAt(index, project);
@@ -102,14 +124,14 @@ public class ProjectsPanelController {
 
     private void deleteProjectFromList(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().filtered(node -> node.getProperties().get("project").equals(project));
+            var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
         });
     }
 
     public void updateProject(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().filtered(node -> node.getProperties().get("project").equals(project));
+            var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
             var newIndex = findInsertionIndex(project);
             insertProjectPanelAt(newIndex, project);
@@ -117,7 +139,7 @@ public class ProjectsPanelController {
     }
 
     private int findInsertionIndex(Project project) {
-        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get("project")).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
+        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get(PROJECT_KEY)).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
         return index < 0 ? -index - 1 : index;
     }
 
@@ -128,7 +150,7 @@ public class ProjectsPanelController {
         controller.getProjectIconText().setText(getIconTextFromTitle(project.getTitle()));
         controller.setProject(project);
         var parent = resource.getParent();
-        parent.getProperties().put("project", project);
+        parent.getProperties().put(PROJECT_KEY, project);
         content.getChildren().add(index, parent);
         controller.init();
     }

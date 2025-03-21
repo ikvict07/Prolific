@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,21 +25,14 @@ public class ProjectsRepository extends BasicRepositoryImplementationProvider<Pr
     @SneakyThrows
     public Project findByPath(String path) {
         try {
-            String sql = "SELECT * FROM projects WHERE path = ?";
+            String sql = "SELECT id, title, type, path, is_manually_added, is_starred FROM projects WHERE path = ?";
 
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, path);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
-                        Project project = new Project();
-                        project.setId(resultSet.getInt("id"));
-                        project.setTitle(resultSet.getString("title"));
-                        project.setType(resultSet.getString("type"));
-                        project.setPath(resultSet.getString("path"));
-                        project.setIsManuallyAdded(resultSet.getBoolean("is_manually_added"));
-                        project.setIsStarred(resultSet.getBoolean("is_starred"));
-                        return project;
+                        return constructProject(resultSet);
                     }
                 }
             }
@@ -47,6 +41,17 @@ public class ProjectsRepository extends BasicRepositoryImplementationProvider<Pr
             throw e;
         }
         return null;
+    }
+
+    private static Project constructProject(ResultSet resultSet) throws SQLException {
+        var project = new Project();
+        project.setId(resultSet.getInt("id"));
+        project.setTitle(resultSet.getString("title"));
+        project.setType(resultSet.getString("type"));
+        project.setPath(resultSet.getString("path"));
+        project.setIsManuallyAdded(resultSet.getBoolean("is_manually_added"));
+        project.setIsStarred(resultSet.getBoolean("is_starred"));
+        return project;
     }
 
     @Override
@@ -69,14 +74,7 @@ public class ProjectsRepository extends BasicRepositoryImplementationProvider<Pr
 
             while (resultSet.next()) {
                 Project project = new Project();
-                project.setId(resultSet.getInt("id"));
-                project.setTitle(resultSet.getString("title"));
-                project.setType(resultSet.getString("type"));
-                project.setPath(resultSet.getString("path"));
-                project.setIsManuallyAdded(resultSet.getBoolean("is_manually_added"));
-                project.setIsStarred(resultSet.getBoolean("is_starred"));
-                deletedProject.add(project);
-
+                deletedProject.add(constructProject(resultSet));
             }
         }
 
