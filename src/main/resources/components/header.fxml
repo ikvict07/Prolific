@@ -10,7 +10,7 @@
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
                AnchorPane.leftAnchor="0.0">
 
-        <Label fx:id="titleText" textFill="#ebecf0" text="Projects Manager" textAlignment="CENTER"/>
+        <Label fx:id="titleText" textFill="#ebecf0" text="Prolific" textAlignment="CENTER"/>
 
         <HBox id="gradientBox" fx:id="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>
@@ -26,9 +26,15 @@
             </HBox>
             <HBox>
                 <StackPane styleClass="icon-button" onMouseClicked="#projects">
+                    <padding>
+                        <Insets top="6" bottom="6" left="10" right="10"/>
+                    </padding>
                     <fx:include source="/icons/fxml/folder.fxml"/>
                 </StackPane>
                 <StackPane fx:id="settingsButton" styleClass="icon-button" onMouseClicked="#dropdownForSettings">
+                    <padding>
+                        <Insets top="6" bottom="6" left="10" right="10"/>
+                    </padding>
                     <fx:include source="/icons/fxml/settings.fxml"/>
                 </StackPane>
             </HBox>

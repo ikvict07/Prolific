@@ -6,6 +6,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -13,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
@@ -58,11 +58,11 @@ public class HeaderController {
     private ObjectFactory<Alert> alertFactory;
 
     @Autowired
-    public void setSettingsPopup(Popup settingsPopup) {
+    public void setSettingsPopup(ContextMenu settingsPopup) {
         this.settingsPopup = settingsPopup;
     }
 
-    private Popup settingsPopup;
+    private ContextMenu settingsPopup;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -106,9 +106,6 @@ public class HeaderController {
 
         stage.getScene().setOnMouseMoved(this::resizeCursor);
         stage.getScene().setOnMouseDragged(this::resizeWindow);
-        stage.getScene().setOnMousePressed(event -> {
-            settingsPopup.hide();
-        });
 
         stage.setOnShown(_ -> {
             endX = stage.getX() + stage.getWidth();
