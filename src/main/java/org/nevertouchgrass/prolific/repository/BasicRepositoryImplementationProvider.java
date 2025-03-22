@@ -153,8 +153,6 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
     @SneakyThrows
     public T findById(Long id, Class<T> clazz) {
         try {
-
-
             var tableName = getTableName(clazz);
             var fieldPairs = getFieldPairs(clazz);
             var query = getFindByIdQuery(fieldPairs, tableName);

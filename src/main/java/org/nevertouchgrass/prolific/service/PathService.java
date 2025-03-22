@@ -1,12 +1,21 @@
 package org.nevertouchgrass.prolific.service;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
+import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.Project;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -14,7 +23,11 @@ import java.util.NoSuchElementException;
  */
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class PathService {
+    private final SpringFXConfigurationProperties properties;
+    private final XmlMapper xmlMapper;
+
     public Path getProjectPath() {
         Class<?> clazz = PathService.class;
         URL classResource = clazz.getResource(clazz.getSimpleName() + ".class");
@@ -22,9 +35,48 @@ public class PathService {
             throw new IllegalStateException("class resource is null");
         }
         String url = classResource.toString();
-        log.info("Working in directory: {}", url);
 
         return normalizeUrl(URI.create(url));
+    }
+
+    @SneakyThrows
+    public Path getRunConfigsDirectory() {
+        var jarPath = getProjectPath();
+        var dir = jarPath.getParent().resolve(properties.getRunConfigsLocation());
+        Files.createDirectories(dir);
+        return dir;
+    }
+
+    @SneakyThrows
+    public Path getSettingsPath() {
+        Path jarPath = getProjectPath();
+        Path settingsPath = jarPath.getParent().resolve(properties.getSettingsLocation());
+        Path settingsFilePath = settingsPath.resolve("settings.xml");
+        Files.createDirectories(settingsPath);
+        if (!Files.exists(settingsFilePath)) {
+            Files.createFile(settingsFilePath);
+            var settings = new UserSettingsHolder();
+            xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), settings);
+        }
+        return settingsFilePath;
+    }
+
+    @SneakyThrows
+    public List<Path> getWorkspacePaths(Project project) {
+        var ideaFolder = Path.of(project.getPath()).resolve(".idea");
+        var workspaceFolder = ideaFolder.resolve("workspace.xml");
+        var runConfigurationsFolder = ideaFolder.resolve("runConfigurations");
+        var result = new ArrayList<Path>();
+        if (Files.exists(runConfigurationsFolder)) {
+            try (var files = Files.list(runConfigurationsFolder)) {
+                result.addAll(files.toList());
+            }
+        }
+        if (Files.exists(workspaceFolder)) {
+
+            result.add(workspaceFolder);
+        }
+        return result;
     }
 
     public Path normalizeUrl(URI uri) {
@@ -48,7 +100,6 @@ public class PathService {
             }
             int startIndex = System.getProperty("os.name").toLowerCase().contains("win") ? 1 : 0;
             String path = fixed.substring(startIndex, index);
-            log.info("Working in directory: {}", path);
             return Paths.get(path);
         }
         return Paths.get(uri);

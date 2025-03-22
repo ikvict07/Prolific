@@ -1,16 +1,18 @@
 package org.nevertouchgrass.prolific.config;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
 import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.service.DocumentParser;
 import org.nevertouchgrass.prolific.service.PathService;
 import org.nevertouchgrass.prolific.service.ProjectScannerService;
 import org.nevertouchgrass.prolific.service.XmlProjectScannerConfigLoaderService;
+import org.nevertouchgrass.prolific.service.configurations.importers.GradleConfigImporter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @Configuration
@@ -20,13 +22,6 @@ public class TestConfiguration {
     public XmlProjectScannerConfigLoaderService xmlProjectScannerConfigLoaderService(
             PluginConfigProvider pluginConfigProvider) {
         return new XmlProjectScannerConfigLoaderService(pluginConfigProvider);
-    }
-
-    @Bean
-    public PluginConfigProvider pluginConfigProvider() {
-        PluginConfigProvider pluginConfigProvider = new PluginConfigProvider();
-        pluginConfigProvider.setPluginConfigPath(Path.of("src/test/resources/plugin/plugins.xml"));
-        return pluginConfigProvider;
     }
 
     @Bean
@@ -45,7 +40,27 @@ public class TestConfiguration {
     }
 
     @Bean
-    public PathService pathService() {
-        return new PathService();
+    public PathService pathService(SpringFXConfigurationProperties properties, XmlMapper xmlMapper) {
+        return new PathService(properties, xmlMapper);
+    }
+
+    @Bean
+    public XmlMapper xmlMapper() {
+        return new XmlMapper();
+    }
+
+    @Bean
+    public DocumentParser documentParser() {
+        return new DocumentParser();
+    }
+
+    @Bean
+    public GradleConfigImporter gradleConfigImporter(PathService pathService, DocumentParser documentParser) {
+        return new GradleConfigImporter(pathService, documentParser);
+    }
+
+    @Bean
+    public PluginConfigProvider pluginConfigProvider() {
+        return new PluginConfigProvider();
     }
 }

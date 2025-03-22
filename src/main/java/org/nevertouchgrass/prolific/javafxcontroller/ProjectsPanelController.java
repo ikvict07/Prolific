@@ -3,8 +3,6 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
@@ -15,19 +13,22 @@ import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
-import org.nevertouchgrass.prolific.annotation.OnUpdate;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.nevertouchgrass.prolific.service.searching.comparators.ProjectComparatorBuilder;
+import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 @Controller
 @StageComponent("primaryStage")
@@ -35,6 +36,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public class ProjectsPanelController {
+    public static final String PROJECT_KEY = "project";
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -50,9 +52,9 @@ public class ProjectsPanelController {
     private ProjectsRepository projectsRepository;
     private ProjectsService projectsService;
 
-    private final Comparator<Project> projectComparator = Comparator
-            .comparing(Project::getIsStarred).reversed()
-            .thenComparing(p -> p.getTitle().toLowerCase());
+    private Predicate<Project> filterFunction = ProjectFilterService.getDefaultFilter();
+    private Comparator<Project> projectComparator = ProjectComparatorBuilder.getDefault();
+    private Set<Project> beforeFiltering = Set.of();
 
     @Initialize
     private void init() {
@@ -63,11 +65,8 @@ public class ProjectsPanelController {
         content.maxWidthProperty().bind(scrollPane.widthProperty());
         setupScrollBarFadeEffect();
 
-        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(lowerShadow, newValue.doubleValue(), false));
-
-        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> handleShadow(upperShadow, newValue.doubleValue(), true));
-
-
+        upperShadow.visibleProperty().bind(scrollPane.vvalueProperty().greaterThan(0));
+        lowerShadow.visibleProperty().bind(scrollPane.vvalueProperty().lessThan(1));
     }
 
     private void registerListeners() {
@@ -76,55 +75,21 @@ public class ProjectsPanelController {
         projectsService.registerOnUpdateListener(this::updateProject);
     }
 
-    private void handleShadow(Region shadow, double newValue, boolean isUpperShadow) {
-        try {
-            double elementHeight;
-            double halfScroll;
-
-            if (isUpperShadow) {
-                elementHeight = content.getChildren().getFirst().getBoundsInLocal().getHeight();
-                halfScroll = elementHeight / (content.getChildren().size() * elementHeight);
-
-                if (newValue <= halfScroll) {
-                    double shadowHeight = (newValue / halfScroll) * (elementHeight / 2);
-                    shadowHeight = Math.max(0, Math.min(elementHeight / 2, shadowHeight));
-
-                    shadow.setPrefHeight(shadowHeight);
-                    shadow.setMinHeight(shadowHeight);
-                    shadow.setMaxHeight(shadowHeight);
-                } else {
-                    double maxShadowHeight = elementHeight / 2;
-                    shadow.setPrefHeight(maxShadowHeight);
-                    shadow.setMinHeight(maxShadowHeight);
-                    shadow.setMaxHeight(maxShadowHeight);
-                }
-
-                shadow.setVisible(true);
-
-            } else {
-                elementHeight = content.getChildren().getLast().getBoundsInLocal().getHeight();
-                halfScroll = 1.0 - (elementHeight / (content.getChildren().size() * elementHeight));
-
-                if (newValue < halfScroll) {
-                    double maxShadowHeight = elementHeight / 2;
-                    shadow.setPrefHeight(maxShadowHeight);
-                    shadow.setMinHeight(maxShadowHeight);
-                    shadow.setMaxHeight(maxShadowHeight);
-                } else {
-                    double shadowHeight = ((1.0 - newValue) / (1.0 - halfScroll)) * (elementHeight / 2);
-                    shadowHeight = Math.max(0, Math.min(elementHeight / 2, shadowHeight));
-
-                    shadow.setPrefHeight(shadowHeight);
-                    shadow.setMinHeight(shadowHeight);
-                    shadow.setMaxHeight(shadowHeight);
-                }
-
-                shadow.setVisible(newValue < 1.0);
-            }
-        } catch (Exception _) {
-            // ignore
-        }
+    public void filterProjects(Predicate<Project> filterFunction) {
+        this.filterFunction = filterFunction;
+        updateContent();
     }
+
+    public void changeComparator(Comparator<Project> comparator) {
+        projectComparator = comparator;
+        updateContent();
+    }
+
+    private void updateContent() {
+        content.getChildren().clear();
+        beforeFiltering.forEach(this::addProjectToList);
+    }
+
 
 
     private void setupScrollBarFadeEffect() {
@@ -150,6 +115,7 @@ public class ProjectsPanelController {
 
 
     private void addProjectToList(Project project) {
+        if (!filterFunction.test(project)) return;
         Platform.runLater(() -> {
             int index = findInsertionIndex(project);
             insertProjectPanelAt(index, project);
@@ -158,14 +124,14 @@ public class ProjectsPanelController {
 
     private void deleteProjectFromList(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().filtered(node -> node.getProperties().get("project").equals(project));
+            var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
         });
     }
 
     public void updateProject(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().filtered(node -> node.getProperties().get("project").equals(project));
+            var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
             var newIndex = findInsertionIndex(project);
             insertProjectPanelAt(newIndex, project);
@@ -173,7 +139,7 @@ public class ProjectsPanelController {
     }
 
     private int findInsertionIndex(Project project) {
-        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get("project")).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
+        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get(PROJECT_KEY)).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
         return index < 0 ? -index - 1 : index;
     }
 
@@ -184,7 +150,7 @@ public class ProjectsPanelController {
         controller.getProjectIconText().setText(getIconTextFromTitle(project.getTitle()));
         controller.setProject(project);
         var parent = resource.getParent();
-        parent.getProperties().put("project", project);
+        parent.getProperties().put(PROJECT_KEY, project);
         content.getChildren().add(index, parent);
         controller.init();
     }
