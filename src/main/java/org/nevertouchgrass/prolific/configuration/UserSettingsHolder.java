@@ -20,7 +20,7 @@ public class UserSettingsHolder {
     private LocalDateTime lastScanDate = LocalDateTime.now().minusYears(100);
     private Integer rescanEveryHours;
     private List<Project> userProjects;
-    private Integer maximumProjectDepth;
+    private Integer maximumProjectDepth = 6;
     private List<String> excludedDirs;
 
     public void load(UserSettingsHolder userSettingsHolder) {
