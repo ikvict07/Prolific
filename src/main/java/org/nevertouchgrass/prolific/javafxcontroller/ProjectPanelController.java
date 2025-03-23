@@ -244,6 +244,8 @@ public class ProjectPanelController {
         if (currentProcess != null) {
             currentProcess.destroy();
             currentProcess = null;
+            notificationService.notifyInfo(InfoNotification.of("Project {} stopped", project.getTitle()));
+            log.info("Project {} stopped", project.getTitle());
         }
         isProjectRunning.setValue(false);
     }
