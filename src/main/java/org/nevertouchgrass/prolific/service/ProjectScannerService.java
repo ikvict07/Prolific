@@ -148,7 +148,11 @@ public class ProjectScannerService {
 
     private void addProject(Set<Path> where, Path path) {
         try {
-            where.add(path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+            var dir = path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS);
+            if (dir.equals(Path.of(System.getProperty("user.home")))) {
+                return;
+            }
+            where.add(dir);
         } catch (IOException e) {
             log.error("{}", e.getMessage());
         }
@@ -158,8 +162,8 @@ public class ProjectScannerService {
         final Set<Path> projects = ConcurrentHashMap.newKeySet();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        try {
-            var subDirs = Files.list(root).toList();
+        try (var subDirsStream = Files.list(root);){
+            var subDirs = subDirsStream.toList();
             executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
             List<Future<?>> futures = new ArrayList<>();
@@ -179,7 +183,6 @@ public class ProjectScannerService {
                                 if (isScanningCancelled.get()) {
                                     return FileVisitResult.TERMINATE;
                                 }
-
                                 if (excludeMatcher.matches(file) && !pathMatcher.matches(file)) {
                                     return FileVisitResult.CONTINUE;
                                 }

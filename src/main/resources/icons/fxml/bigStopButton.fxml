@@ -8,12 +8,14 @@
 <StackPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@/css/styles.css">
     <Group>
         <Rectangle id="icon"
-                   x="2.5" y="2.5" width="11" height="11"
-                   arcWidth="3" arcHeight="3"
-                   fill="#5E3838" stroke="#DB5C5C" strokeWidth="1"/>
+                   y="5" width="19.5" height="20"
+                   arcWidth="8" arcHeight="8"
+                   fill="#C94F4F"/>
+        <Rectangle x="4.75" y="10" width="10" height="10"
+                   arcWidth="2" arcHeight="2"
+                   fill="transparent" stroke="white" strokeWidth="1.5"/>
     </Group>
     <HBox.margin>
-        <Insets bottom="6" left="10" right="10" top="6"/>
+        <Insets bottom="4" left="8" right="8" top="4"/>
     </HBox.margin>
 </StackPane>
-

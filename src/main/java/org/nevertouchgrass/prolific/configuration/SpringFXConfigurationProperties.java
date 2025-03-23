@@ -11,4 +11,5 @@ public class SpringFXConfigurationProperties {
 	private String fxmlLocation;
 	private String settingsLocation;
 	private String runConfigsLocation;
+	private String iconLocation;
 }

@@ -27,6 +27,8 @@ public class ProcessService {
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private volatile boolean observing = true;
     private final List<ProcessAware> processAware;
+    private final Set<Project> observedProjects = ConcurrentHashMap.newKeySet();
+
 
 
     public List<OSProcess> getLiveProcesses() {
@@ -80,9 +82,23 @@ public class ProcessService {
     }
 
     public void observe(Project project) {
+        if (project.getPath().endsWith(System.getProperty("user.home"))){
+            return;
+        }
+        observedProjects.add(project);
+
         var processes = getRunningProcesses(project);
         live.addAll(processes);
+
+        log.info("Started observing project: {}. Initial processes: {}",
+                project.getTitle(), processes.size());
     }
+
+    public void stopObserve(Project project) {
+        observedProjects.remove(project);
+        log.info("Stopped observing project: {}", project.getTitle());
+    }
+
 
     /**
      * Stops observing processes and cleans up resources.
@@ -109,7 +125,7 @@ public class ProcessService {
      * If a process is no longer running, it notifies listeners and removes it from the live set.
      */
     public void scheduleProcessObserving() {
-        // Create a thread factory for better thread naming
+        // Создание фабрики потоков для лучшего именования
         ThreadFactory threadFactory = new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(1);
             @Override
@@ -121,7 +137,6 @@ public class ProcessService {
             }
         };
 
-        // Replace the executor service with one that uses the named thread factory
         if (executorService instanceof ScheduledThreadPoolExecutor scheduledThreadPoolExecutor) {
             scheduledThreadPoolExecutor.setThreadFactory(threadFactory);
         }
@@ -131,25 +146,42 @@ public class ProcessService {
                 return;
             }
 
-            // Use CopyOnWriteArrayList for thread safety
+            for (Project project : observedProjects) {
+                List<OSProcess> currentProcesses = getRunningProcesses(project);
+
+                for (OSProcess process : currentProcesses) {
+                    if (!live.contains(process)) {
+                        live.add(process);
+                        log.debug("New process detected for project {}: PID {} - {}",
+                                project.getTitle(), process.getProcessID(), process.getName());
+                    }
+                }
+            }
+
             List<OSProcess> toRemove = new CopyOnWriteArrayList<>();
 
             live.forEach(p -> {
                 if (os.getProcess(p.getProcessID()) == null) {
                     dead.add(p);
-                    onKillListeners.forEach(c -> c.accept(p));
+                    log.debug("Process died: PID {} - {}", p.getProcessID(), p.getName());
+                    onKillListeners.forEach(c -> {
+                        try {
+                            c.accept(p);
+                        } catch (Exception e) {
+                            log.error("Error in process kill listener", e);
+                        }
+                    });
                     toRemove.add(p);
                 }
             });
 
-            // Remove dead processes from the live set
             if (!toRemove.isEmpty()) {
-                live.removeAll(toRemove);
+                toRemove.forEach(live::remove);
+                log.debug("Removed {} dead processes from tracking", toRemove.size());
 
-                // Limit the size of the dead set to prevent memory leaks
                 if (dead.size() > 1000) {
-                    // Keep only the most recent 500 dead processes
-                    dead.removeIf(p -> !toRemove.contains(p) && dead.size() > 500);
+                    AtomicInteger toRemoveCount = new AtomicInteger(dead.size() - 500);
+                    dead.removeIf(p -> !toRemove.contains(p) && toRemoveCount.getAndDecrement() > 0);
                 }
             }
         }, 0, 3, TimeUnit.SECONDS);

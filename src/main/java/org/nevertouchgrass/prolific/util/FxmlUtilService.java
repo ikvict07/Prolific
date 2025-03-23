@@ -34,6 +34,20 @@ public class FxmlUtilService {
         }
     }
 
+    public static List<String> getIconNames(SpringFXConfigurationProperties projectConfigurationProperties) {
+        try {
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver
+                    .getResources("classpath*:" + projectConfigurationProperties.getIconLocation() + "/*.fxml");
+
+            return Arrays.stream(resources).map(Resource::getFilename).filter(Objects::nonNull)
+                    .map(name -> name.substring(0, name.length() - 5)).toList();
+
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to scan FXML files", e);
+        }
+    }
+
     @SneakyThrows
     public static Parent loadFxml(String fxmlName, SpringFXConfigurationProperties projectConfigurationProperties, ApplicationContext applicationContext) {
         FXMLLoader loader = getFxmlLoader(fxmlName, projectConfigurationProperties, applicationContext);
@@ -43,6 +57,18 @@ public class FxmlUtilService {
         return p;
     }
 
+    @SneakyThrows
+    public static Parent loadIcon(String fxmlName, SpringFXConfigurationProperties projectConfigurationProperties, ApplicationContext applicationContext) {
+        FXMLLoader loader = getFxmlLoader(fxmlName, projectConfigurationProperties, applicationContext);
+        return loader.load();
+    }
+
+
+    public static FXMLLoader getIconLoader(String fxmlName, SpringFXConfigurationProperties projectConfigurationProperties, ApplicationContext applicationContext) {
+        String fxmlLocation = projectConfigurationProperties.getIconLocation();
+        return new FXMLLoader(
+                Objects.requireNonNull(applicationContext.getClass().getResource("/" + fxmlLocation + "/" + fxmlName + ".fxml")));
+    }
     @SneakyThrows
     public static FXMLLoader getFxmlLoader(String fxmlName, SpringFXConfigurationProperties projectConfigurationProperties, ApplicationContext applicationContext) {
         String fxmlLocation = projectConfigurationProperties.getFxmlLocation();

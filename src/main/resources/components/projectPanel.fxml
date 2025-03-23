@@ -22,7 +22,8 @@
         </HBox>
         <Label fx:id="projectTitleText" textFill="WHITE" styleClass="label"/>
         <HBox alignment="CENTER_RIGHT" spacing="4.0" HBox.hgrow="ALWAYS">
-            <HBox fx:id="controlPanel" alignment="CENTER" spacing="10" styleClass="icon-button" onMouseClicked="#showProjectConfigurations">
+            <HBox fx:id="controlPanel" alignment="CENTER" spacing="10" styleClass="icon-button"
+                  onMouseClicked="#showProjectConfigurations">
                 <padding>
                     <Insets top="4" bottom="4" left="6" right="6"/>
                 </padding>
@@ -35,8 +36,10 @@
                 <Label fx:id="configurationName" styleClass="label" textOverrun="CENTER_ELLIPSIS"/>
                 <fx:include fx:id="configurationButton" source="/icons/fxml/unfold_button.fxml"/>
             </HBox>
-            <StackPane fx:id="run" styleClass="icon-button">
-                <fx:include source="/icons/fxml/runButton.fxml"/>
+            <StackPane fx:id="run" styleClass="icon-button" onMouseClicked="#runProject">
+                <HBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:id="runContent">
+                    <fx:include source="/icons/fxml/runButton.fxml"/>
+                </HBox>
             </StackPane>
             <StackPane fx:id="config" onMouseClicked="#showProjectSetting" styleClass="icon-button">
                 <fx:include source="/icons/fxml/configurationButton.fxml"/>

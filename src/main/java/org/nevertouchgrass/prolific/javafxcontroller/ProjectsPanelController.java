@@ -19,6 +19,7 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.nevertouchgrass.prolific.service.metrics.ProcessService;
 import org.nevertouchgrass.prolific.service.searching.comparators.ProjectComparatorBuilder;
 import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,6 @@ import org.springframework.stereotype.Controller;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 
 @Controller
@@ -54,7 +54,7 @@ public class ProjectsPanelController {
 
     private Predicate<Project> filterFunction = ProjectFilterService.getDefaultFilter();
     private Comparator<Project> projectComparator = ProjectComparatorBuilder.getDefault();
-    private Set<Project> beforeFiltering = Set.of();
+    private ProcessService processService;
 
     @Initialize
     private void init() {
@@ -87,9 +87,8 @@ public class ProjectsPanelController {
 
     private void updateContent() {
         content.getChildren().clear();
-        beforeFiltering.forEach(this::addProjectToList);
+        projectsService.getProjects().forEach(this::addProjectToList);
     }
-
 
 
     private void setupScrollBarFadeEffect() {
@@ -123,6 +122,7 @@ public class ProjectsPanelController {
     }
 
     private void deleteProjectFromList(Project project) {
+        processService.stopObserve(project);
         Platform.runLater(() -> {
             var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
@@ -165,10 +165,11 @@ public class ProjectsPanelController {
     }
 
     @Autowired
-    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder, ProjectsRepository projectsRepository, ProjectsService projectsService) {
+    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder, ProjectsRepository projectsRepository, ProjectsService projectsService, ProcessService processService) {
         this.fxmlProvider = fxmlProvider;
         this.userSettingsHolder = userSettingsHolder;
         this.projectsRepository = projectsRepository;
         this.projectsService = projectsService;
+        this.processService = processService;
     }
 }
