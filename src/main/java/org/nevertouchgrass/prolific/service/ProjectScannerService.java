@@ -1,6 +1,5 @@
 package org.nevertouchgrass.prolific.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -44,8 +43,15 @@ public class ProjectScannerService {
     private final AtomicBoolean isScanningCancelled = new AtomicBoolean(false);
     private boolean isScanning = false;
 
-    @PostConstruct
-    public void init() {
+    /**
+     * Scan for projects in the given root directory
+     *
+     * @param rootDirectory directory to scan
+     * @param onFind        callback for each found project
+     * @return Set of found project paths
+     * @throws IllegalStateException if scanning is already in progress
+     */
+    public Set<Path> scanForProjects(String rootDirectory, Consumer<Path> onFind) {
         List<ProjectTypeModel> projectTypeModels;
         List<String> matchers = new ArrayList<>();
         projectTypeModels = configLoaderService.loadProjectTypes();
@@ -53,20 +59,19 @@ public class ProjectScannerService {
             matchers.addAll(projectTypeModel.getIdentifiers());
         }
         List<String> exclude = userSettingsHolder.getExcludedDirs();
-        String excludePattern = String.format("glob:**/{%s}", String.join(",", exclude));
-        String pattern = String.format("glob:**/{%s}", String.join(",", matchers));
-        this.pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
-        this.excludeMatcher = FileSystems.getDefault().getPathMatcher(excludePattern);
-    }
-
-    /**
-     * Scan for projects in the given root directory
-     * @param rootDirectory directory to scan
-     * @param onFind callback for each found project
-     * @return Set of found project paths
-     * @throws IllegalStateException if scanning is already in progress
-     */
-    public Set<Path> scanForProjects(String rootDirectory, Consumer<Path> onFind) {
+        if (exclude == null || exclude.isEmpty()) {
+            this.excludeMatcher = FileSystems.getDefault().getPathMatcher("glob:**/{.git,.svn,.hg,.bzr}");
+        } else {
+            String excludePattern = String.format("glob:**/{%s}", String.join(",", exclude));
+            this.excludeMatcher = FileSystems.getDefault().getPathMatcher(excludePattern);
+        }
+        if (matchers.isEmpty()) {
+            log.warn("No project types configured. Scanning will not be performed");
+            return Set.of();
+        } else {
+            String pattern = String.format("glob:**/{%s}", String.join(",", matchers));
+            this.pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
+        }
         if (isScanning) {
             throw new IllegalStateException("Scanning is already in progress");
         }
@@ -99,17 +104,20 @@ public class ProjectScannerService {
 
     /**
      * Scan for projects in the given root directory
+     *
      * @param rootDirectory directory to scan
      * @return Set of found project paths
      * @throws IllegalStateException if scanning is already in progress
      */
     public Set<Path> scanForProjects(String rootDirectory) {
-        return scanForProjects(rootDirectory, _ -> {});
+        return scanForProjects(rootDirectory, _ -> {
+        });
     }
 
     /**
      * Cancel the current scanning operation.
      * Has no effect if no scanning is in progress.
+     *
      * @return true if scanning was cancelled, false if no scanning was in progress
      */
     public boolean cancelScanning() {
@@ -131,6 +139,7 @@ public class ProjectScannerService {
 
     /**
      * Check if scanning is currently in progress
+     *
      * @return true if scanning is in progress, false otherwise
      */
     public boolean isScanning() {
