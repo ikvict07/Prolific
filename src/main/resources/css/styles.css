@@ -9,6 +9,11 @@
     -fx-font-size: 1.25em;
     -fx-background-radius: 16px 16px 0 0;
 }
+#footer {
+    -fx-background-color: #2B2D30;
+    -fx-font-size: 1.25em;
+    -fx-background-radius: 0 0 16px 16px;
+}
 
 .rounded {
     -fx-background-radius: 16px;
