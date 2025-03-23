@@ -1,6 +1,5 @@
 package org.nevertouchgrass.prolific.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,26 +35,9 @@ import java.util.function.Consumer;
 public class ProjectScannerService {
 
     private final XmlProjectScannerConfigLoaderService configLoaderService;
-    private PathMatcher pathMatcher;
-    private PathMatcher excludeMatcher;
     private final UserSettingsHolder userSettingsHolder;
     private final NotificationService notificationService;
 
-
-    @PostConstruct
-    public void init() {
-        List<ProjectTypeModel> projectTypeModels;
-        List<String> matchers = new ArrayList<>();
-        projectTypeModels = configLoaderService.loadProjectTypes();
-        for (ProjectTypeModel projectTypeModel : projectTypeModels) {
-            matchers.addAll(projectTypeModel.getIdentifiers());
-        }
-        List<String> exclude = userSettingsHolder.getExcludedDirs();
-        String excludePattern = String.format("glob:**/{%s}", String.join(",", exclude));
-        String pattern = String.format("glob:**/{%s}", String.join(",", matchers));
-        this.pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
-        this.excludeMatcher = FileSystems.getDefault().getPathMatcher(excludePattern);
-    }
 
     public Set<Path> scanForProjects(String rootDirectory, Consumer<Path> onFind) {
         notificationService.notifyInfo(new InfoNotification("Scanning for projects"));
@@ -83,18 +65,35 @@ public class ProjectScannerService {
 
     public Set<Path> startSearching(Path root, Consumer<Path> onFind) {
         final Set<Path> projects = ConcurrentHashMap.newKeySet();
-
+        List<ProjectTypeModel> projectTypeModels;
+        List<String> matchers = new ArrayList<>();
+        projectTypeModels = configLoaderService.loadProjectTypes();
+        for (ProjectTypeModel projectTypeModel : projectTypeModels) {
+            matchers.addAll(projectTypeModel.getIdentifiers());
+        }
+        List<String> exclude = userSettingsHolder.getExcludedDirs();
+        String excludePattern;
+        PathMatcher excludeMatcher = null;
+        if (exclude == null) {
+            excludeMatcher = p -> false;
+        } else {
+            excludePattern = String.format("glob:**/{%s}", String.join(",", exclude));
+            excludeMatcher = FileSystems.getDefault().getPathMatcher(excludePattern);
+        }
+        String pattern = String.format("glob:**/{%s}", String.join(",", matchers));
+        var pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
         try (
                 var subDirs = Files.list(root);
                 final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
         ) {
+            PathMatcher finalExcludeMatcher = excludeMatcher;
             subDirs.forEach(subDir -> executor.submit(() -> {
                 try {
                     Files.walkFileTree(subDir, new SimpleFileVisitor<>() {
                         @Override
                         @NonNull
                         public FileVisitResult visitFile(Path file, @NonNull BasicFileAttributes attrs) {
-                            if (excludeMatcher.matches(file) && !pathMatcher.matches(file)) {
+                            if (finalExcludeMatcher.matches(file) && !pathMatcher.matches(file)) {
                                 return FileVisitResult.CONTINUE;
                             }
                             if (Files.isReadable(file) && pathMatcher.matches(file)) {
@@ -112,7 +111,7 @@ public class ProjectScannerService {
                         @Override
                         @NonNull
                         public FileVisitResult preVisitDirectory(Path dir, @NonNull BasicFileAttributes attrs) {
-                            if (excludeMatcher.matches(dir) && !pathMatcher.matches(dir)) {
+                            if (finalExcludeMatcher.matches(dir) && !pathMatcher.matches(dir)) {
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
                             if (dir.getNameCount() > userSettingsHolder.getMaximumProjectDepth()) {

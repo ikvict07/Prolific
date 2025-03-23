@@ -3,9 +3,8 @@ package org.nevertouchgrass.prolific.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.nevertouchgrass.prolific.config.TestConfiguration;
+import org.nevertouchgrass.prolific.BackendTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.net.URI;
 import java.nio.file.FileSystems;
@@ -13,8 +12,7 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest(classes = TestConfiguration.class)
-class PathServiceTests {
+class PathServiceTests extends BackendTestBase {
     @Autowired
     private PathService ps;
 
