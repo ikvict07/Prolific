@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service.importers.contract;
+package org.nevertouchgrass.prolific.service.configurations.importers.contract;
 
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
