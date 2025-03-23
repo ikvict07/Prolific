@@ -2,10 +2,13 @@ package org.nevertouchgrass.prolific.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.nevertouchgrass.prolific.model.notification.EventNotification;
+import org.nevertouchgrass.prolific.model.notification.InfoNotification;
+import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
@@ -29,19 +32,15 @@ import java.util.function.Consumer;
 @Log4j2
 @SuppressWarnings({"unused", "FieldCanBeLocal", "NullableProblems"})
 @DependsOn("userSettingsService")
+@RequiredArgsConstructor
 public class ProjectScannerService {
 
     private final XmlProjectScannerConfigLoaderService configLoaderService;
     private PathMatcher pathMatcher;
     private PathMatcher excludeMatcher;
     private final UserSettingsHolder userSettingsHolder;
+    private final NotificationService notificationService;
 
-
-    @Autowired
-    public ProjectScannerService(@NonNull XmlProjectScannerConfigLoaderService configLoaderService, UserSettingsHolder userSettingsHolder) {
-        this.configLoaderService = configLoaderService;
-        this.userSettingsHolder = userSettingsHolder;
-    }
 
     @PostConstruct
     public void init() {
@@ -59,9 +58,13 @@ public class ProjectScannerService {
     }
 
     public Set<Path> scanForProjects(String rootDirectory, Consumer<Path> onFind) {
+        notificationService.notifyInfo(new InfoNotification("Scanning for projects"));
+        notificationService.notifyEvent(new EventNotification(EventNotification.EventType.START_PROJECT_SCAN));
         log.info("Scanning for projects in {}", rootDirectory);
         var result = startSearching(Path.of(rootDirectory), onFind);
         log.info("Scanning finished, found {} projects", result.size());
+        notificationService.notifyEvent(new EventNotification(EventNotification.EventType.END_PROJECT_SCAN));
+        notificationService.notifyInfo(InfoNotification.of("Scanning finished, found {} projects",result.size()));
         return result;
     }
 
