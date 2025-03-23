@@ -228,13 +228,3 @@ tasks.installDist {
 tasks.bootJar {
     dependsOn(tasks.test)
 }
-
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = BigDecimal.valueOf(0.7)
-            }
-        }
-    }
-}

@@ -1,11 +1,13 @@
 package org.nevertouchgrass.prolific.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.nevertouchgrass.prolific.model.notification.EventNotification;
+import org.nevertouchgrass.prolific.model.notification.InfoNotification;
+import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
