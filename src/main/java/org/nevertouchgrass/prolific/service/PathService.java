@@ -14,6 +14,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -25,6 +27,7 @@ import java.util.NoSuchElementException;
 public class PathService {
     private final SpringFXConfigurationProperties properties;
     private final XmlMapper xmlMapper;
+
     public Path getProjectPath() {
         Class<?> clazz = PathService.class;
         URL classResource = clazz.getResource(clazz.getSimpleName() + ".class");
@@ -57,8 +60,23 @@ public class PathService {
         }
         return settingsFilePath;
     }
-    public Path getWorkspacePath(Project project) {
-        return Path.of(project.getPath()).resolve(".idea").resolve("workspace.xml");
+
+    @SneakyThrows
+    public List<Path> getWorkspacePaths(Project project) {
+        var ideaFolder = Path.of(project.getPath()).resolve(".idea");
+        var workspaceFolder = ideaFolder.resolve("workspace.xml");
+        var runConfigurationsFolder = ideaFolder.resolve("runConfigurations");
+        var result = new ArrayList<Path>();
+        if (Files.exists(runConfigurationsFolder)) {
+            try (var files = Files.list(runConfigurationsFolder)) {
+                result.addAll(files.toList());
+            }
+        }
+        if (Files.exists(workspaceFolder)) {
+
+            result.add(workspaceFolder);
+        }
+        return result;
     }
 
     public Path normalizeUrl(URI uri) {

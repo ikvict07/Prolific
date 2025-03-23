@@ -1,6 +1,5 @@
 package org.nevertouchgrass.prolific.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
@@ -23,14 +22,12 @@ import java.time.LocalDateTime;
 
 @Service
 @Log4j2
-@RequiredArgsConstructor
 @SuppressWarnings({"unused", "FieldCanBeLocal", "NullableProblems"})
 public class PeriodicalScanningService implements ApplicationListener<StageShowEvent> {
     private final ProjectScannerService projectScannerService;
     private final UserSettingsHolder userSettingsHolder;
     private final ProjectResolver projectResolver;
     private final UserSettingsService userSettingsService;
-
     private final ProjectsRepository projectsRepository;
 
     private PeriodicalScanningService it;
@@ -38,6 +35,14 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     @Autowired
     private void setSelf(@Lazy PeriodicalScanningService it) {
         this.it = it;
+    }
+
+    public PeriodicalScanningService(ProjectScannerService projectScannerService, UserSettingsHolder userSettingsHolder, ProjectResolver projectResolver, @Lazy UserSettingsService userSettingsService, ProjectsRepository projectsRepository) {
+        this.projectScannerService = projectScannerService;
+        this.userSettingsHolder = userSettingsHolder;
+        this.projectResolver = projectResolver;
+        this.userSettingsService = userSettingsService;
+        this.projectsRepository = projectsRepository;
     }
 
     public void scheduleScanning() {
@@ -56,10 +61,7 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
         log.info("Deleting projects that are not starred and not manually added");
         projectsRepository.deleteWhereIsStarredIsFalseAndIsManuallyAddedIsFalse();
         log.info("Scanning for projects in {}", baseScanDirectory);
-        new Thread(() -> {
-            findProjects(baseScanDirectory);
-            log.info("Finished scanning for projects");
-        }).start();
+        new Thread(() -> findProjects(baseScanDirectory)).start();
         userSettingsHolder.setLastScanDate(LocalDateTime.now());
         userSettingsService.saveSettings();
     }
@@ -71,6 +73,9 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     @SneakyThrows
     private void resolveAndSave(Path path) {
         Path p = path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS);
+        if (p.equals(Path.of(userSettingsHolder.getBaseScanDirectory()))) {
+            return;
+        }
         Project project = projectResolver.resolveProject(p, userSettingsHolder.getMaximumProjectDepth());
         projectsRepository.save(project);
     }

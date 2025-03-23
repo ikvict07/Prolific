@@ -1,6 +1,8 @@
 package org.nevertouchgrass.prolific.service;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.annotation.OnDelete;
 import org.nevertouchgrass.prolific.annotation.OnSave;
 import org.nevertouchgrass.prolific.annotation.OnUpdate;
@@ -19,22 +21,20 @@ import java.util.stream.Collectors;
 
 @Service
 @DependsOn("databaseService")
+@RequiredArgsConstructor
 public class ProjectsService {
 
     private final ProjectResolver projectResolver;
     private final ProjectsRepository projectsRepository;
+
     private final Set<Project> projects = ConcurrentHashMap.newKeySet();
 
     private final List<Consumer<Project>> onAddListeners = new ArrayList<>();
     private final List<Consumer<Project>> onRemoveListeners = new ArrayList<>();
     private final List<Consumer<Project>> onUpdateListeners = new ArrayList<>();
 
-    public ProjectsService(ProjectResolver projectResolver, ProjectsRepository projectsRepository) {
-        this.projectResolver = projectResolver;
-        this.projectsRepository = projectsRepository;
-    }
-
     @PostConstruct
+    @SneakyThrows
     private void init() {
         projectsRepository.findAll(Project.class).forEach(projects::add);
     }

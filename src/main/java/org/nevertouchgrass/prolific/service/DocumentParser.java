@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.*;
+
 @Service
 public class DocumentParser {
     @SneakyThrows
@@ -26,22 +28,22 @@ public class DocumentParser {
 
 
     public boolean isConfigFor(String name, Element element) {
-        return name.equalsIgnoreCase(element.getAttribute("factoryName"));
+        return name.equalsIgnoreCase(element.getAttribute(FACTORY_NAME));
     }
 
     public RunConfig extractRunConfig(Element config, String optionsAttribute) {
         RunConfig runConfig = new RunConfig();
 
-        String configName = config.getAttribute("name");
+        String configName = config.getAttribute(NAME);
         runConfig.setConfigName(configName);
 
         runConfig.setCommand(new ArrayList<>());
-        NodeList options = config.getElementsByTagName("option");
+        NodeList options = config.getElementsByTagName(OPTION);
 
         for (int j = 0; j < options.getLength(); j++) {
             Element option = (Element) options.item(j);
 
-            if (optionsAttribute.equalsIgnoreCase(option.getAttribute("name"))) {
+            if (optionsAttribute.equalsIgnoreCase(option.getAttribute(NAME))) {
                 addTaskNamesToConfig(option, runConfig);
             }
         }
@@ -49,10 +51,10 @@ public class DocumentParser {
     }
 
     public void addTaskNamesToConfig(Element option, RunConfig runConfig) {
-        NodeList listOptions = option.getElementsByTagName("option");
+        NodeList listOptions = option.getElementsByTagName(OPTION);
         for (int k = 0; k < listOptions.getLength(); k++) {
             Element taskOption = (Element) listOptions.item(k);
-            String value = taskOption.getAttribute("value");
+            String value = taskOption.getAttribute(VALUE);
             if (!value.isEmpty()) {
                 runConfig.getCommand().add(value);
             }

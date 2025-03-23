@@ -8,7 +8,7 @@ import org.nevertouchgrass.prolific.service.DocumentParser;
 import org.nevertouchgrass.prolific.service.PathService;
 import org.nevertouchgrass.prolific.service.ProjectScannerService;
 import org.nevertouchgrass.prolific.service.XmlProjectScannerConfigLoaderService;
-import org.nevertouchgrass.prolific.service.importers.GradleConfigImporter;
+import org.nevertouchgrass.prolific.service.configurations.importers.GradleConfigImporter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,5 +57,10 @@ public class TestConfiguration {
     @Bean
     public GradleConfigImporter gradleConfigImporter(PathService pathService, DocumentParser documentParser) {
         return new GradleConfigImporter(pathService, documentParser);
+    }
+
+    @Bean
+    public PluginConfigProvider pluginConfigProvider() {
+        return new PluginConfigProvider();
     }
 }
