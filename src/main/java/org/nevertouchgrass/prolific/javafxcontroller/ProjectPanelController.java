@@ -212,10 +212,18 @@ public class ProjectPanelController {
         }
         try {
             notificationService.notifyInfo(InfoNotification.of("Running project {}", project.getTitle()));
-            currentProcess = projectRunner.runProject(project, chosenConfig);
-            processService.addProcess(currentProcess.pid());
-            processService.registerOnKillListener(this::onProcessDeath);
-            isProjectRunning.setValue(true);
+            new Thread(() -> {
+                try {
+                    currentProcess = projectRunner.runProject(project, chosenConfig);
+                    processService.addProcess(currentProcess.pid());
+                    processService.registerOnKillListener(this::onProcessDeath);
+                    isProjectRunning.setValue(true);
+                } catch (Exception e) {
+                    notificationService.notifyError(ErrorNotification.of(e, "Error while running project {}", project.getTitle()));
+                    log.error("Error while running project {}", project.getTitle(), e);
+                    throw new RuntimeException(e);
+                }
+            }).start();
         } catch (Exception e) {
             notificationService.notifyError(ErrorNotification.of(e, "Error while running project {}", project.getTitle()));
             log.error("Error while running project {}", project.getTitle(), e);
