@@ -3,26 +3,24 @@ package org.nevertouchgrass.prolific.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.nevertouchgrass.prolific.config.TestConfiguration;
+import org.nevertouchgrass.prolific.BackendTestBase;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-@SpringBootTest(classes = TestConfiguration.class)
-public class XmlProjectScannerConfigLoaderServiceTests {
+class XmlProjectScannerConfigLoaderServiceTests extends BackendTestBase {
 
 	@Autowired
 	private XmlProjectScannerConfigLoaderService xmlProjectScannerConfigLoaderService;
 
 	@Test
 	@DisplayName("Test load project scanner plugins config")
-	public void givenPath_whenScanConfig_thenReturnProjectTypeModels() {
+	void givenPath_whenScanConfig_thenReturnProjectTypeModels() {
 		// Given
-		var expected = List.of(new ProjectTypeModel("Gradle", List.of("build.gradle", "build.gradle.kts", ".gradle")),
+		var expected = List.of(new ProjectTypeModel(
+				"Gradle", List.of("build.gradle", "build.gradle.kts", ".gradle")),
 				new ProjectTypeModel("Maven", List.of("pom.xml")),
-				new ProjectTypeModel("IntelliJ IDEA", List.of("*.iml", ".idea")),
 				new ProjectTypeModel("Eclipse", List.of(".project", ".classpath")),
 				new ProjectTypeModel("Python", List.of("requirements.txt", "pyproject.toml", "setup.py", ".venv")));
 
