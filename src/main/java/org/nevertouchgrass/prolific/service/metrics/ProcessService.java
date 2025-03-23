@@ -28,11 +28,19 @@ public class ProcessService {
     private volatile boolean observing = true;
     private final List<ProcessAware> processAware;
     private final Set<Project> observedProjects = ConcurrentHashMap.newKeySet();
+    private final Set<OSProcess> processes = ConcurrentHashMap.newKeySet();
 
 
 
     public List<OSProcess> getLiveProcesses() {
         return List.copyOf(live);
+    }
+    public void addProcess(long pid) {
+        var process = os.getProcess((int) pid);
+        if (!live.contains(process)) {
+            live.add(process);
+            log.debug("New process detected: PID {} - {}", process.getProcessID(), process.getName());
+        }
     }
 
     /**
@@ -52,7 +60,6 @@ public class ProcessService {
      * @return a list of running processes for the project
      */
     public List<OSProcess> getRunningProcesses(Project project) {
-        var processes = os.getProcesses();
         // Create pattern only once per method call
         var patternString = "(^|/)" + Pattern.quote(project.getTitle()) + "(\\s|$|/|])";
         var pattern = Pattern.compile(patternString);
@@ -84,6 +91,10 @@ public class ProcessService {
     public void observe(Project project) {
         if (project.getPath().endsWith(System.getProperty("user.home"))){
             return;
+        }
+        synchronized (processes) {
+            processes.clear();
+            processes.addAll(os.getProcesses());
         }
         observedProjects.add(project);
 
@@ -125,7 +136,6 @@ public class ProcessService {
      * If a process is no longer running, it notifies listeners and removes it from the live set.
      */
     public void scheduleProcessObserving() {
-        // Создание фабрики потоков для лучшего именования
         ThreadFactory threadFactory = new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(1);
             @Override
@@ -145,6 +155,8 @@ public class ProcessService {
             if (!observing) {
                 return;
             }
+            processes.clear();
+            processes.addAll(os.getProcesses());
 
             for (Project project : observedProjects) {
                 List<OSProcess> currentProcesses = getRunningProcesses(project);

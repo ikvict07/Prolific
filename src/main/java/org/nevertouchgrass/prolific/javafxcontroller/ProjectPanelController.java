@@ -141,7 +141,9 @@ public class ProjectPanelController {
             star.setVisible(false);
             projectsRepository.update(project);
         });
-        processService.observe(project);
+        new Thread(() -> {
+            processService.observe(project);
+        }).start();
     }
 
 
@@ -211,6 +213,7 @@ public class ProjectPanelController {
         try {
             notificationService.notifyInfo(InfoNotification.of("Running project {}", project.getTitle()));
             currentProcess = projectRunner.runProject(project, chosenConfig);
+            processService.addProcess(currentProcess.pid());
             processService.registerOnKillListener(this::onProcessDeath);
             isProjectRunning.setValue(true);
         } catch (Exception e) {
