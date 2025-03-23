@@ -9,6 +9,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -145,6 +146,8 @@ public class ProjectPanelController {
             star.setVisible(false);
             projectsRepository.update(project);
         });
+        Tooltip tooltip = new Tooltip(project.getPath());
+        projectTitleText.setTooltip(tooltip);
     }
 
 
