@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.config;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.mockito.Mockito;
 import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
 import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
@@ -9,6 +10,7 @@ import org.nevertouchgrass.prolific.service.PathService;
 import org.nevertouchgrass.prolific.service.ProjectScannerService;
 import org.nevertouchgrass.prolific.service.XmlProjectScannerConfigLoaderService;
 import org.nevertouchgrass.prolific.service.configurations.importers.GradleConfigImporter;
+import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +30,7 @@ public class TestConfiguration {
     public ProjectScannerService projectScannerService(
             XmlProjectScannerConfigLoaderService xmlProjectScannerConfigLoaderService, UserSettingsHolder userSettings) {
         System.out.println(xmlProjectScannerConfigLoaderService.loadProjectTypes());
-        return new ProjectScannerService(xmlProjectScannerConfigLoaderService, userSettings);
+        return new ProjectScannerService(xmlProjectScannerConfigLoaderService, userSettings, Mockito.mock(NotificationService.class));
     }
 
     @Bean

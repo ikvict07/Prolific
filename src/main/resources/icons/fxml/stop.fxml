@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@/css/styles.css">
+    <Group>
+        <Rectangle id="icon"
+                   x="2.5" y="2.5" width="11" height="11"
+                   arcWidth="3" arcHeight="3"
+                   fill="#5E3838" stroke="#DB5C5C" strokeWidth="1"/>
+    </Group>
+</StackPane>

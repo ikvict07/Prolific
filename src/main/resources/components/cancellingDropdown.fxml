@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="root" id="projectSettingsDropdown" xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.nevertouchgrass.prolific.javafxcontroller.CancellingDropdownController"
+      styleClass="popup" stylesheets="@/css/styles.css">
+    <Label fx:id="cancelButton" onMouseClicked="#cancel" textAlignment="JUSTIFY">
+        <graphic>
+            <fx:include disable="true" maxWidth="10" maxHeight="10" source="/icons/fxml/stop.fxml"/>
+        </graphic>
+        Cancel scanning
+    </Label>
+</VBox>

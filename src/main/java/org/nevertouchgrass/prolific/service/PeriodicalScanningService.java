@@ -1,5 +1,6 @@
 package org.nevertouchgrass.prolific.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 @Service
 @Log4j2
 @SuppressWarnings({"unused", "FieldCanBeLocal", "NullableProblems"})
+@RequiredArgsConstructor
 public class PeriodicalScanningService implements ApplicationListener<StageShowEvent> {
     private final ProjectScannerService projectScannerService;
     private final UserSettingsHolder userSettingsHolder;
@@ -37,14 +39,11 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
         this.it = it;
     }
 
-    public PeriodicalScanningService(ProjectScannerService projectScannerService, UserSettingsHolder userSettingsHolder, ProjectResolver projectResolver, @Lazy UserSettingsService userSettingsService, ProjectsRepository projectsRepository) {
-        this.projectScannerService = projectScannerService;
-        this.userSettingsHolder = userSettingsHolder;
-        this.projectResolver = projectResolver;
-        this.userSettingsService = userSettingsService;
-        this.projectsRepository = projectsRepository;
-    }
 
+    public void cancelScanning() {
+        log.info("Canceling scanning");
+        projectScannerService.cancelScanning();
+    }
     public void scheduleScanning() {
         new Thread(() -> {
             LocalDateTime lastScanDate = userSettingsHolder.getLastScanDate();

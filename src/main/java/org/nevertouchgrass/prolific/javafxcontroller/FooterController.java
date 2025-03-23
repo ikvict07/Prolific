@@ -2,11 +2,14 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
@@ -35,9 +38,13 @@ public class FooterController implements NotificationListener<Notification> {
 
     private Loader loader;
 
+    private ContextMenu cancellingPopup;
+
+
     @Autowired
-    private void setLoader(Loader loader) {
+    private void set(Loader loader, Pair<CancellingDropdownController, ContextMenu> cancelPopup) {
         this.loader = loader;
+        cancellingPopup = cancelPopup.getValue();
     }
 
     @Override
@@ -71,10 +78,34 @@ public class FooterController implements NotificationListener<Notification> {
         var event = notification.getPayload();
         switch (event) {
             case START_PROJECT_SCAN -> Platform.runLater(() -> {
+                loaderPane.setVisible(true);
                 loaderPane.getChildren().clear();
                 loaderPane.getChildren().add(loader.createLoader());
             });
-            case END_PROJECT_SCAN -> Platform.runLater(() -> loaderPane.getChildren().clear());
+            case END_PROJECT_SCAN -> Platform.runLater(() -> {
+                loaderPane.setVisible(false);
+                loaderPane.getChildren().clear();
+            });
         }
+    }
+
+    public void showCancelPopup() {
+        Bounds contentBounds = content.localToScreen(content.getBoundsInLocal());
+        Bounds footerBounds = footer.localToScreen(footer.getBoundsInLocal());
+        Stage stage = (Stage) footer.getScene().getWindow();
+
+        cancellingPopup.setX(contentBounds.getMinX());
+        cancellingPopup.setY(contentBounds.getMinY());
+        cancellingPopup.show(stage);
+
+        Platform.runLater(() -> {
+            double popupWidth = cancellingPopup.getWidth();
+            double popupHeight = cancellingPopup.getHeight();
+
+            double rightAlignedX = stage.getX() + stage.getWidth() - popupWidth + 8;
+            double topAlignedY = footerBounds.getMinY() - popupHeight / 4 * 3;
+            cancellingPopup.setX(rightAlignedX);
+            cancellingPopup.setY(topAlignedY);
+        });
     }
 }
