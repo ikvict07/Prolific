@@ -10,7 +10,7 @@
         <Rectangle id="icon"
                    x="2.5" y="2.5" width="11" height="11"
                    arcWidth="3" arcHeight="3"
-                   fill="#5E3838" stroke="#DB5C5C" strokeWidth="1"/>
+                   fill="#5E3838" stroke="#DB5C5C"/>
     </Group>
     <HBox.margin>
         <Insets bottom="6" left="10" right="10" top="6"/>

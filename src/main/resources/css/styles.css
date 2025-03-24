@@ -248,6 +248,15 @@
     -fx-background-insets: 0 10%;
 }
 
+.stop-button {
+    -fx-background-color: #DB5C5C;
+    -fx-background-radius: 8;
+}
+
+.stop-button:hover {
+    -fx-background-color: #C04F4F;
+}
+
 /** {*/
 /*    -fx-border-width: 1px;*/
 /*    -fx-border-color: red;*/

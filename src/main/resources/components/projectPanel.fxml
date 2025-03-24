@@ -36,7 +36,7 @@
                 <Label fx:id="configurationName" styleClass="label" textOverrun="CENTER_ELLIPSIS"/>
                 <fx:include fx:id="configurationButton" source="/icons/fxml/unfold_button.fxml"/>
             </HBox>
-            <StackPane fx:id="run" styleClass="icon-button" onMouseClicked="#runProject">
+            <StackPane fx:id="run" onMouseClicked="#runProject">
                 <HBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:id="runContent">
                     <fx:include source="/icons/fxml/runButton.fxml"/>
                 </HBox>
