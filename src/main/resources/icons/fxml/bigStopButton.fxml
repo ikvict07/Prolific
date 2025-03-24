@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Rectangle?>
 <StackPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@/css/styles.css" styleClass="stop-button">
-    <Rectangle x="0.5" y="0.5" width="12" height="12" fill="TRANSPARENT" stroke="#FFF7F7" strokeWidth="1.5" arcHeight="2" arcWidth="2"/>
+    <Rectangle x="0.5" y="0.5" width="16" height="16" fill="TRANSPARENT" stroke="#FFF7F7" strokeWidth="1.5" arcHeight="2" arcWidth="2"/>
     <padding>
         <Insets top="6" bottom="6" right="10" left="10"/>
     </padding>
