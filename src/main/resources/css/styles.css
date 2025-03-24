@@ -164,6 +164,58 @@
     -fx-background-color: transparent;
 }
 
+.split-pane {
+    -fx-background-color: transparent;
+}
+
+.split-pane-divider {
+    -fx-background-color: transparent;
+    -fx-padding: 16px;
+}
+
+.text-area {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DFE1E5;
+}
+
+.text-area .content {
+    -fx-background-color: #1E1F22;
+    -fx-background-radius: 0;
+}
+
+.text-area .scroll-pane {
+    -fx-background-color: #2B2D30;
+    -fx-hbar-policy: as-needed;
+    -fx-vbar-policy: as-needed;
+}
+
+.text-area .scroll-pane .scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 0;
+    -fx-opacity: 1;
+}
+
+.text-area .scroll-pane .scroll-bar .thumb:pressed,
+.text-area .scroll-pane .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+}
+
+.text-area .scroll-pane .scroll-bar:horizontal .increment-arrow,
+.text-area .scroll-pane .scroll-bar:horizontal .decrement-arrow  {
+    -fx-shape: " ";
+    -fx-padding: 0.25em 0;
+}
+
+.text-area .scroll-pane .scroll-bar:vertical .increment-arrow,
+.text-area .scroll-pane .scroll-bar:vertical .decrement-arrow  {
+    -fx-shape: " ";
+    -fx-padding: 0 0.25em;
+}
+
+.text-area .scroll-pane .corner {
+    -fx-background-color: transparent;
+}
+
 .scroll-shadow {
     -fx-background-color: linear-gradient(to bottom, rgba(30, 31, 34, 0.5), rgb(30, 31, 34));
     -fx-pref-height: 30px;
@@ -256,6 +308,66 @@
 .stop-button:hover {
     -fx-background-color: #C04F4F;
 }
+
+.metrics-hbox {
+    -fx-background-color: #2B2D30;
+    -fx-border-width: 2 0 0 0;
+    -fx-border-color: #1E1F22
+}
+
+.running-projects-label {
+    -fx-border-color: #6F737A;
+    -fx-border-radius: 4;
+    -fx-padding: 2 4 2 4;
+}
+
+.logs-header {
+    -fx-background-color: #2B2D30;
+}
+
+.project-logs-dropdown {
+    -fx-border-color: #3574F0;
+    -fx-border-radius: 4;
+    -fx-border-width: 1.5;
+    -fx-bacground-radius: 4;
+}
+
+.project-logs-dropdown:hover {
+    -fx-background-color: #3A3C40
+}
+
+.logs-footer {
+    -fx-background-color: #2B2D30;
+}
+
+.logs-button-container {
+    -fx-border-color: #6F737A;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.logs-button {
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 6 12 6 12;
+}
+
+.logs-button:hover {
+    -fx-background-color: #3A3C40;
+}
+
+.logs-button-selected {
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 6 12 6 12;
+    -fx-border-color: #6F737A;
+    -fx-background-color: #393B40;
+}
+
+.logs-button-selected:hover {
+    -fx-background-color: #46484D;
+}
+
 
 /** {*/
 /*    -fx-border-width: 1px;*/
