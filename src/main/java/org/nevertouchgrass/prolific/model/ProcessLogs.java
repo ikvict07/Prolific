@@ -1,5 +1,7 @@
 package org.nevertouchgrass.prolific.model;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -16,7 +18,7 @@ import java.util.function.Consumer;
 @Getter
 @ToString
 public class ProcessLogs {
-    private final List<String> logs = Collections.synchronizedList(new ArrayList<>());
+    private final ObservableList<String> logs = FXCollections.observableArrayList();
     private final List<String> errors = Collections.synchronizedList(new ArrayList<>());
     private final List<Consumer<String>> onLogAddedListeners = new CopyOnWriteArrayList<>();
     private final List<Consumer<String>> onErrorAddedListeners = new CopyOnWriteArrayList<>();

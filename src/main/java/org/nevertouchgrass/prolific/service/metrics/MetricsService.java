@@ -5,6 +5,7 @@ import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.model.Metric;
 import org.nevertouchgrass.prolific.model.ProcessMetrics;
+import org.nevertouchgrass.prolific.util.OSProcessWrapper;
 import org.springframework.stereotype.Service;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
@@ -17,14 +18,14 @@ import java.util.concurrent.*;
 @Service
 @RequiredArgsConstructor
 public class MetricsService implements ProcessAware {
-    private final Map<OSProcess, ProcessMetrics> metrics = new ConcurrentHashMap<>();
-    private final Set<OSProcess> observableProcesses = ConcurrentHashMap.newKeySet();
+    private final Map<OSProcessWrapper, ProcessMetrics> metrics = new ConcurrentHashMap<>();
+    private final Set<OSProcessWrapper> observableProcesses = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final OperatingSystem os;
     private volatile boolean observing = true;
 
 
-    public Map<OSProcess, ProcessMetrics> getMetrics() {
+    public Map<OSProcessWrapper, ProcessMetrics> getMetrics() {
         return Map.copyOf(metrics);
     }
 
@@ -44,13 +45,14 @@ public class MetricsService implements ProcessAware {
                 return;
             }
             observableProcesses.forEach(p -> {
-                if (os.getProcess(p.getProcessID()) == null) {
+                OSProcess process = p.getProcess();
+                if (os.getProcess(process.getProcessID()) == null) {
                     return;
                 }
                 var metric = new Metric();
-                var cpu = os.getProcess(p.getProcessID()).getProcessCpuLoadCumulative();
-                var memory = os.getProcess(p.getProcessID()).getResidentSetSize();
-                var threadCount = os.getProcess(p.getProcessID()).getThreadCount();
+                var cpu = os.getProcess(process.getProcessID()).getProcessCpuLoadCumulative();
+                var memory = os.getProcess(process.getProcessID()).getResidentSetSize();
+                var threadCount = os.getProcess(process.getProcessID()).getThreadCount();
                 var timestamp = LocalDateTime.now();
                 metric.setCpuUsage(cpu);
                 metric.setMemoryUsage(memory);
@@ -58,7 +60,7 @@ public class MetricsService implements ProcessAware {
                 metric.setTimeStamp(timestamp);
                 metrics.computeIfAbsent(p, p1 -> {
                     var newMetrics = new ProcessMetrics();
-                    newMetrics.setStartTime(p1.getStartTime());
+                    newMetrics.setStartTime(p1.getProcess().getStartTime());
                     return newMetrics;
                 }).addMetric(metric);
             });
@@ -67,12 +69,12 @@ public class MetricsService implements ProcessAware {
 
     @Override
     public void onProcessKill(OSProcess process) {
-        observableProcesses.remove(process);
+        observableProcesses.remove(new OSProcessWrapper(process));
     }
 
-    public void observeProcess(OSProcess process) {
+    public void observeProcess(OSProcessWrapper process) {
         observableProcesses.add(process);
-        metrics.computeIfAbsent(process, p -> new ProcessMetrics());
+        metrics.computeIfAbsent(process, _ -> new ProcessMetrics());
     }
 
     @PreDestroy

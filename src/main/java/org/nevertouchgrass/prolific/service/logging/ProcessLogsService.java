@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.service.metrics.ProcessAware;
+import org.nevertouchgrass.prolific.util.OSProcessWrapper;
 import org.springframework.stereotype.Service;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
@@ -22,8 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 @Log4j2
 public class ProcessLogsService implements ProcessAware {
+    private final OperatingSystem os;
     private final List<Process> observableProcesses = new CopyOnWriteArrayList<>();
-    private final Map<Process, ProcessLogs> logs = new ConcurrentHashMap<>();
+    private final Map<OSProcessWrapper, ProcessLogs> logs = new ConcurrentHashMap<>();
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(
         new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(1);
@@ -36,7 +38,6 @@ public class ProcessLogsService implements ProcessAware {
             }
         }
     );
-    private final OperatingSystem os;
     private final Map<Process, BufferedReader> processInputStreamMap = new ConcurrentHashMap<>();
     private final Map<Process, BufferedReader> processErrorStreamMap = new ConcurrentHashMap<>();
     private volatile boolean observing = true;
@@ -49,13 +50,14 @@ public class ProcessLogsService implements ProcessAware {
         startObserving();
     }
 
-    public Map<Process, ProcessLogs> getLogs() {
+    public Map<OSProcessWrapper, ProcessLogs> getLogs() {
         return Map.copyOf(logs);
     }
 
     public void observeProcess(Process process) {
+        OSProcessWrapper osProcessWrapper = new OSProcessWrapper(os.getProcess((int) process.pid()));
         observableProcesses.add(process);
-        logs.computeIfAbsent(process, p -> new ProcessLogs());
+        logs.computeIfAbsent(osProcessWrapper, _ -> new ProcessLogs());
     }
 
     /**
@@ -115,7 +117,8 @@ public class ProcessLogsService implements ProcessAware {
                     processesToRemove.add(p);
                     return;
                 }
-                var processLogs = logs.computeIfAbsent(p, p1 -> new ProcessLogs());
+                OSProcessWrapper osProcessWrapper = new OSProcessWrapper(os.getProcess((int) p.pid()));
+                var processLogs = logs.computeIfAbsent(osProcessWrapper, _ -> new ProcessLogs());
                 var inputStream = processInputStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getInputStream())));
                 var errorStream = processErrorStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getErrorStream())));
                 readNewLines(inputStream, processLogs);
@@ -125,7 +128,8 @@ public class ProcessLogsService implements ProcessAware {
             // Clean up resources for processes that no longer exist
             processesToRemove.forEach(p -> {
                 closeReaders(p);
-                logs.remove(p);
+                OSProcessWrapper osProcessWrapper = new OSProcessWrapper(os.getProcess((int) p.pid()));
+                logs.remove(osProcessWrapper);
                 observableProcesses.remove(p);
             });
         }, 0, 3, TimeUnit.SECONDS);

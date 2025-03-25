@@ -1,16 +1,14 @@
 package org.nevertouchgrass.prolific.util;
 
+import lombok.Getter;
 import oshi.software.os.OSProcess;
 
+@Getter
 public class OSProcessWrapper {
     private final OSProcess process;
 
     public OSProcessWrapper(OSProcess process) {
         this.process = process;
-    }
-
-    public OSProcess getProcess() {
-        return process;
     }
 
     @Override

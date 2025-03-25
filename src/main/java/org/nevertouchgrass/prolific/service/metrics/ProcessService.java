@@ -19,15 +19,14 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class ProcessService {
     private final OperatingSystem os;
-    private final Set<OSProcess> live = ConcurrentHashMap.newKeySet();
-    private final Set<OSProcess> dead = ConcurrentHashMap.newKeySet();
+    private final Set<OSProcessWrapper> live = ConcurrentHashMap.newKeySet();
+    private final Set<OSProcessWrapper> dead = ConcurrentHashMap.newKeySet();
     private final Set<Consumer<OSProcess>> onKillListeners = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private volatile boolean observing = true;
@@ -37,7 +36,7 @@ public class ProcessService {
 
     private final ObservableMap<Project, Set<OSProcessWrapper>> observableProcessesMap = FXCollections.observableHashMap();
 
-    public List<OSProcess> getLiveProcesses() {
+    public List<OSProcessWrapper> getLiveProcesses() {
         return List.copyOf(live);
     }
 
@@ -46,14 +45,12 @@ public class ProcessService {
     }
 
     public void addProcess(long pid, Project project) {
-        var process = os.getProcess((int) pid);
-        if (!live.contains(process)) {
-            if (live.add(process)) {
-                Set<OSProcessWrapper> value = observableProcessesMap.getOrDefault(project, ConcurrentHashMap.newKeySet());
-                value.add(new OSProcessWrapper(process));
-                observableProcessesMap.put(project, value);
-            }
-            log.debug("New process detected: PID {} - {}", process.getProcessID(), process.getName());
+        OSProcessWrapper process = new OSProcessWrapper(os.getProcess((int) pid));
+        if (live.add(process)) {
+            Set<OSProcessWrapper> value = observableProcessesMap.getOrDefault(project, ConcurrentHashMap.newKeySet());
+            value.add(process);
+            observableProcessesMap.put(project, value);
+            log.debug("New process detected: PID {} - {}", process.getProcess().getProcessID(), process.getProcess().getName());
         }
     }
 
@@ -73,7 +70,7 @@ public class ProcessService {
      * @param project the project to get running processes for
      * @return a list of running processes for the project
      */
-    public List<OSProcess> getRunningProcesses(Project project) {
+    public List<OSProcessWrapper> getRunningProcesses(Project project) {
         // Create pattern only once per method call
         var patternString = "(^|/)" + Pattern.quote(project.getTitle()) + "(\\s|$|/|])";
         var pattern = Pattern.compile(patternString);
@@ -81,11 +78,12 @@ public class ProcessService {
         var result = processes.stream()
                 .filter(p -> p.getCommandLine().contains(project.getPath()))
                 .filter(p -> pattern.matcher(p.getCommandLine()).find())
+                .map(OSProcessWrapper::new)
                 .toList();
 
         if (!result.isEmpty()) {
             log.info("For project {} found {} running processes", project.getPath(), result.size());
-            log.info("{} Running processes: {}", project, result.stream().map(OSProcess::getCommandLine).toList());
+            log.info("{} Running processes: {}", project, result.stream().map(it -> it.getProcess().getCommandLine()).toList());
         }
         return result;
     }
@@ -115,7 +113,7 @@ public class ProcessService {
         var processes = getRunningProcesses(project);
         if (live.addAll(processes)) {
             Set<OSProcessWrapper> value = ConcurrentHashMap.newKeySet();
-            value.addAll(processes.stream().map(OSProcessWrapper::new).toList());
+            value.addAll(processes);
             observableProcessesMap.put(project, value);
         }
 
@@ -177,31 +175,29 @@ public class ProcessService {
             processes.addAll(os.getProcesses());
 
             for (Project project : observedProjects) {
-                List<OSProcess> currentProcesses = getRunningProcesses(project);
+                List<OSProcessWrapper> currentProcesses = getRunningProcesses(project);
 
                 Set<OSProcessWrapper> processes = observableProcessesMap.getOrDefault(project, ConcurrentHashMap.newKeySet());
 
-                for (OSProcess process : currentProcesses) {
-                    if (!live.contains(process)) {
-                        if (live.add(process)) {
-                            processes.add(new OSProcessWrapper(process));
+                for (OSProcessWrapper process : currentProcesses) {
+                    if (live.add(process)) {
+                            processes.add(process);
                             observableProcessesMap.put(project, processes);
-                        }
                         log.debug("New process detected for project {}: PID {} - {}",
-                                project.getTitle(), process.getProcessID(), process.getName());
+                                project.getTitle(), process.getProcess().getProcessID(), process.getProcess().getName());
                     }
                 }
             }
 
-            List<OSProcess> toRemove = new CopyOnWriteArrayList<>();
+            List<OSProcessWrapper> toRemove = new CopyOnWriteArrayList<>();
 
             live.forEach(p -> {
-                if (os.getProcess(p.getProcessID()) == null) {
+                if (os.getProcess(p.getProcess().getProcessID()) == null) {
                     dead.add(p);
-                    log.debug("Process died: PID {} - {}", p.getProcessID(), p.getName());
+                    log.debug("Process died: PID {} - {}", p.getProcess().getProcessID(), p.getProcess().getName());
                     onKillListeners.forEach(c -> {
                         try {
-                            c.accept(p);
+                            c.accept(p.getProcess());
                         } catch (Exception e) {
                             log.error("Error in process kill listener", e);
                         }
