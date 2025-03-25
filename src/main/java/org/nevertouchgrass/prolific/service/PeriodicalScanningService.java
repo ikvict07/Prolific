@@ -73,11 +73,11 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     private void resolveAndSave(Path path) {
         Path p = path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS);
         if (p.equals(Path.of(userSettingsHolder.getBaseScanDirectory()))) {
-            System.err.println("SKIP");
+            log.info("Skipping base scan directory: {}", p);
             return;
         }
         if (p.toAbsolutePath().normalize().toString().equals(System.getProperty("user.home"))) {
-            System.err.println("SKIP2");
+            log.info("Skipping user home directory: {}", p);
             return;
         }
         Project project = projectResolver.resolveProject(p, userSettingsHolder.getMaximumProjectDepth());
