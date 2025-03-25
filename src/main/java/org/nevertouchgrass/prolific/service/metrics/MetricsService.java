@@ -5,7 +5,7 @@ import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.model.Metric;
 import org.nevertouchgrass.prolific.model.ProcessMetrics;
-import org.nevertouchgrass.prolific.util.OSProcessWrapper;
+import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.stereotype.Service;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
@@ -18,14 +18,14 @@ import java.util.concurrent.*;
 @Service
 @RequiredArgsConstructor
 public class MetricsService implements ProcessAware {
-    private final Map<OSProcessWrapper, ProcessMetrics> metrics = new ConcurrentHashMap<>();
-    private final Set<OSProcessWrapper> observableProcesses = ConcurrentHashMap.newKeySet();
+    private final Map<ProcessWrapper, ProcessMetrics> metrics = new ConcurrentHashMap<>();
+    private final Set<ProcessWrapper> observableProcesses = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final OperatingSystem os;
     private volatile boolean observing = true;
 
 
-    public Map<OSProcessWrapper, ProcessMetrics> getMetrics() {
+    public Map<ProcessWrapper, ProcessMetrics> getMetrics() {
         return Map.copyOf(metrics);
     }
 
@@ -45,7 +45,7 @@ public class MetricsService implements ProcessAware {
                 return;
             }
             observableProcesses.forEach(p -> {
-                OSProcess process = p.getProcess();
+                OSProcess process = p.getOsProcess();
                 if (os.getProcess(process.getProcessID()) == null) {
                     return;
                 }
@@ -60,7 +60,7 @@ public class MetricsService implements ProcessAware {
                 metric.setTimeStamp(timestamp);
                 metrics.computeIfAbsent(p, p1 -> {
                     var newMetrics = new ProcessMetrics();
-                    newMetrics.setStartTime(p1.getProcess().getStartTime());
+                    newMetrics.setStartTime(p1.getOsProcess().getStartTime());
                     return newMetrics;
                 }).addMetric(metric);
             });
@@ -68,11 +68,11 @@ public class MetricsService implements ProcessAware {
     }
 
     @Override
-    public void onProcessKill(OSProcess process) {
-        observableProcesses.remove(new OSProcessWrapper(process));
+    public void onProcessKill(ProcessWrapper process) {
+        observableProcesses.remove(process);
     }
 
-    public void observeProcess(OSProcessWrapper process) {
+    public void observeProcess(ProcessWrapper process) {
         observableProcesses.add(process);
         metrics.computeIfAbsent(process, _ -> new ProcessMetrics());
     }

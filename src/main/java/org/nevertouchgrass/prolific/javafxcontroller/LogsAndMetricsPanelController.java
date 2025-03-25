@@ -20,7 +20,7 @@ import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.ProcessService;
-import org.nevertouchgrass.prolific.util.OSProcessWrapper;
+import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +29,7 @@ import java.util.Set;
 
 @Slf4j
 @Component
+@SuppressWarnings("java:S1450")
 public class LogsAndMetricsPanelController {
     @FXML
     private TextArea logsAndMetrics;
@@ -50,7 +51,7 @@ public class LogsAndMetricsPanelController {
     private ProcessService processService;
     private ProcessLogsService processLogsService;
 
-    private ObservableMap<Project, Set<OSProcessWrapper>> processes;
+    private ObservableMap<Project, Set<ProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
 
 
@@ -76,7 +77,7 @@ public class LogsAndMetricsPanelController {
         runningProjectsCount = new SimpleIntegerProperty(processes.size());
         runningProjectsCount.addListener((_, _, newValue) -> Platform.runLater(() -> runningProjects.setText(runningProjects.getText().replaceAll("\\d+", String.valueOf(newValue)))));
 
-        processes.addListener((MapChangeListener<? super Project, ? super Set<OSProcessWrapper>>) change -> {
+        processes.addListener((MapChangeListener<? super Project, ? super Set<ProcessWrapper>>) change -> {
             if (change.wasAdded()) {
                 CustomMenuItem menuItem = new CustomMenuItem(new Label(change.getKey().getTitle()));
                 menuItem.setId(change.getKey().getTitle());
@@ -84,10 +85,10 @@ public class LogsAndMetricsPanelController {
                 menuItem.addEventHandler(ActionEvent.ACTION,  _ -> {
                     projectChoice.set(change.getKey().getTitle());
                     ContextMenu subMenu = new ContextMenu();
-                    for (OSProcessWrapper osProcessWrapper : processes.get(change.getKey())) {
-                        MenuItem item = new MenuItem(osProcessWrapper.getProcess().getName());
+                    for (ProcessWrapper processWrapper : processes.get(change.getKey())) {
+                        MenuItem item = new MenuItem(processWrapper.getName());
                         item.setOnAction(_ -> {
-                            ObservableList<String> logs = processLogsService.getLogs().getOrDefault(osProcessWrapper, new ProcessLogs()).getLogs();
+                            ObservableList<String> logs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs()).getLogs();
                             logs.addListener((ListChangeListener<? super String>) c -> {
                                 while (c.next()) {
                                     if (c.wasAdded()) {
@@ -131,16 +132,17 @@ public class LogsAndMetricsPanelController {
     }
 
     public void switchLogsButtonStyle(MouseEvent event) {
+        String label = "label";
         if (event.getSource() == logsButton) {
             logsButton.getStyleClass().clear();
-            logsButton.getStyleClass().addAll("label", "logs-button-selected");
+            logsButton.getStyleClass().addAll(label, "logs-button-selected");
             metricsButton.getStyleClass().clear();
-            metricsButton.getStyleClass().addAll("label","logs-button");
+            metricsButton.getStyleClass().addAll(label,"logs-button");
         } else if (event.getSource() == metricsButton) {
             metricsButton.getStyleClass().clear();
-            metricsButton.getStyleClass().addAll("label", "logs-button-selected");
+            metricsButton.getStyleClass().addAll(label, "logs-button-selected");
             logsButton.getStyleClass().clear();
-            logsButton.getStyleClass().addAll("label", "logs-button");
+            logsButton.getStyleClass().addAll(label, "logs-button");
         }
     }
 }

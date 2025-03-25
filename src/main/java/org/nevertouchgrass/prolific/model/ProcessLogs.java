@@ -35,6 +35,11 @@ public class ProcessLogs {
         onErrorAddedListeners.add(listener);
     }
 
+    public void deleteListener(Consumer<String> listener) {
+        onLogAddedListeners.remove(listener);
+        onErrorAddedListeners.remove(listener);
+    }
+
     /**
      * Adds an error message to the errors list and notifies listeners.
      * If the list exceeds the maximum size, the oldest entries are removed.
