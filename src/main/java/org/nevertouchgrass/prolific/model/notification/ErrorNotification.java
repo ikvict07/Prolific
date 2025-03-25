@@ -1,5 +1,7 @@
 package org.nevertouchgrass.prolific.model.notification;
 
+import org.nevertouchgrass.prolific.model.notification.contract.Notification;
+
 public class ErrorNotification implements Notification {
     private final Throwable throwable;
     private final String message;
