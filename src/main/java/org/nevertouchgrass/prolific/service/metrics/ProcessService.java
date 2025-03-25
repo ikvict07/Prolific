@@ -2,19 +2,24 @@ package org.nevertouchgrass.prolific.service.metrics;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.util.OSProcessWrapper;
 import org.springframework.stereotype.Service;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +35,24 @@ public class ProcessService {
     private final Set<Project> observedProjects = ConcurrentHashMap.newKeySet();
     private final Set<OSProcess> processes = ConcurrentHashMap.newKeySet();
 
-
+    private final ObservableMap<Project, Set<OSProcessWrapper>> observableProcessesMap = FXCollections.observableHashMap();
 
     public List<OSProcess> getLiveProcesses() {
         return List.copyOf(live);
     }
-    public void addProcess(long pid) {
+
+    public ObservableMap<Project, Set<OSProcessWrapper>> getObservableLiveProcesses() {
+        return observableProcessesMap;
+    }
+
+    public void addProcess(long pid, Project project) {
         var process = os.getProcess((int) pid);
         if (!live.contains(process)) {
-            live.add(process);
+            if (live.add(process)) {
+                Set<OSProcessWrapper> value = observableProcessesMap.getOrDefault(project, ConcurrentHashMap.newKeySet());
+                value.add(new OSProcessWrapper(process));
+                observableProcessesMap.put(project, value);
+            }
             log.debug("New process detected: PID {} - {}", process.getProcessID(), process.getName());
         }
     }
@@ -99,7 +113,11 @@ public class ProcessService {
         observedProjects.add(project);
 
         var processes = getRunningProcesses(project);
-        live.addAll(processes);
+        if (live.addAll(processes)) {
+            Set<OSProcessWrapper> value = ConcurrentHashMap.newKeySet();
+            value.addAll(processes.stream().map(OSProcessWrapper::new).toList());
+            observableProcessesMap.put(project, value);
+        }
 
         log.info("Started observing project: {}. Initial processes: {}",
                 project.getTitle(), processes.size());
@@ -161,9 +179,14 @@ public class ProcessService {
             for (Project project : observedProjects) {
                 List<OSProcess> currentProcesses = getRunningProcesses(project);
 
+                Set<OSProcessWrapper> processes = observableProcessesMap.getOrDefault(project, ConcurrentHashMap.newKeySet());
+
                 for (OSProcess process : currentProcesses) {
                     if (!live.contains(process)) {
-                        live.add(process);
+                        if (live.add(process)) {
+                            processes.add(new OSProcessWrapper(process));
+                            observableProcessesMap.put(project, processes);
+                        }
                         log.debug("New process detected for project {}: PID {} - {}",
                                 project.getTitle(), process.getProcessID(), process.getName());
                     }
@@ -188,7 +211,21 @@ public class ProcessService {
             });
 
             if (!toRemove.isEmpty()) {
-                toRemove.forEach(live::remove);
+                toRemove.forEach(p -> {
+                    live.remove(p);
+                    for (Map.Entry<Project, Set<OSProcessWrapper>> entry : observableProcessesMap.entrySet()) {
+                        Set<OSProcessWrapper> processes = entry.getValue();
+                        if (processes.isEmpty()) {
+                            observableProcessesMap.remove(entry.getKey());
+                        }
+                        if (processes.remove(p)) {
+                            if (processes.isEmpty()) {
+                                observableProcessesMap.remove(entry.getKey());
+                            }
+                            break;
+                        }
+                    }
+                });
                 log.debug("Removed {} dead processes from tracking", toRemove.size());
 
                 if (dead.size() > 1000) {
@@ -210,5 +247,6 @@ public class ProcessService {
         live.clear();
         dead.clear();
         onKillListeners.clear();
+        observableProcessesMap.clear();
     }
 }

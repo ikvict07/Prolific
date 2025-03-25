@@ -6,6 +6,6 @@
 <StackPane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@/css/styles.css" styleClass="stop-button">
     <Rectangle x="0.5" y="0.5" width="16" height="16" fill="TRANSPARENT" stroke="#FFF7F7" strokeWidth="1.5" arcHeight="2" arcWidth="2"/>
     <padding>
-        <Insets top="6" bottom="6" right="10" left="10"/>
+        <Insets top="6" bottom="6" right="8" left="8"/>
     </padding>
 </StackPane>

@@ -12,9 +12,9 @@
             <padding>
                 <Insets top="12" bottom="12" right="16" left="16"/>
             </padding>
-            <Label text="You have 0 running projects" styleClass="running-projects-label"/>
+            <Label fx:id="runningProjects" text="You have 0 running projects" styleClass="running-projects-label"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <HBox fx:id="projectLogsDropdown" spacing="10" styleClass="project-logs-dropdown" onMouseClicked="#switchConfigurationButtonIcon">
+            <HBox fx:id="projectLogsDropdown" spacing="10" styleClass="project-logs-dropdown" onMouseClicked="#showRunningProjects">
                 <padding>
                     <Insets top="4" bottom="4" left="8" right="8"/>
                 </padding>

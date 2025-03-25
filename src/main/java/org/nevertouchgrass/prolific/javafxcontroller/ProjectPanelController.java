@@ -215,7 +215,7 @@ public class ProjectPanelController {
             new Thread(() -> {
                 try {
                     currentProcess = projectRunner.runProject(project, chosenConfig);
-                    processService.addProcess(currentProcess.pid());
+                    processService.addProcess(currentProcess.pid(), project);
                     processService.registerOnKillListener(this::onProcessDeath);
                     isProjectRunning.setValue(true);
                 } catch (Exception e) {
