@@ -179,7 +179,7 @@ public class LogsAndMetricsPanelController {
             if (!subscriptions.containsKey(processWrapper)) {
                 var logsFlux = processLogsService.subscribeToLogs(processWrapper);
                 var subscription = logsFlux.subscribe(l -> Platform.runLater(() -> {
-                    if (selectedProcessWrapper != processWrapper) {
+                    if (!selectedProcessWrapper.equals(processWrapper)) {
                         return;
                     }
                     logsAndMetrics.appendText("\n" + l.getLog());
