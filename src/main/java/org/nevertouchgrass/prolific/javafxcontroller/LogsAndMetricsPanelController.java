@@ -3,9 +3,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,6 +12,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
@@ -87,39 +86,31 @@ public class LogsAndMetricsPanelController {
                 menuItem.setId(change.getKey().getTitle());
                 menuItem.setHideOnClick(false);
 
-                menuItem.addEventHandler(ActionEvent.ACTION,  _ -> {
-                    projectChoice.set(change.getKey().getTitle());
+                Set<ProcessWrapper> processWrappers = processes.get(change.getKey());
 
-                    ContextMenu subMenu = new ContextMenu();
+                if (processWrappers.size() == 1) {
+                    setupProcessMenuItem(menuItem, change.getKey().getTitle(), processWrappers.iterator().next());
+                    menuItem.addEventHandler(ActionEvent.ACTION, _ -> projectChoice.set(change.getKey().getTitle()));
+                } else {
+                    menuItem.addEventHandler(ActionEvent.ACTION, _ -> {
+                        projectChoice.set(change.getKey().getTitle());
 
-                    for (ProcessWrapper processWrapper : processes.get(change.getKey())) {
-                        MenuItem item = new MenuItem(processWrapper.getName());
+                        ContextMenu subMenu = new ContextMenu();
 
-                        item.setOnAction(_ -> {
-                            ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-                            Consumer<String> logAddedListener = _ -> {
-                                Platform.runLater(() -> {
-                                    List<String> logs = processLogs.getLogs();
-                                    logsAndMetrics.setText(String.join("\n", logs));
-                                    logsAndMetrics.positionCaret(logsAndMetrics.getLength() - logs.getLast().length());
-                                });
-                            };
-
-                            logsAndMetrics.clear();
-                            processLogsList.forEach(ProcessLogs::clearOnLogAddedListeners);
-                            processLogsList.clear();
-                            processLogsList.add(processLogs);
-
-                            processLogs.addOnLogAddedListener(logAddedListener);
-                            if (processLogs.getLogs().stream().mapToInt(String::length).sum() > logsAndMetrics.getLength()) {
-                                logAddedListener.accept(null);
+                        if (processWrappers.size() == 1) {
+                            setupProcessMenuItem(menuItem, change.getKey().getTitle(), processWrappers.iterator().next());
+                        } else {
+                            for (ProcessWrapper processWrapper : processWrappers) {
+                                CustomMenuItem item = new CustomMenuItem();
+                                setupProcessMenuItem(item, processWrapper.getName(), processWrapper);
+                                subMenu.getItems().add(item);
                             }
-                        });
-                        subMenu.getItems().add(item);
-                    }
-                    Bounds bounds = menuItem.getStyleableNode().localToScreen(menuItem.getStyleableNode().getBoundsInLocal());
-                    subMenu.show(menuItem.getParentPopup(), bounds.getMaxX(), bounds.getMinY());
-                });
+                        }
+
+                        Bounds bounds = menuItem.getStyleableNode().localToScreen(menuItem.getStyleableNode().getBoundsInLocal());
+                        subMenu.show(menuItem.getParentPopup(), bounds.getMaxX(), bounds.getMinY());
+                    });
+                }
                 contextMenu.getItems().add(menuItem);
             } else if (change.wasRemoved()) {
                 Platform.runLater(() -> contextMenu.getItems().removeIf(item -> item.getId().equals(change.getKey().getTitle())));
@@ -162,5 +153,29 @@ public class LogsAndMetricsPanelController {
             logsButton.getStyleClass().clear();
             logsButton.getStyleClass().addAll(label, "logs-button");
         }
+    }
+
+    private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, String text, ProcessWrapper processWrapper) {
+        menuItem.setContent(new Label(text));
+        menuItem.setHideOnClick(false);
+
+        menuItem.setOnAction(_ -> {
+            ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
+            Consumer<String> logAddedListener = _ -> Platform.runLater(() -> {
+                List<String> logs = processLogs.getLogs();
+                logsAndMetrics.setText(String.join("\n", logs));
+                logsAndMetrics.positionCaret(logsAndMetrics.getLength() - logs.getLast().length());
+            });
+
+            logsAndMetrics.clear();
+            processLogsList.forEach(ProcessLogs::clearOnLogAddedListeners);
+            processLogsList.clear();
+            processLogsList.add(processLogs);
+
+            processLogs.addOnLogAddedListener(logAddedListener);
+            if (processLogs.getLogs().stream().mapToInt(String::length).sum() > logsAndMetrics.getLength()) {
+                logAddedListener.accept(null);
+            }
+        });
     }
 }
