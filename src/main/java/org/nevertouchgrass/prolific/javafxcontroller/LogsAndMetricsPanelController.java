@@ -3,7 +3,9 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,7 +20,7 @@ import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.ProcessService;
-import org.nevertouchgrass.prolific.util.OSProcessWrapper;
+import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,7 @@ import java.util.function.Consumer;
 
 @Slf4j
 @Component
+@SuppressWarnings("java:S1450")
 public class LogsAndMetricsPanelController {
     @FXML
     private TextArea logsAndMetrics;
@@ -51,7 +54,7 @@ public class LogsAndMetricsPanelController {
     private ProcessService processService;
     private ProcessLogsService processLogsService;
 
-    private ObservableMap<Project, Set<OSProcessWrapper>> processes;
+    private ObservableMap<Project, Set<ProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
 
     private final CopyOnWriteArrayList<ProcessLogs> processLogsList = new CopyOnWriteArrayList<>();
@@ -69,6 +72,7 @@ public class LogsAndMetricsPanelController {
         projectLogsDropdown.prefWidthProperty().bind(logsAndMetrics.widthProperty().multiply(0.3));
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
+        logsAndMetrics.textProperty().addListener((_, _, _) -> logsAndMetrics.selectEnd());
     }
 
     @Initialize
@@ -77,7 +81,7 @@ public class LogsAndMetricsPanelController {
         runningProjectsCount = new SimpleIntegerProperty(processes.size());
         runningProjectsCount.addListener((_, _, newValue) -> Platform.runLater(() -> runningProjects.setText(runningProjects.getText().replaceAll("\\d+", String.valueOf(newValue)))));
 
-        processes.addListener((MapChangeListener<? super Project, ? super Set<OSProcessWrapper>>) change -> {
+        processes.addListener((MapChangeListener<? super Project, ? super Set<ProcessWrapper>>) change -> {
             if (change.wasAdded()) {
                 CustomMenuItem menuItem = new CustomMenuItem(new Label(change.getKey().getTitle()));
                 menuItem.setId(change.getKey().getTitle());
@@ -88,11 +92,11 @@ public class LogsAndMetricsPanelController {
 
                     ContextMenu subMenu = new ContextMenu();
 
-                    for (OSProcessWrapper osProcessWrapper : processes.get(change.getKey())) {
-                        MenuItem item = new MenuItem(osProcessWrapper.getProcess().getName());
+                    for (ProcessWrapper processWrapper : processes.get(change.getKey())) {
+                        MenuItem item = new MenuItem(processWrapper.getName());
 
                         item.setOnAction(_ -> {
-                            ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(osProcessWrapper, new ProcessLogs());
+                            ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
                             Consumer<String> logAddedListener = _ -> {
                                 Platform.runLater(() -> {
                                     List<String> logs = processLogs.getLogs();
@@ -146,16 +150,17 @@ public class LogsAndMetricsPanelController {
     }
 
     public void switchLogsButtonStyle(MouseEvent event) {
+        String label = "label";
         if (event.getSource() == logsButton) {
             logsButton.getStyleClass().clear();
-            logsButton.getStyleClass().addAll("label", "logs-button-selected");
+            logsButton.getStyleClass().addAll(label, "logs-button-selected");
             metricsButton.getStyleClass().clear();
-            metricsButton.getStyleClass().addAll("label","logs-button");
+            metricsButton.getStyleClass().addAll(label,"logs-button");
         } else if (event.getSource() == metricsButton) {
             metricsButton.getStyleClass().clear();
-            metricsButton.getStyleClass().addAll("label", "logs-button-selected");
+            metricsButton.getStyleClass().addAll(label, "logs-button-selected");
             logsButton.getStyleClass().clear();
-            logsButton.getStyleClass().addAll("label", "logs-button");
+            logsButton.getStyleClass().addAll(label, "logs-button");
         }
     }
 }

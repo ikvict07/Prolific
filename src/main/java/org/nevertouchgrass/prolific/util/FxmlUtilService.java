@@ -59,7 +59,7 @@ public class FxmlUtilService {
 
     @SneakyThrows
     public static Parent loadIcon(String fxmlName, SpringFXConfigurationProperties projectConfigurationProperties, ApplicationContext applicationContext) {
-        FXMLLoader loader = getFxmlLoader(fxmlName, projectConfigurationProperties, applicationContext);
+        FXMLLoader loader = getIconLoader(fxmlName, projectConfigurationProperties, applicationContext);
         return loader.load();
     }
 

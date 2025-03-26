@@ -8,13 +8,11 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
-import org.nevertouchgrass.prolific.annotation.StageComponent;
-import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
@@ -31,7 +29,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 @Controller
-@StageComponent("primaryStage")
 @SuppressWarnings("unused")
 @Getter
 @Setter
@@ -41,7 +38,6 @@ public class ProjectsPanelController {
     private ScrollPane scrollPane;
     @FXML
     private VBox content;
-    private Stage stage;
     @FXML
     private Region upperShadow;
     @FXML

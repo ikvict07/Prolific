@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
-import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.springframework.stereotype.Service;
 

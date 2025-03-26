@@ -3,7 +3,7 @@ package org.nevertouchgrass.prolific.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
@@ -117,12 +117,10 @@ public class ProjectScannerService {
     /**
      * Cancel the current scanning operation.
      * Has no effect if no scanning is in progress.
-     *
-     * @return true if scanning was cancelled, false if no scanning was in progress
      */
-    public boolean cancelScanning() {
+    public void cancelScanning() {
         if (!isScanning) {
-            return false;
+            return;
         }
 
         isScanningCancelled.set(true);
@@ -134,7 +132,6 @@ public class ProjectScannerService {
 
         notificationService.notifyInfo(new InfoNotification("Scanning cancelled"));
         log.info("Scanning cancelled by user");
-        return true;
     }
 
     /**
@@ -162,7 +159,7 @@ public class ProjectScannerService {
         final Set<Path> projects = ConcurrentHashMap.newKeySet();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        try (var subDirsStream = Files.list(root);){
+        try (var subDirsStream = Files.list(root)){
             var subDirs = subDirsStream.toList();
             executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 

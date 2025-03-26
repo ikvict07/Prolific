@@ -31,10 +31,10 @@ import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
 import org.nevertouchgrass.prolific.service.metrics.ProcessService;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
+import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import oshi.software.os.OSProcess;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,6 +44,7 @@ import java.util.List;
 @Scope("prototype")
 @Data
 public class ProjectPanelController {
+    public static final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
     @FXML
     public StackPane star;
     @FXML
@@ -94,7 +95,7 @@ public class ProjectPanelController {
     private ProcessService processService;
 
     private RunConfig chosenConfig = null;
-    private Process currentProcess = null;
+    private ProcessWrapper currentProcess = null;
     private Property<Boolean> isProjectRunning = new SimpleBooleanProperty(false);
     private ProjectsService projectsService;
 
@@ -115,21 +116,19 @@ public class ProjectPanelController {
 
         generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), "Your configurations");
         generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
-        isProjectRunning.addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                if (newValue) {
-                    runContent.getChildren().clear();
-                    var stopButton = fxmlProvider.getIcon("bigStopButton");
-                    runContent.getChildren().add(stopButton);
-                    run.setOnMouseClicked((event -> stopProject()));
-                } else {
-                    runContent.getChildren().clear();
-                    var runButton = fxmlProvider.getIcon("runButton");
-                    runContent.getChildren().add(runButton);
-                    run.setOnMouseClicked((event -> runProject()));
-                }
-            });
-        });
+        isProjectRunning.addListener((_, _, newValue) -> Platform.runLater(() -> {
+            if (newValue) {
+                runContent.getChildren().clear();
+                var stopButton = fxmlProvider.getIcon("bigStopButton");
+                runContent.getChildren().add(stopButton);
+                run.setOnMouseClicked((_ -> stopProject()));
+            } else {
+                runContent.getChildren().clear();
+                var runButton = fxmlProvider.getIcon("runButton");
+                runContent.getChildren().add(runButton);
+                run.setOnMouseClicked((_ -> runProject()));
+            }
+        }));
     }
 
     public void setProject(Project project) {
@@ -141,9 +140,6 @@ public class ProjectPanelController {
             star.setVisible(false);
             projectsRepository.update(project);
         });
-        new Thread(() -> {
-            processService.observe(project);
-        }).start();
     }
 
 
@@ -212,29 +208,18 @@ public class ProjectPanelController {
         }
         try {
             notificationService.notifyInfo(InfoNotification.of("Running project {}", project.getTitle()));
-            new Thread(() -> {
-                try {
-                    currentProcess = projectRunner.runProject(project, chosenConfig);
-                    processService.addProcess(currentProcess.pid(), project);
-                    processService.registerOnKillListener(this::onProcessDeath);
-                    isProjectRunning.setValue(true);
-                } catch (Exception e) {
-                    notificationService.notifyError(ErrorNotification.of(e, "Error while running project {}", project.getTitle()));
-                    log.error("Error while running project {}", project.getTitle(), e);
-                    throw new RuntimeException(e);
-                }
-            }).start();
+            new Thread(this::runProjectLambda).start();
         } catch (Exception e) {
-            notificationService.notifyError(ErrorNotification.of(e, "Error while running project {}", project.getTitle()));
-            log.error("Error while running project {}", project.getTitle(), e);
+            notificationService.notifyError(ErrorNotification.of(e, PROJECT_RUN_ERROR_MESSAGE, project.getTitle()));
+            log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
         }
     }
 
-    public void onProcessDeath(OSProcess process) {
+    public void onProcessDeath(ProcessWrapper process) {
         if (currentProcess != null) {
-            var myPid = currentProcess.pid();
-            var pid = process.getProcessID();
-            if (myPid == (long) pid) {
+            var myPid = currentProcess.getOsProcess().getProcessID();
+            var pid = process.getOsProcess().getProcessID();
+            if (myPid == pid) {
                 stopProject();
             }
         }
@@ -242,7 +227,7 @@ public class ProjectPanelController {
 
     public void stopProject() {
         if (currentProcess != null) {
-            currentProcess.destroy();
+            currentProcess.getProcess().destroy();
             currentProcess = null;
             notificationService.notifyInfo(InfoNotification.of("Project {} stopped", project.getTitle()));
             log.info("Project {} stopped", project.getTitle());
@@ -267,4 +252,16 @@ public class ProjectPanelController {
         this.processService = processService;
     }
 
+    private void runProjectLambda() {
+        try {
+            currentProcess = projectRunner.runProject(project, chosenConfig);
+            processService.addProcess(project, currentProcess);
+            processService.registerOnKillListener(this::onProcessDeath);
+            isProjectRunning.setValue(true);
+        } catch (Exception e) {
+            notificationService.notifyError(ErrorNotification.of(e, PROJECT_RUN_ERROR_MESSAGE, project.getTitle()));
+            log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
+            throw new IllegalStateException(e);
+        }
+    }
 }

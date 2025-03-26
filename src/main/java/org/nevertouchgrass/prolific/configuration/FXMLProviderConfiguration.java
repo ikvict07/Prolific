@@ -57,8 +57,7 @@ public class FXMLProviderConfiguration {
     private Parent getParent(String parentName) {
         List<String> xmls = FxmlUtilService.getIconNames(configurationProperties);
         if (xmls.contains(parentName)) {
-            FXMLLoader loader = FxmlUtilService.getIconLoader(parentName, configurationProperties, context);
-            return loader.load();
+            return FxmlUtilService.loadIcon(parentName, configurationProperties, context);
         }
         throw new FileNotFoundException("Couldn't find " + parentName);
     }

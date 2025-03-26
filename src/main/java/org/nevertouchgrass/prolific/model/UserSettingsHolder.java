@@ -1,10 +1,9 @@
-package org.nevertouchgrass.prolific.configuration;
+package org.nevertouchgrass.prolific.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
-import org.nevertouchgrass.prolific.model.Project;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

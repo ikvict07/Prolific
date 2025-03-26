@@ -1,8 +1,8 @@
 package org.nevertouchgrass.prolific.service.metrics;
 
-import oshi.software.os.OSProcess;
+import org.nevertouchgrass.prolific.util.ProcessWrapper;
 
 @FunctionalInterface
 public interface ProcessAware {
-    void onProcessKill(OSProcess process);
+    void onProcessKill(ProcessWrapper process);
 }

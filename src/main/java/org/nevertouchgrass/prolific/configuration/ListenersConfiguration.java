@@ -3,7 +3,7 @@ package org.nevertouchgrass.prolific.configuration;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
-import org.nevertouchgrass.prolific.model.notification.Notification;
+import org.nevertouchgrass.prolific.model.notification.contract.Notification;
 import org.nevertouchgrass.prolific.service.notification.contract.NotificationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

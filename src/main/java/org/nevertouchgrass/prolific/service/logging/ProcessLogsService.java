@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.service.metrics.ProcessAware;
-import org.nevertouchgrass.prolific.util.OSProcessWrapper;
+import org.nevertouchgrass.prolific.util.ProcessWrapper;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
 import java.io.BufferedReader;
@@ -24,13 +24,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j2
 public class ProcessLogsService implements ProcessAware {
     private final OperatingSystem os;
-    private final List<Process> observableProcesses = new CopyOnWriteArrayList<>();
-    private final Map<OSProcessWrapper, ProcessLogs> logs = new ConcurrentHashMap<>();
+    private final List<ProcessWrapper> observableProcesses = new CopyOnWriteArrayList<>();
+    private final Map<ProcessWrapper, ProcessLogs> logs = new ConcurrentHashMap<>();
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(
         new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(1);
             @Override
-            public Thread newThread(Runnable r) {
+            public Thread newThread(@NonNull Runnable r) {
                 Thread thread = Executors.defaultThreadFactory().newThread(r);
                 thread.setName("process-logs-service-" + threadNumber.getAndIncrement());
                 thread.setDaemon(true);
@@ -38,8 +38,8 @@ public class ProcessLogsService implements ProcessAware {
             }
         }
     );
-    private final Map<Process, BufferedReader> processInputStreamMap = new ConcurrentHashMap<>();
-    private final Map<Process, BufferedReader> processErrorStreamMap = new ConcurrentHashMap<>();
+    private final Map<ProcessWrapper, BufferedReader> processInputStreamMap = new ConcurrentHashMap<>();
+    private final Map<ProcessWrapper, BufferedReader> processErrorStreamMap = new ConcurrentHashMap<>();
     private volatile boolean observing = true;
 
     /**
@@ -50,14 +50,13 @@ public class ProcessLogsService implements ProcessAware {
         startObserving();
     }
 
-    public Map<OSProcessWrapper, ProcessLogs> getLogs() {
+    public Map<ProcessWrapper, ProcessLogs> getLogs() {
         return Map.copyOf(logs);
     }
 
-    public void observeProcess(Process process) {
-        OSProcessWrapper osProcessWrapper = new OSProcessWrapper(os.getProcess((int) process.pid()));
+    public void observeProcess(ProcessWrapper process) {
         observableProcesses.add(process);
-        logs.computeIfAbsent(osProcessWrapper, _ -> new ProcessLogs());
+        logs.computeIfAbsent(process, _ -> new ProcessLogs());
     }
 
     /**
@@ -66,9 +65,9 @@ public class ProcessLogsService implements ProcessAware {
      * @param process the terminated process
      */
     @Override
-    public void onProcessKill(OSProcess process) {
+    public void onProcessKill(ProcessWrapper process) {
         observableProcesses.removeIf(p -> {
-            if ((int) p.pid() == process.getProcessID()) {
+            if (p.equals(process)) {
                 // Clean up resources for this process
                 closeReaders(p);
                 return true;
@@ -82,18 +81,19 @@ public class ProcessLogsService implements ProcessAware {
      *
      * @param process the process whose readers should be closed
      */
-    private void closeReaders(Process process) {
+    @SuppressWarnings("EmptyTryBlock")
+    private void closeReaders(ProcessWrapper process) {
 
         try (BufferedReader inputReader = processInputStreamMap.remove(process)) {
             // closing
         } catch (IOException e) {
-            log.error("Error closing input stream reader for process {}", process.pid(), e);
+            log.error("Error closing input stream reader for process {}", process.getProcess().pid(), e);
         }
 
         try (BufferedReader errorReader = processErrorStreamMap.remove(process)) {
             // closing
         } catch (IOException e) {
-            log.error("Error closing error stream reader for process {}", process.pid(), e);
+            log.error("Error closing error stream reader for process {}", process.getProcess().pid(), e);
         }
     }
 
@@ -109,18 +109,17 @@ public class ProcessLogsService implements ProcessAware {
             }
 
             // Create a list to store processes that no longer exist
-            List<Process> processesToRemove = new CopyOnWriteArrayList<>();
+            List<ProcessWrapper> processesToRemove = new CopyOnWriteArrayList<>();
 
             observableProcesses.forEach(p -> {
-                if (os.getProcess((int) p.pid()) == null) {
+                if (os.getProcess(p.getOsProcess().getProcessID()) == null) {
                     // Process no longer exists, add it to the list for removal
                     processesToRemove.add(p);
                     return;
                 }
-                OSProcessWrapper osProcessWrapper = new OSProcessWrapper(os.getProcess((int) p.pid()));
-                var processLogs = logs.computeIfAbsent(osProcessWrapper, _ -> new ProcessLogs());
-                var inputStream = processInputStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getInputStream())));
-                var errorStream = processErrorStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getErrorStream())));
+                var processLogs = logs.computeIfAbsent(p, _ -> new ProcessLogs());
+                var inputStream = processInputStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getProcess().getInputStream())));
+                var errorStream = processErrorStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getProcess().getErrorStream())));
                 readNewLines(inputStream, processLogs);
                 readNewError(errorStream, processLogs);
             });
@@ -128,8 +127,7 @@ public class ProcessLogsService implements ProcessAware {
             // Clean up resources for processes that no longer exist
             processesToRemove.forEach(p -> {
                 closeReaders(p);
-                OSProcessWrapper osProcessWrapper = new OSProcessWrapper(os.getProcess((int) p.pid()));
-                logs.remove(osProcessWrapper);
+                logs.remove(p);
                 observableProcesses.remove(p);
             });
         }, 0, 3, TimeUnit.SECONDS);

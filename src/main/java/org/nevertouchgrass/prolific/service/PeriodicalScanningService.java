@@ -3,7 +3,7 @@ package org.nevertouchgrass.prolific.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
@@ -73,11 +73,11 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     private void resolveAndSave(Path path) {
         Path p = path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS);
         if (p.equals(Path.of(userSettingsHolder.getBaseScanDirectory()))) {
-            System.err.println("SKIP");
+            log.info("Skipping base scan directory: {}", p);
             return;
         }
         if (p.toAbsolutePath().normalize().toString().equals(System.getProperty("user.home"))) {
-            System.err.println("SKIP2");
+            log.info("Skipping user home directory: {}", p);
             return;
         }
         Project project = projectResolver.resolveProject(p, userSettingsHolder.getMaximumProjectDepth());
