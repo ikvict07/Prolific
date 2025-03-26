@@ -118,7 +118,6 @@ public class ProjectsPanelController {
     }
 
     private void deleteProjectFromList(Project project) {
-        processService.stopObserve(project);
         Platform.runLater(() -> {
             var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
