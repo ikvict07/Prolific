@@ -9,12 +9,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.model.LogWrapper;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
@@ -24,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -161,10 +165,16 @@ public class LogsAndMetricsPanelController {
 
         menuItem.setOnAction(_ -> {
             ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-            Consumer<String> logAddedListener = _ -> Platform.runLater(() -> {
-                List<String> logs = processLogs.getLogs();
-                logsAndMetrics.setText(String.join("\n", logs));
-                logsAndMetrics.positionCaret(logsAndMetrics.getLength() - logs.getLast().length());
+            Consumer<LogWrapper> logAddedListener = _ -> Platform.runLater(() -> {
+                Queue<LogWrapper> logs = processLogs.getLogs();
+                logsAndMetrics.setText(String.join("\n", logs.stream().map(LogWrapper::getLog).toList()));
+                int position;
+                if (logs.peek() == null) {
+                    position = logsAndMetrics.getLength();
+                } else {
+                    position = logsAndMetrics.getLength() - logs.peek().getLog().length();
+                }
+                logsAndMetrics.positionCaret(position);
             });
 
             logsAndMetrics.clear();
@@ -173,7 +183,7 @@ public class LogsAndMetricsPanelController {
             processLogsList.add(processLogs);
 
             processLogs.addOnLogAddedListener(logAddedListener);
-            if (processLogs.getLogs().stream().mapToInt(String::length).sum() > logsAndMetrics.getLength()) {
+            if (processLogs.getLogs().stream().mapToInt(l -> l.getLog().length()).sum() > logsAndMetrics.getLength()) {
                 logAddedListener.accept(null);
             }
         });
