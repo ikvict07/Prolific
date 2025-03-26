@@ -26,12 +26,13 @@ import org.nevertouchgrass.prolific.service.metrics.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.Disposable;
 
 import java.io.IOException;
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 @Slf4j
 @Component
@@ -79,6 +80,7 @@ public class LogsAndMetricsPanelController {
     }
 
     @Initialize
+    @SuppressWarnings("unused") // Will be called by BPP
     public void init() {
         processes = processService.getObservableLiveProcesses();
         runningProjectsCount = new SimpleIntegerProperty(processes.size());
@@ -150,7 +152,7 @@ public class LogsAndMetricsPanelController {
             logsButton.getStyleClass().clear();
             logsButton.getStyleClass().addAll(label, "logs-button-selected");
             metricsButton.getStyleClass().clear();
-            metricsButton.getStyleClass().addAll(label,"logs-button");
+            metricsButton.getStyleClass().addAll(label, "logs-button");
         } else if (event.getSource() == metricsButton) {
             metricsButton.getStyleClass().clear();
             metricsButton.getStyleClass().addAll(label, "logs-button-selected");
@@ -159,33 +161,32 @@ public class LogsAndMetricsPanelController {
         }
     }
 
+    private ProcessWrapper selectedProcessWrapper = null;
+    private final Map<ProcessWrapper, Disposable> subscriptions = new HashMap<>();
+
     private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, String text, ProcessWrapper processWrapper) {
         menuItem.setContent(new Label(text));
         menuItem.setHideOnClick(false);
 
         menuItem.setOnAction(_ -> {
+            selectedProcessWrapper = processWrapper;
+
             ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-            Consumer<LogWrapper> logAddedListener = _ -> Platform.runLater(() -> {
-                Queue<LogWrapper> logs = processLogs.getLogs();
-                logsAndMetrics.setText(String.join("\n", logs.stream().map(LogWrapper::getLog).toList()));
-                int position;
-                if (logs.peek() == null) {
-                    position = logsAndMetrics.getLength();
-                } else {
-                    position = logsAndMetrics.getLength() - logs.peek().getLog().length();
-                }
-                logsAndMetrics.positionCaret(position);
+            Platform.runLater(() -> {
+                logsAndMetrics.clear();
+                logsAndMetrics.setText("\n" + String.join("\n", processLogs.getLogs().stream().map(LogWrapper::getLog).toList()));
             });
-
-            logsAndMetrics.clear();
-            processLogsList.forEach(ProcessLogs::clearOnLogAddedListeners);
-            processLogsList.clear();
-            processLogsList.add(processLogs);
-
-            processLogs.addOnLogAddedListener(logAddedListener);
-            if (processLogs.getLogs().stream().mapToInt(l -> l.getLog().length()).sum() > logsAndMetrics.getLength()) {
-                logAddedListener.accept(null);
+            if (!subscriptions.containsKey(processWrapper)) {
+                var logsFlux = processLogsService.subscribeToLogs(processWrapper);
+                var subscription = logsFlux.subscribe(l -> Platform.runLater(() -> {
+                    if (selectedProcessWrapper != processWrapper) {
+                        return;
+                    }
+                    logsAndMetrics.appendText("\n" + l.getLog());
+                }));
+                subscriptions.put(processWrapper, subscription);
             }
+
         });
     }
 }
