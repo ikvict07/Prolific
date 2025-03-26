@@ -3,9 +3,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 @Slf4j
 @Component
@@ -53,6 +54,7 @@ public class LogsAndMetricsPanelController {
     private ObservableMap<Project, Set<OSProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
 
+    private final CopyOnWriteArrayList<ProcessLogs> processLogsList = new CopyOnWriteArrayList<>();
 
     @Autowired
     public void set(ProcessService processService, ProcessLogsService processLogsService) {
@@ -67,7 +69,6 @@ public class LogsAndMetricsPanelController {
         projectLogsDropdown.prefWidthProperty().bind(logsAndMetrics.widthProperty().multiply(0.3));
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
-        logsAndMetrics.textProperty().addListener((_, _, _) -> logsAndMetrics.selectEnd());
     }
 
     @Initialize
@@ -81,20 +82,34 @@ public class LogsAndMetricsPanelController {
                 CustomMenuItem menuItem = new CustomMenuItem(new Label(change.getKey().getTitle()));
                 menuItem.setId(change.getKey().getTitle());
                 menuItem.setHideOnClick(false);
+
                 menuItem.addEventHandler(ActionEvent.ACTION,  _ -> {
                     projectChoice.set(change.getKey().getTitle());
+
                     ContextMenu subMenu = new ContextMenu();
+
                     for (OSProcessWrapper osProcessWrapper : processes.get(change.getKey())) {
                         MenuItem item = new MenuItem(osProcessWrapper.getProcess().getName());
+
                         item.setOnAction(_ -> {
-                            ObservableList<String> logs = processLogsService.getLogs().getOrDefault(osProcessWrapper, new ProcessLogs()).getLogs();
-                            logs.addListener((ListChangeListener<? super String>) c -> {
-                                while (c.next()) {
-                                    if (c.wasAdded()) {
-                                        logsAndMetrics.appendText(c.getAddedSubList().getFirst() + "\n");
-                                    }
-                                }
-                            });
+                            ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(osProcessWrapper, new ProcessLogs());
+                            Consumer<String> logAddedListener = _ -> {
+                                Platform.runLater(() -> {
+                                    List<String> logs = processLogs.getLogs();
+                                    logsAndMetrics.setText(String.join("\n", logs));
+                                    logsAndMetrics.positionCaret(logsAndMetrics.getLength() - logs.getLast().length());
+                                });
+                            };
+
+                            logsAndMetrics.clear();
+                            processLogsList.forEach(ProcessLogs::clearOnLogAddedListeners);
+                            processLogsList.clear();
+                            processLogsList.add(processLogs);
+
+                            processLogs.addOnLogAddedListener(logAddedListener);
+                            if (processLogs.getLogs().stream().mapToInt(String::length).sum() > logsAndMetrics.getLength()) {
+                                logAddedListener.accept(null);
+                            }
                         });
                         subMenu.getItems().add(item);
                     }
