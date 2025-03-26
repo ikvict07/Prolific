@@ -69,11 +69,20 @@ public class ProcessLogsService implements ProcessAware {
         observableProcesses.removeIf(p -> {
             if (p.equals(process)) {
                 // Clean up resources for this process
+                readLogs(p);
                 closeReaders(p);
                 return true;
             }
             return false;
         });
+    }
+
+    private void readLogs(ProcessWrapper p) {
+        var processLogs = logs.computeIfAbsent(p, _ -> new ProcessLogs());
+        var logsReader = processInputStreamMap.computeIfAbsent(p, _ -> new BufferedReader(new InputStreamReader(p.getProcess().getInputStream())));
+        var errorsReader = processErrorStreamMap.computeIfAbsent(p, _ -> new BufferedReader(new InputStreamReader(p.getProcess().getErrorStream())));
+        readNewLines(logsReader, processLogs);
+        readNewError(errorsReader, processLogs);
     }
 
     /**
@@ -117,11 +126,7 @@ public class ProcessLogsService implements ProcessAware {
                     processesToRemove.add(p);
                     return;
                 }
-                var processLogs = logs.computeIfAbsent(p, _ -> new ProcessLogs());
-                var inputStream = processInputStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getProcess().getInputStream())));
-                var errorStream = processErrorStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getProcess().getErrorStream())));
-                readNewLines(inputStream, processLogs);
-                readNewError(errorStream, processLogs);
+                readLogs(p);
             });
 
             // Clean up resources for processes that no longer exist
@@ -130,7 +135,7 @@ public class ProcessLogsService implements ProcessAware {
                 logs.remove(p);
                 observableProcesses.remove(p);
             });
-        }, 0, 3, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     /**
