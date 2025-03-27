@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.configuration;
+package org.nevertouchgrass.prolific.components;
 
 
 import javafx.application.Platform;

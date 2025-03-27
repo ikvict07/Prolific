@@ -9,6 +9,7 @@
     -fx-font-size: 1.25em;
     -fx-background-radius: 16px 16px 0 0;
 }
+
 #footer {
     -fx-background-color: #2B2D30;
     -fx-font-size: 1.25em;
@@ -178,6 +179,7 @@
     -fx-background-insets: 0 10%;
     -fx-background-radius: 0 0 16 16;
 }
+
 .scroll-shadow-top {
     -fx-background-color: linear-gradient(to top, rgba(30, 31, 34, 0.5), rgb(30, 31, 34));
     -fx-pref-height: 30px;
@@ -186,7 +188,6 @@
     -fx-background-insets: 0 10%;
     -fx-background-radius: 0 0 16 16;
 }
-
 
 
 .scroll-bar:vertical .thumb {
@@ -200,6 +201,33 @@
     -fx-background-color: #2B2D30;
     -fx-border-color: black;
     -fx-border-width: 1px;
+}
+
+.metrics-chart {
+    -fx-background-color: #1E1F22;
+}
+
+.chart-plot-background {
+    -fx-background-color: #2B2D30;
+}
+
+.chart-series-line {
+    -fx-stroke-width: 2px;
+    -fx-effect: null;
+}
+
+.filled-chart-green .chart-series-area-line {
+    -fx-stroke: #369650
+}
+.filled-chart-green .default-color0.chart-series-area-fill {
+    -fx-fill: rgba(137, 195, 152, 0.5);
+}
+
+.filled-chart-blue .chart-series-area-line {
+    -fx-stroke: #3574F0;
+}
+.filled-chart-blue .default-color0.chart-series-area-fill {
+    -fx-fill: rgba(88, 140, 243, 0.5);
 }
 
 .label {
@@ -359,13 +387,13 @@
 }
 
 .scroll-pane .scroll-bar:horizontal .increment-arrow,
-.scroll-pane .scroll-bar:horizontal .decrement-arrow  {
+.scroll-pane .scroll-bar:horizontal .decrement-arrow {
     -fx-shape: " ";
     -fx-padding: 0.25em 0;
 }
 
 .scroll-pane .scroll-bar:vertical .increment-arrow,
-.scroll-pane .scroll-bar:vertical .decrement-arrow  {
+.scroll-pane .scroll-bar:vertical .decrement-arrow {
     -fx-shape: " ";
     -fx-padding: 0 0.25em;
 }
@@ -373,7 +401,6 @@
 .scroll-pane .corner {
     -fx-background-color: transparent;
 }
-
 
 
 /** {*/

@@ -16,10 +16,12 @@ import javafx.scene.layout.HBox;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
-import org.nevertouchgrass.prolific.configuration.LogsAndMetricsTextComponent;
+import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
+import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
+import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.metrics.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,12 +61,14 @@ public class LogsAndMetricsPanelController {
     private SimpleIntegerProperty runningProjectsCount;
 
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
+    private MetricsService metricsService;
 
 
     @Autowired
-    public void set(ProcessService processService, ProcessLogsService processLogsService) {
+    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService) {
         this.processService = processService;
         this.processLogsService = processLogsService;
+        this.metricsService = metricsService;
     }
 
     private final SimpleStringProperty projectChoice = new SimpleStringProperty("None");
@@ -170,6 +174,12 @@ public class LogsAndMetricsPanelController {
                     componentProvider.init();
                     return componentProvider;
                 });
-        placeForScrollPane.getChildren().add(component.getLogsScrollPane());
+        var component2 = new MetricsChartComponent(metricsService, processWrapper);
+        placeForScrollPane.getChildren().add(component2);
+    }
+
+    @Autowired
+    public void setMetricsService(MetricsService metricsService) {
+        this.metricsService = metricsService;
     }
 }
