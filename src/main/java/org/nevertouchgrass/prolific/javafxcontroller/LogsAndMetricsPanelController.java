@@ -11,15 +11,12 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
-import org.nevertouchgrass.prolific.model.LogWrapper;
+import org.nevertouchgrass.prolific.configuration.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
@@ -27,9 +24,10 @@ import org.nevertouchgrass.prolific.service.metrics.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import reactor.core.Disposable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
@@ -38,7 +36,7 @@ import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 @SuppressWarnings("java:S1450")
 public class LogsAndMetricsPanelController {
     @FXML
-    private TextFlow logsAndMetrics;
+    private HBox placeForScrollPane;
     @FXML
     private HBox projectLogsDropdown;
     @FXML
@@ -51,8 +49,6 @@ public class LogsAndMetricsPanelController {
     private Label metricsButton;
     @FXML
     private Label runningProjects;
-    @FXML
-    private ScrollPane scrollPane;
 
     private final ContextMenu contextMenu = new ContextMenu();
 
@@ -61,6 +57,9 @@ public class LogsAndMetricsPanelController {
 
     private ObservableMap<Project, Set<ProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
+
+    private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
+
 
     @Autowired
     public void set(ProcessService processService, ProcessLogsService processLogsService) {
@@ -74,7 +73,7 @@ public class LogsAndMetricsPanelController {
     public void initialize() {
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
-        logsAndMetrics.heightProperty().addListener((_, _, _) -> scrollPane.setVvalue(1));
+//        logsAndMetrics.heightProperty().addListener((_, _, _) -> scrollPane.);
     }
 
     @Initialize
@@ -152,42 +151,25 @@ public class LogsAndMetricsPanelController {
         }
     }
 
-    private ProcessWrapper selectedProcessWrapper = null;
-    private final Map<ProcessWrapper, Disposable> subscriptions = new HashMap<>();
-
     private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, Project project, String text, ProcessWrapper processWrapper) {
         menuItem.setContent(new Label(text));
         menuItem.setHideOnClick(false);
-        menuItem.setOnAction(_ -> {
+        menuItem.setOnAction(_ -> Platform.runLater(() -> {
             projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
             changeLogs(processWrapper);
-        });
+        }));
     }
 
     private void changeLogs(ProcessWrapper processWrapper) {
-        selectedProcessWrapper = processWrapper;
-        ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-        Platform.runLater(() -> {
-            logsAndMetrics.getChildren().clear();
-            Queue<LogWrapper> logs = processLogs.getLogs();
-            List<Text> newText = logs.stream().map(it -> {
-                Text itText = new Text(it.getLog() + "\n");
-                itText.getStyleClass().add("log-text");
-                return itText;
-            }).toList();
-            logsAndMetrics.getChildren().addAll(newText);
-        });
-        if (!subscriptions.containsKey(processWrapper)) {
-            var logsFlux = processLogsService.subscribeToLogs(processWrapper);
-            var subscription = logsFlux.subscribe(l -> Platform.runLater(() -> {
-                if (!selectedProcessWrapper.equals(processWrapper)) {
-                    return;
-                }
-                Text newText = new Text(l.getLog() + "\n");
-                newText.getStyleClass().add("log-text");
-                logsAndMetrics.getChildren().add(newText);
-            }));
-            subscriptions.put(processWrapper, subscription);
-        }
+        placeForScrollPane.getChildren().clear();
+        var processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
+        var flux = processLogsService.subscribeToLogs(processWrapper);
+        var component = logsAndMetricsTextComponents.computeIfAbsent(processWrapper,
+                _ -> {
+                    var componentProvider =  new LogsAndMetricsTextComponent(processLogs, flux);
+                    componentProvider.init();
+                    return componentProvider;
+                });
+        placeForScrollPane.getChildren().add(component.getLogsScrollPane());
     }
 }

@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.sqlite)
     implementation(libs.hikari)
     implementation(libs.reactor)
+    implementation(libs.richtext)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 

@@ -7,6 +7,7 @@
 <?import javafx.scene.text.TextFlow?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
+      xmlns:rtfx="http://fxmisc.org/richtext"
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.LogsAndMetricsPanelController"
       stylesheets="@/css/styles.css">
 
@@ -26,9 +27,9 @@
         </HBox>
     </HBox>
 
-    <HBox VBox.vgrow="ALWAYS">
-        <ScrollPane fx:id="scrollPane" styleClass="scroll-pane" fitToHeight="true" HBox.hgrow="ALWAYS">
-            <TextFlow fx:id="logsAndMetrics" styleClass="text-flow">
+    <HBox fx:id="placeForScrollPane" VBox.vgrow="ALWAYS">
+        <ScrollPane styleClass="scroll-pane" fitToHeight="true" HBox.hgrow="ALWAYS">
+            <TextFlow styleClass="text-flow">
                 <Text text="Choose project first" styleClass="log-text"/>
             </TextFlow>
         </ScrollPane>

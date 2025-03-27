@@ -14,14 +14,8 @@ import java.util.concurrent.PriorityBlockingQueue;
 @ToString
 public class ProcessLogs {
     private final Queue<LogWrapper> logs = new PriorityBlockingQueue<>();
-    private static final int MAX_LOG_SIZE = 10000;
 
     public void addLog(LogWrapper log) {
-        synchronized (logs) {
-            logs.add(log);
-            while (logs.size() > MAX_LOG_SIZE) {
-                logs.poll();
-            }
-        }
+        logs.add(log);
     }
 }
