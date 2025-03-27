@@ -19,6 +19,7 @@ import javafx.scene.text.TextFlow;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.model.LogWrapper;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -160,12 +162,12 @@ public class LogsAndMetricsPanelController {
 
         menuItem.setOnAction(_ -> {
             ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-            Consumer<String> logAddedListener = _ -> Platform.runLater(() -> {
+            Consumer<LogWrapper> logAddedListener = _ -> Platform.runLater(() -> {
                 projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
                 logsAndMetrics.getChildren().clear();
-                List<String> logs = processLogs.getLogs();
+                Queue<LogWrapper> logs = processLogs.getLogs();
                 List<Text> newText = logs.stream().map(it -> {
-                    Text itText = new Text(it + "\n");
+                    Text itText = new Text(it.getLog() + "\n");
                     itText.getStyleClass().add("log-text");
                     return itText;
                 }).toList();
@@ -178,7 +180,7 @@ public class LogsAndMetricsPanelController {
             processLogsList.add(processLogs);
 
             processLogs.addOnLogAddedListener(logAddedListener);
-            if (processLogs.getLogs().stream().mapToInt(String::length).sum() > logsAndMetrics.getChildren().stream().mapToInt(it -> ((Text)it).getText().length()).sum()) {
+            if (processLogs.getLogs().stream().mapToInt(it -> it.getLog().length()).sum() > logsAndMetrics.getChildren().stream().mapToInt(it -> ((Text)it).getText().length()).sum()) {
                 logAddedListener.accept(null);
             }
         });
