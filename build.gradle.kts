@@ -43,7 +43,7 @@ dependencies {
     implementation(libs.jacksonTypes)
     implementation(libs.sqlite)
     implementation(libs.hikari)
-
+    implementation(libs.reactor)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 

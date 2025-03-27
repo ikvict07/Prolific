@@ -27,12 +27,9 @@ import org.nevertouchgrass.prolific.service.metrics.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.Disposable;
 
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
+import java.util.*;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
@@ -65,8 +62,6 @@ public class LogsAndMetricsPanelController {
     private ObservableMap<Project, Set<ProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
 
-    private final CopyOnWriteArrayList<ProcessLogs> processLogsList = new CopyOnWriteArrayList<>();
-
     @Autowired
     public void set(ProcessService processService, ProcessLogsService processLogsService) {
         this.processService = processService;
@@ -83,6 +78,7 @@ public class LogsAndMetricsPanelController {
     }
 
     @Initialize
+    @SuppressWarnings("unused") // Will be called by BPP
     public void init() {
         processes = processService.getObservableLiveProcesses();
         runningProjectsCount = new SimpleIntegerProperty(processes.size());
@@ -147,7 +143,7 @@ public class LogsAndMetricsPanelController {
             logsButton.getStyleClass().clear();
             logsButton.getStyleClass().addAll(label, "logs-button-selected");
             metricsButton.getStyleClass().clear();
-            metricsButton.getStyleClass().addAll(label,"logs-button");
+            metricsButton.getStyleClass().addAll(label, "logs-button");
         } else if (event.getSource() == metricsButton) {
             metricsButton.getStyleClass().clear();
             metricsButton.getStyleClass().addAll(label, "logs-button-selected");
@@ -156,13 +152,17 @@ public class LogsAndMetricsPanelController {
         }
     }
 
+    private ProcessWrapper selectedProcessWrapper = null;
+    private final Map<ProcessWrapper, Disposable> subscriptions = new HashMap<>();
+
     private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, Project project, String text, ProcessWrapper processWrapper) {
         menuItem.setContent(new Label(text));
         menuItem.setHideOnClick(false);
 
         menuItem.setOnAction(_ -> {
+            selectedProcessWrapper = processWrapper;
             ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-            Consumer<LogWrapper> logAddedListener = _ -> Platform.runLater(() -> {
+            Platform.runLater(() -> {
                 projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
                 logsAndMetrics.getChildren().clear();
                 Queue<LogWrapper> logs = processLogs.getLogs();
@@ -173,16 +173,19 @@ public class LogsAndMetricsPanelController {
                 }).toList();
                 logsAndMetrics.getChildren().addAll(newText);
             });
-
-            logsAndMetrics.getChildren();
-            processLogsList.forEach(ProcessLogs::clearOnLogAddedListeners);
-            processLogsList.clear();
-            processLogsList.add(processLogs);
-
-            processLogs.addOnLogAddedListener(logAddedListener);
-            if (processLogs.getLogs().stream().mapToInt(it -> it.getLog().length()).sum() > logsAndMetrics.getChildren().stream().mapToInt(it -> ((Text)it).getText().length()).sum()) {
-                logAddedListener.accept(null);
+            if (!subscriptions.containsKey(processWrapper)) {
+                var logsFlux = processLogsService.subscribeToLogs(processWrapper);
+                var subscription = logsFlux.subscribe(l -> Platform.runLater(() -> {
+                    if (!selectedProcessWrapper.equals(processWrapper)) {
+                        return;
+                    }
+                    Text newText = new Text(l.getLog() + "\n");
+                    newText.getStyleClass().add("log-text");
+                    logsAndMetrics.getChildren().add(newText);
+                }));
+                subscriptions.put(processWrapper, subscription);
             }
+
         });
     }
 }
