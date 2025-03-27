@@ -8,6 +8,7 @@ import org.nevertouchgrass.prolific.service.metrics.ProcessAware;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
@@ -16,7 +17,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProcessLogsService implements ProcessAware {
     private final Map<ProcessWrapper, ProcessLogs> logs = new ConcurrentHashMap<>();
     private final Map<ProcessWrapper, Sinks.Many<LogWrapper>> processLogSinks = new ConcurrentHashMap<>();
+    private final Map<ProcessWrapper, AtomicBoolean> queueProcessingFlags = new ConcurrentHashMap<>();
 
     public void observeProcess(ProcessWrapper process) {
         logs.computeIfAbsent(process, _ -> new ProcessLogs());
@@ -35,20 +40,23 @@ public class ProcessLogsService implements ProcessAware {
         Sinks.Many<LogWrapper> sink = Sinks.many().multicast().onBackpressureBuffer();
         processLogSinks.put(process, sink);
 
+        BlockingQueue<LogWrapper> logQueue = new LinkedBlockingQueue<>();
+
+        AtomicBoolean isProcessing = new AtomicBoolean(true);
+        queueProcessingFlags.put(process, isProcessing);
+
         BufferedReader inputStream = new BufferedReader(new InputStreamReader(process.getProcess().getInputStream()));
         BufferedReader errorStream = new BufferedReader(new InputStreamReader(process.getProcess().getErrorStream()));
 
-        Flux.merge(
-                createLogFlux(inputStream, processLogs, LogWrapper.LogType.INFO),
-                createLogFlux(errorStream, processLogs, LogWrapper.LogType.ERROR)
-        ).subscribe(
-                sink::tryEmitNext,
-                e -> log.error("Error during log reading", e)
-        );
+        startReader(inputStream, LogWrapper.LogType.INFO, logQueue);
+
+        startReader(errorStream, LogWrapper.LogType.ERROR, logQueue);
+
+        startQueueProcessor(logQueue, sink, processLogs, isProcessing);
     }
 
-    private Flux<LogWrapper> createLogFlux(BufferedReader reader, ProcessLogs processLogs, LogWrapper.LogType logType) {
-        return Flux.<LogWrapper>create(emitter -> {
+    private void startReader(BufferedReader reader, LogWrapper.LogType logType, BlockingQueue<LogWrapper> queue) {
+        Mono.fromRunnable(() -> {
             try (reader) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -57,14 +65,41 @@ public class ProcessLogsService implements ProcessAware {
                     logEntry.setLogType(logType);
                     logEntry.setTimeStamp(LocalDateTime.now());
 
-                    processLogs.addLog(logEntry);
-                    emitter.next(logEntry);
+                    queue.put(logEntry);
                 }
-                emitter.complete();
-            } catch (IOException e) {
-                emitter.error(e);
+            } catch (IOException | InterruptedException e) {
+                log.error("Error reading process output", e);
+                Thread.currentThread().interrupt();
             }
-        }).subscribeOn(Schedulers.boundedElastic());
+        }).subscribeOn(Schedulers.boundedElastic()).subscribe();
+    }
+
+    private void startQueueProcessor(
+            BlockingQueue<LogWrapper> queue,
+            Sinks.Many<LogWrapper> sink,
+            ProcessLogs processLogs,
+            AtomicBoolean isProcessing
+    ) {
+        Mono.fromRunnable(() -> {
+            try {
+                while (isProcessing.get() || !queue.isEmpty()) {
+                    LogWrapper logEntry = queue.poll();
+                    if (logEntry != null) {
+                        processLogs.addLog(logEntry);
+
+                        sink.tryEmitNext(logEntry);
+                    } else {
+                        if (isProcessing.get()) {
+                            Thread.sleep(10);
+                        }
+                    }
+                }
+                sink.tryEmitComplete();
+            } catch (InterruptedException e) {
+                log.error("Queue processing interrupted", e);
+                Thread.currentThread().interrupt();
+            }
+        }).subscribeOn(Schedulers.boundedElastic()).subscribe();
     }
 
     public Flux<LogWrapper> subscribeToLogs(ProcessWrapper process) {
@@ -77,9 +112,11 @@ public class ProcessLogsService implements ProcessAware {
 
     @Override
     public void onProcessKill(ProcessWrapper process) {
-        Sinks.Many<LogWrapper> sink = processLogSinks.remove(process);
-        if (sink != null) {
-            sink.tryEmitComplete();
+        AtomicBoolean isProcessing = queueProcessingFlags.get(process);
+        if (isProcessing != null) {
+            isProcessing.set(false);
         }
+
+        queueProcessingFlags.remove(process);
     }
 }

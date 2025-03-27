@@ -45,7 +45,7 @@ public class LogsAndMetricsTextComponent {
 
         logsFlux.bufferTimeout(50, Duration.ofMillis(500))
                 .subscribe(batch -> Platform.runLater(() -> {
-                    batch.forEach(log -> {
+                        batch.stream().sorted().forEach(log -> {
                         int startPos = logsTextArea.getLength();
                         logsTextArea.appendText(log.getLog() + "\n");
                         logsTextArea.setStyleClass(startPos, logsTextArea.getLength(), "log-text");
