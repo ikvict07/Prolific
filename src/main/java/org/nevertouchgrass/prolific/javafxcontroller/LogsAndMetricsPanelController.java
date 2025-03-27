@@ -158,34 +158,36 @@ public class LogsAndMetricsPanelController {
     private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, Project project, String text, ProcessWrapper processWrapper) {
         menuItem.setContent(new Label(text));
         menuItem.setHideOnClick(false);
-
         menuItem.setOnAction(_ -> {
-            selectedProcessWrapper = processWrapper;
-            ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-            Platform.runLater(() -> {
-                projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
-                logsAndMetrics.getChildren().clear();
-                Queue<LogWrapper> logs = processLogs.getLogs();
-                List<Text> newText = logs.stream().map(it -> {
-                    Text itText = new Text(it.getLog() + "\n");
-                    itText.getStyleClass().add("log-text");
-                    return itText;
-                }).toList();
-                logsAndMetrics.getChildren().addAll(newText);
-            });
-            if (!subscriptions.containsKey(processWrapper)) {
-                var logsFlux = processLogsService.subscribeToLogs(processWrapper);
-                var subscription = logsFlux.subscribe(l -> Platform.runLater(() -> {
-                    if (!selectedProcessWrapper.equals(processWrapper)) {
-                        return;
-                    }
-                    Text newText = new Text(l.getLog() + "\n");
-                    newText.getStyleClass().add("log-text");
-                    logsAndMetrics.getChildren().add(newText);
-                }));
-                subscriptions.put(processWrapper, subscription);
-            }
-
+            projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
+            changeLogs(processWrapper);
         });
+    }
+
+    private void changeLogs(ProcessWrapper processWrapper) {
+        selectedProcessWrapper = processWrapper;
+        ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
+        Platform.runLater(() -> {
+            logsAndMetrics.getChildren().clear();
+            Queue<LogWrapper> logs = processLogs.getLogs();
+            List<Text> newText = logs.stream().map(it -> {
+                Text itText = new Text(it.getLog() + "\n");
+                itText.getStyleClass().add("log-text");
+                return itText;
+            }).toList();
+            logsAndMetrics.getChildren().addAll(newText);
+        });
+        if (!subscriptions.containsKey(processWrapper)) {
+            var logsFlux = processLogsService.subscribeToLogs(processWrapper);
+            var subscription = logsFlux.subscribe(l -> Platform.runLater(() -> {
+                if (!selectedProcessWrapper.equals(processWrapper)) {
+                    return;
+                }
+                Text newText = new Text(l.getLog() + "\n");
+                newText.getStyleClass().add("log-text");
+                logsAndMetrics.getChildren().add(newText);
+            }));
+            subscriptions.put(processWrapper, subscription);
+        }
     }
 }
