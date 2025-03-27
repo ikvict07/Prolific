@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -36,8 +35,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
+
+import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
 @Slf4j
 @Component
@@ -162,15 +162,8 @@ public class ProjectPanelController {
     }
 
     private void switchConfigurationButtonIcon() {
-        try {
-            HBox substituteIcon = "unfoldButton".equals(configurationButton.getChildren().getFirst().getId()) ?
-                    new FXMLLoader(getClass().getResource("/icons/fxml/fold_button.fxml")).load() :
-                    new FXMLLoader(getClass().getResource("/icons/fxml/unfold_button.fxml")).load();
-            configurationButton.getChildren().clear();
-            configurationButton.getChildren().add(substituteIcon.getChildren().getFirst());
-        } catch (IOException e) {
-            log.error("Error retrieving fxml resource: {}", e.getMessage());
-        }
+        String resource = "unfoldButton".equalsIgnoreCase(configurationButton.getChildren().getFirst().getId()) ? "/icons/fxml/fold_button.fxml" : "/icons/fxml/unfold_button.fxml";
+        switchPaneChildren(configurationButton, resource);
     }
 
 

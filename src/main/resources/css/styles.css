@@ -156,12 +156,9 @@
     -fx-transition: opacity 0.3s;
 }
 
-.scroll-pane > .scroll-bar:hover {
-    -fx-opacity: 0;
-}
-
 .scroll-pane > .scroll-bar .track {
     -fx-background-color: transparent;
+    -fx-fill: transparent;
 }
 
 .split-pane {
@@ -171,49 +168,6 @@
 .split-pane-divider {
     -fx-background-color: transparent;
     -fx-padding: 16px;
-}
-
-.text-area {
-    -fx-background-color: transparent;
-    -fx-text-fill: #DFE1E5;
-}
-
-.text-area .content {
-    -fx-background-color: #1E1F22;
-    -fx-background-radius: 0;
-}
-
-.text-area .scroll-pane {
-    -fx-background-color: #2B2D30;
-    -fx-hbar-policy: as-needed;
-    -fx-vbar-policy: as-needed;
-}
-
-.text-area .scroll-pane .scroll-bar .thumb {
-    -fx-background-color: rgba(255, 255, 255, 0.2);
-    -fx-background-radius: 0;
-    -fx-opacity: 1;
-}
-
-.text-area .scroll-pane .scroll-bar .thumb:pressed,
-.text-area .scroll-pane .scroll-bar .thumb:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.4);
-}
-
-.text-area .scroll-pane .scroll-bar:horizontal .increment-arrow,
-.text-area .scroll-pane .scroll-bar:horizontal .decrement-arrow  {
-    -fx-shape: " ";
-    -fx-padding: 0.25em 0;
-}
-
-.text-area .scroll-pane .scroll-bar:vertical .increment-arrow,
-.text-area .scroll-pane .scroll-bar:vertical .decrement-arrow  {
-    -fx-shape: " ";
-    -fx-padding: 0 0.25em;
-}
-
-.text-area .scroll-pane .corner {
-    -fx-background-color: transparent;
 }
 
 .scroll-shadow {
@@ -367,6 +321,59 @@
 .logs-button-selected:hover {
     -fx-background-color: #46484D;
 }
+
+.log-text {
+    -fx-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+    -fx-background-color: transparent;
+}
+
+.text-flow {
+    -fx-padding: 4;
+    -fx-background-color: #1E1F22;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-hbar-policy: as-needed;
+    -fx-vbar-policy: as-needed;
+}
+
+.scroll-pane .scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 0;
+    -fx-opacity: 1;
+}
+
+.scroll-pane .scroll-bar .thumb:pressed,
+.scroll-pane .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+}
+
+.scroll-pane .scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:horizontal .increment-arrow,
+.scroll-pane .scroll-bar:horizontal .decrement-arrow  {
+    -fx-shape: " ";
+    -fx-padding: 0.25em 0;
+}
+
+.scroll-pane .scroll-bar:vertical .increment-arrow,
+.scroll-pane .scroll-bar:vertical .decrement-arrow  {
+    -fx-shape: " ";
+    -fx-padding: 0 0.25em;
+}
+
+.scroll-pane .corner {
+    -fx-background-color: transparent;
+}
+
 
 
 /** {*/

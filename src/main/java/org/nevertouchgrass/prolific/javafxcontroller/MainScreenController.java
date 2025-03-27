@@ -3,8 +3,8 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
@@ -23,7 +23,7 @@ public class MainScreenController {
     @FXML
     public AnchorPane mainScreen;
     @FXML
-    public BorderPane logsAndMetricsPanel;
+    public VBox logsAndMetricsPanel;
 
     @Initialize
     public void init() {

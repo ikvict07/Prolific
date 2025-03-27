@@ -7,11 +7,15 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
@@ -23,18 +27,19 @@ import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+
+import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
 @Slf4j
 @Component
 @SuppressWarnings("java:S1450")
 public class LogsAndMetricsPanelController {
     @FXML
-    private TextArea logsAndMetrics;
+    private TextFlow logsAndMetrics;
     @FXML
     private HBox projectLogsDropdown;
     @FXML
@@ -47,6 +52,8 @@ public class LogsAndMetricsPanelController {
     private Label metricsButton;
     @FXML
     private Label runningProjects;
+    @FXML
+    private ScrollPane scrollPane;
 
     private final ContextMenu contextMenu = new ContextMenu();
 
@@ -68,10 +75,9 @@ public class LogsAndMetricsPanelController {
 
     @FXML
     public void initialize() {
-        projectLogsDropdown.prefWidthProperty().bind(logsAndMetrics.widthProperty().multiply(0.3));
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
-        logsAndMetrics.textProperty().addListener((_, _, _) -> logsAndMetrics.selectEnd());
+        logsAndMetrics.heightProperty().addListener((_, _, _) -> scrollPane.setVvalue(1));
     }
 
     @Initialize
@@ -82,29 +88,29 @@ public class LogsAndMetricsPanelController {
 
         processes.addListener((MapChangeListener<? super Project, ? super Set<ProcessWrapper>>) change -> {
             if (change.wasAdded()) {
-                CustomMenuItem menuItem = new CustomMenuItem(new Label(change.getKey().getTitle()));
-                menuItem.setId(change.getKey().getTitle());
+                Project project = change.getKey();
+
+                CustomMenuItem menuItem = new CustomMenuItem(new Label(project.getTitle()));
+                menuItem.setId(project.getTitle());
                 menuItem.setHideOnClick(false);
 
                 Set<ProcessWrapper> processWrappers = processes.get(change.getKey());
 
                 if (processWrappers.size() == 1) {
-                    setupProcessMenuItem(menuItem, change.getKey().getTitle(), processWrappers.iterator().next());
-                    menuItem.addEventHandler(ActionEvent.ACTION, _ -> projectChoice.set(change.getKey().getTitle()));
+                    ProcessWrapper processWrapper = processWrappers.iterator().next();
+                    setupProcessMenuItem(menuItem, project, project.getTitle() + " - " + processWrapper.getName(), processWrapper);
+
+                    menuItem.fire();
                 } else {
                     menuItem.addEventHandler(ActionEvent.ACTION, _ -> {
-                        projectChoice.set(change.getKey().getTitle());
+                        projectChoice.set(project.getTitle());
 
                         ContextMenu subMenu = new ContextMenu();
 
-                        if (processWrappers.size() == 1) {
-                            setupProcessMenuItem(menuItem, change.getKey().getTitle(), processWrappers.iterator().next());
-                        } else {
-                            for (ProcessWrapper processWrapper : processWrappers) {
-                                CustomMenuItem item = new CustomMenuItem();
-                                setupProcessMenuItem(item, processWrapper.getName(), processWrapper);
-                                subMenu.getItems().add(item);
-                            }
+                        for (ProcessWrapper processWrapper : processWrappers) {
+                            CustomMenuItem item = new CustomMenuItem();
+                            setupProcessMenuItem(item, project, processWrapper.getName(), processWrapper);
+                            subMenu.getItems().add(item);
                         }
 
                         Bounds bounds = menuItem.getStyleableNode().localToScreen(menuItem.getStyleableNode().getBoundsInLocal());
@@ -129,15 +135,8 @@ public class LogsAndMetricsPanelController {
     }
 
     private void switchConfigurationButtonIcon() {
-        try {
-            HBox substituteIcon = "unfoldButton".equals(foldButton.getChildren().getFirst().getId()) ?
-                    new FXMLLoader(getClass().getResource("/icons/fxml/fold_button.fxml")).load() :
-                    new FXMLLoader(getClass().getResource("/icons/fxml/unfold_button.fxml")).load();
-            foldButton.getChildren().clear();
-            foldButton.getChildren().add(substituteIcon.getChildren().getFirst());
-        } catch (IOException e) {
-            log.error("Error retrieving fxml resource: {}", e.getMessage());
-        }
+        String resource = "unfoldButton".equalsIgnoreCase(foldButton.getChildren().getFirst().getId()) ? "/icons/fxml/fold_button.fxml" : "/icons/fxml/unfold_button.fxml";
+        switchPaneChildren(foldButton, resource);
     }
 
     public void switchLogsButtonStyle(MouseEvent event) {
@@ -155,25 +154,31 @@ public class LogsAndMetricsPanelController {
         }
     }
 
-    private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, String text, ProcessWrapper processWrapper) {
+    private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, Project project, String text, ProcessWrapper processWrapper) {
         menuItem.setContent(new Label(text));
         menuItem.setHideOnClick(false);
 
         menuItem.setOnAction(_ -> {
             ProcessLogs processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
             Consumer<String> logAddedListener = _ -> Platform.runLater(() -> {
+                projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
+                logsAndMetrics.getChildren().clear();
                 List<String> logs = processLogs.getLogs();
-                logsAndMetrics.setText(String.join("\n", logs));
-                logsAndMetrics.positionCaret(logsAndMetrics.getLength() - logs.getLast().length());
+                List<Text> newText = logs.stream().map(it -> {
+                    Text itText = new Text(it + "\n");
+                    itText.getStyleClass().add("log-text");
+                    return itText;
+                }).toList();
+                logsAndMetrics.getChildren().addAll(newText);
             });
 
-            logsAndMetrics.clear();
+            logsAndMetrics.getChildren();
             processLogsList.forEach(ProcessLogs::clearOnLogAddedListeners);
             processLogsList.clear();
             processLogsList.add(processLogs);
 
             processLogs.addOnLogAddedListener(logAddedListener);
-            if (processLogs.getLogs().stream().mapToInt(String::length).sum() > logsAndMetrics.getLength()) {
+            if (processLogs.getLogs().stream().mapToInt(String::length).sum() > logsAndMetrics.getChildren().stream().mapToInt(it -> ((Text)it).getText().length()).sum()) {
                 logAddedListener.accept(null);
             }
         });

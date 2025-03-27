@@ -11,6 +11,7 @@ sqlite = "3.49.1.0"
 hikari = "6.2.1"
 beryx = "1.12.2"
 
+
 [libraries]
 springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
 springBoot = { module = "org.springframework.boot:spring-boot-starter" }
@@ -25,6 +26,8 @@ logging = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j"
 sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite"}
 springAop = { module = "org.springframework.boot:spring-boot-starter-aop" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+
+
 [bundles]
 spring = [
     "springBootParent",
@@ -36,6 +39,7 @@ testing = [
     "junitJupiter",
     "mockito",
 ]
+
 
 [plugins]
 springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
