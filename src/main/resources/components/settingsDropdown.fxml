@@ -7,4 +7,5 @@
     <Label maxWidth="Infinity" text="Settings..." textAlignment="JUSTIFY"/>
     <Label maxWidth="Infinity" onMouseClicked="#rescan" text="Run scanning" textAlignment="JUSTIFY"/>
     <Label maxWidth="Infinity" text="Plugins" textAlignment="JUSTIFY"/>
+    <Label maxWidth="Infinity" onMouseClicked="#showLicenseWindow" text="Activate license" textAlignment="JUSTIFY"/>
 </VBox>
