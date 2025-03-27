@@ -28,6 +28,12 @@ public class DefaultProjectRunner implements ProjectRunner {
         try {
             Process process = processBuilder.start();
             var procWrapper = ProcessWrapper.of(process);
+            var children = process.toHandle().children();
+            var descendants = process.toHandle().descendants();
+            process.onExit().thenAccept(_ -> {
+                children.forEach(ProcessHandle::destroy);
+                descendants.forEach(ProcessHandle::destroy);
+            });
             procWrapper.setName(runConfig.getConfigName());
             processLogsService.observeProcess(procWrapper);
             metricsService.observeProcess(procWrapper);

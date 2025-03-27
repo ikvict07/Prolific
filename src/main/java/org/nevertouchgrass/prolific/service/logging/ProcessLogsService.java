@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.model.LogWrapper;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.service.metrics.ProcessAware;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
@@ -14,6 +15,7 @@ import oshi.software.os.OperatingSystem;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -69,11 +71,20 @@ public class ProcessLogsService implements ProcessAware {
         observableProcesses.removeIf(p -> {
             if (p.equals(process)) {
                 // Clean up resources for this process
+                readLogs(p);
                 closeReaders(p);
                 return true;
             }
             return false;
         });
+    }
+
+    private void readLogs(ProcessWrapper p) {
+        var processLogs = logs.computeIfAbsent(p, _ -> new ProcessLogs());
+        var logsReader = processInputStreamMap.computeIfAbsent(p, _ -> new BufferedReader(new InputStreamReader(p.getProcess().getInputStream())));
+        var errorsReader = processErrorStreamMap.computeIfAbsent(p, _ -> new BufferedReader(new InputStreamReader(p.getProcess().getErrorStream())));
+        new Thread(() -> readNewLines(logsReader, processLogs)).start();
+        new Thread(() -> readNewError(errorsReader, processLogs)).start();
     }
 
     /**
@@ -84,13 +95,13 @@ public class ProcessLogsService implements ProcessAware {
     @SuppressWarnings("EmptyTryBlock")
     private void closeReaders(ProcessWrapper process) {
 
-        try (BufferedReader inputReader = processInputStreamMap.remove(process)) {
+        try (BufferedReader _ = processInputStreamMap.remove(process)) {
             // closing
         } catch (IOException e) {
             log.error("Error closing input stream reader for process {}", process.getProcess().pid(), e);
         }
 
-        try (BufferedReader errorReader = processErrorStreamMap.remove(process)) {
+        try (BufferedReader _ = processErrorStreamMap.remove(process)) {
             // closing
         } catch (IOException e) {
             log.error("Error closing error stream reader for process {}", process.getProcess().pid(), e);
@@ -117,11 +128,7 @@ public class ProcessLogsService implements ProcessAware {
                     processesToRemove.add(p);
                     return;
                 }
-                var processLogs = logs.computeIfAbsent(p, _ -> new ProcessLogs());
-                var inputStream = processInputStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getProcess().getInputStream())));
-                var errorStream = processErrorStreamMap.computeIfAbsent(p, p1 -> new BufferedReader(new InputStreamReader(p1.getProcess().getErrorStream())));
-                readNewLines(inputStream, processLogs);
-                readNewError(errorStream, processLogs);
+                readLogs(p);
             });
 
             // Clean up resources for processes that no longer exist
@@ -130,7 +137,7 @@ public class ProcessLogsService implements ProcessAware {
                 logs.remove(p);
                 observableProcesses.remove(p);
             });
-        }, 0, 3, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -169,7 +176,11 @@ public class ProcessLogsService implements ProcessAware {
         try {
             String line;
             while (reader.ready() && (line = reader.readLine()) != null) {
-                processLogs.addLog(line);
+                var log = new LogWrapper();
+                log.setLog(line);
+                log.setLogType(LogWrapper.LogType.INFO);
+                log.setTimeStamp(LocalDateTime.now());
+                processLogs.addLog(log);
             }
         } catch (IOException e) {
             log.error("Error occurred while reading input stream", e);
@@ -186,7 +197,11 @@ public class ProcessLogsService implements ProcessAware {
         try {
             String line;
             while (reader.ready() && (line = reader.readLine()) != null) {
-                processLogs.addError(line);
+                var log = new LogWrapper();
+                log.setLog(line);
+                log.setLogType(LogWrapper.LogType.ERROR);
+                log.setTimeStamp(LocalDateTime.now());
+                processLogs.addLog(log);
             }
         } catch (IOException e) {
             log.error("Error occurred while reading error stream", e);

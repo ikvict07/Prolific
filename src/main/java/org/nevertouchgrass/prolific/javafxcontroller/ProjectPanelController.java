@@ -247,7 +247,7 @@ public class ProjectPanelController {
 
     private void runProjectLambda() {
         try {
-            currentProcess = projectRunner.runProject(project, chosenConfig);
+            currentProcess = processService.runProject(project, chosenConfig);
             processService.addProcess(project, currentProcess);
             processService.registerOnKillListener(this::onProcessDeath);
             isProjectRunning.setValue(true);
