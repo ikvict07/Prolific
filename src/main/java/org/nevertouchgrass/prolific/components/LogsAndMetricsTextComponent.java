@@ -29,7 +29,6 @@ public class LogsAndMetricsTextComponent {
         logsTextArea.getStyleClass().add("text-flow");
         logsScrollPane.getStyleClass().add("scroll-pane");
         logsTextArea.setEditable(false);
-        logsTextArea.setWrapText(true);
         logsScrollPane.setMaxWidth(Double.MAX_VALUE);
         logsScrollPane.setMaxHeight(Double.MAX_VALUE);
 
