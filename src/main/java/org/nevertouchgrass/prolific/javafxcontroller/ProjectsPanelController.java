@@ -17,7 +17,7 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
-import org.nevertouchgrass.prolific.service.metrics.ProcessService;
+import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.service.searching.comparators.ProjectComparatorBuilder;
 import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;

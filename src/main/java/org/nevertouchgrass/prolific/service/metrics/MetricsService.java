@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Metric;
 import org.nevertouchgrass.prolific.model.ProcessMetrics;
+import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
+import org.nevertouchgrass.prolific.service.notification.NotificationService;
+import org.nevertouchgrass.prolific.service.process.ProcessAware;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.stereotype.Service;
 import oshi.software.os.OSProcess;
@@ -35,6 +38,7 @@ public class MetricsService implements ProcessAware {
     private final AtomicBoolean observing = new AtomicBoolean(true);
 
     private final Map<ProcessWrapper, AtomicBoolean> processActiveFlags = new ConcurrentHashMap<>();
+    private final NotificationService notificationService;
 
     public Map<ProcessWrapper, ProcessMetrics> getMetrics() {
         return Map.copyOf(metrics);
@@ -42,7 +46,7 @@ public class MetricsService implements ProcessAware {
 
     public void stopObserving() {
         observing.set(false);
-        processActiveFlags.forEach((process, flag) -> flag.set(false));
+        processActiveFlags.forEach((_, flag) -> flag.set(false));
     }
 
     public void observeProcess(ProcessWrapper process) {
@@ -104,9 +108,9 @@ public class MetricsService implements ProcessAware {
         var descendants = new HashSet<ProcessHandle>();
         receiveDescendants(process.getProcess().toHandle(), descendants);
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            return getCpuForWindows(process, descendants);
+            return getCpuForWindows(descendants);
         } else {
-            return getCpuForUnix(process, descendants);
+            return getCpuForUnix(descendants);
         }
     }
 
@@ -114,131 +118,101 @@ public class MetricsService implements ProcessAware {
         var descendants = new HashSet<ProcessHandle>();
         receiveDescendants(process.getProcess().toHandle(), descendants);
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            return getMemoryUsageForWindows(process, descendants);
+            return getMemoryUsageForWindows(descendants);
         } else {
-            return getMemoryUsageForUnix(process, descendants);
+            return getMemoryUsageForUnix(descendants);
         }
     }
 
-    private long getMemoryUsageForWindows(ProcessWrapper process, Set<ProcessHandle> descendants) {
+    private long getMemoryUsageForWindows(Set<ProcessHandle> descendants) {
         AtomicReference<Long> memoryUsage = new AtomicReference<>(0L);
         descendants.forEach(d -> {
             var pb = new ProcessBuilder("wmic", "path", "Win32_PerfFormattedData_PerfProc_Process", "where", "IDProcess=" + d.pid(), "get", "WorkingSetSize");
-            Process p = null;
-            try {
-                p = pb.start();
-            } catch (IOException e) {
-
-            }
-            var reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while (true) {
-                try {
-                    if ((reader.ready() && (line = reader.readLine()) != null)) {
-                        try {
-                            String finalLine = line;
-                            memoryUsage.updateAndGet(v -> (v + Long.parseLong(finalLine.trim().replaceAll("[^0-9]", "")) * 1024L));
-                            break;
-                        } catch (Exception e) {
-                        }
-                    }
-                } catch (IOException e) {
-                    break;
-                }
-            }
+            readMemoryUsage(memoryUsage, pb);
         });
         return memoryUsage.get();
     }
 
-    private long getMemoryUsageForUnix(ProcessWrapper process, Set<ProcessHandle> descendants) {
+    private long getMemoryUsageForUnix(Set<ProcessHandle> descendants) {
         AtomicReference<Long> memoryUsage = new AtomicReference<>(0L);
         descendants.forEach(d -> {
             var pb = new ProcessBuilder("ps", "-p", String.valueOf(d.pid()), "-o", "rss");
-            Process p = null;
-            try {
-                p = pb.start();
-            } catch (IOException e) {
-
-            }
-            var reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while (true) {
-                try {
-                    if ((reader.ready() && (line = reader.readLine()) != null)) {
-                        try {
-                            String finalLine = line;
-                            memoryUsage.updateAndGet(v -> (v + Long.parseLong(finalLine.trim().replaceAll("[^0-9]", "")) * 1024L));
-                            break;
-                        } catch (Exception e) {
-                        }
-                    }
-                } catch (IOException e) {
-                    break;
-                }
-            }
+            readMemoryUsage(memoryUsage, pb);
         });
         return memoryUsage.get();
     }
 
-    private double getCpuForUnix(ProcessWrapper process, Set<ProcessHandle> descendants) {
+    private double getCpuForUnix(Set<ProcessHandle> descendants) {
         AtomicReference<Double> cpuUsage = new AtomicReference<>(0d);
         descendants.forEach(d -> {
-
             var pb = new ProcessBuilder("ps", "-p", String.valueOf(d.pid()), "-o", "%cpu");
-            Process p = null;
-            try {
-                p = pb.start();
-            } catch (IOException e) {
-
-            }
-            var reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while (true) {
-                try {
-                    if ((reader.ready() && (line = reader.readLine()) != null)) {
-                        try {
-                            String finalLine = line;
-                            cpuUsage.updateAndGet(v -> (v + Double.parseDouble(finalLine.trim().replaceAll("[^0-9]", ""))));
-                            break;
-                        } catch (Exception e) {
-                        }
-                    }
-                } catch (IOException e) {
-                    break;
-                }
-            }
+            cpuUsage.updateAndGet(v -> v + readCpuUsage(pb));
         });
         return cpuUsage.get();
     }
 
-    private double getCpuForWindows(ProcessWrapper process, Set<ProcessHandle> descendants) {
+    private double getCpuForWindows(Set<ProcessHandle> descendants) {
         AtomicReference<Double> cpuUsage = new AtomicReference<>(0d);
         descendants.forEach(d -> {
-
             var pb = new ProcessBuilder("wmic", "path", "Win32_PerfFormattedData_PerfProc_Process", "where", "IDProcess=" + d.pid(), "get", "PercentProcessorTime");
-            Process p = null;
-            try {
-                p = pb.start();
-            } catch (IOException e) {
-
-            }
-            var reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while (true) {
-                try {
-                    if ((reader.ready() && (line = reader.readLine()) != null)) {
-                        try {
-                            String finalLine = line;
-                            cpuUsage.updateAndGet(v -> (v + Double.parseDouble(finalLine.trim().replaceAll("[^0-9]", ""))));
-                            break;
-                        } catch (Exception e) {
-                        }
-                    }
-                } catch (IOException e) {
-                    break;
-                }
-            }
+            cpuUsage.updateAndGet(v -> v + readCpuUsage(pb));
         });
+        return cpuUsage.get();
+    }
+
+    private void readMemoryUsage(AtomicReference<Long> memoryUsage, ProcessBuilder pb) {
+        Process p = null;
+        try {
+            p = pb.start();
+        } catch (IOException e) {
+            notificationService.notifyError(ErrorNotification.of(e, "Couldn't read RAM usage"));
+        }
+        var reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String line;
+        int i = 0;
+        while (i < 2) {
+            try {
+                if ((reader.ready() && (line = reader.readLine()) != null)) {
+                    try {
+                        String finalLine = line;
+                        memoryUsage.updateAndGet(v -> (v + Long.parseLong(finalLine.trim().replaceAll("[^0-9]", "")) * 1024L));
+                        break;
+                    } catch (Exception e) {
+                        i++;
+                    }
+                }
+            } catch (IOException e) {
+                break;
+            }
+        }
+    }
+
+    private double readCpuUsage(ProcessBuilder pb) {
+        AtomicReference<Double> cpuUsage = new AtomicReference<>(0d);
+        Process p = null;
+        try {
+            p = pb.start();
+        } catch (IOException e) {
+            notificationService.notifyError(ErrorNotification.of(e, "Couldn't read cpu usage"));
+        }
+        var reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String line;
+        int i = 0;
+        while (i < 2) {
+            try {
+                if ((reader.ready() && (line = reader.readLine()) != null)) {
+                    try {
+                        String finalLine = line;
+                        cpuUsage.updateAndGet(v -> (v + Double.parseDouble(finalLine.trim().replaceAll("[^0-9]", ""))));
+                        break;
+                    } catch (Exception e) {
+                        i++;
+                    }
+                }
+            } catch (IOException e) {
+                break;
+            }
+        }
         return cpuUsage.get();
     }
 

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.LogWrapper;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
-import org.nevertouchgrass.prolific.service.metrics.ProcessAware;
+import org.nevertouchgrass.prolific.service.process.ProcessAware;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

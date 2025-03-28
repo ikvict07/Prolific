@@ -23,7 +23,7 @@ import org.nevertouchgrass.prolific.model.ProcessMetrics;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
-import org.nevertouchgrass.prolific.service.metrics.ProcessService;
+import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
