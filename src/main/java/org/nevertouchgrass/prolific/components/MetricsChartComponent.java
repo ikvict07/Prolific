@@ -29,8 +29,6 @@ public class MetricsChartComponent extends VBox {
     private NumberAxis yMemAxis;
     private final long timeWindow = 20;
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-    private CategoryAxis xCpuAxis;
-    private CategoryAxis xMemAxis;
 
     private final List<XYChart.Data<String, Number>> allCpuData = new ArrayList<>();
     private final List<XYChart.Data<String, Number>> allMemoryData = new ArrayList<>();
@@ -61,7 +59,7 @@ public class MetricsChartComponent extends VBox {
     }
 
     private void createCharts() {
-        xCpuAxis = new CategoryAxis();
+        CategoryAxis xCpuAxis = new CategoryAxis();
         yCpuAxis = new NumberAxis("CPU %", 0, maxCpuUsage, 50);
         yCpuAxis.setAutoRanging(false);
 
@@ -79,7 +77,7 @@ public class MetricsChartComponent extends VBox {
 
         setupChartTooltip(cpuChart, cpuSeries, "CPU: %.2f%%");
 
-        xMemAxis = new CategoryAxis();
+        CategoryAxis xMemAxis = new CategoryAxis();
         yMemAxis = new NumberAxis("RAM (MB)", 0, 1000, 100);
         yMemAxis.setAutoRanging(false);
 
@@ -102,26 +100,37 @@ public class MetricsChartComponent extends VBox {
 
     private void createScrollBar() {
         scrollBar = new ScrollBar();
-        scrollBar.setVisible(true);
+        scrollBar.setVisible(false);
         scrollBar.getStyleClass().add("scroll-bar-metrics");
+
         scrollBar.setMin(0);
-        scrollBar.setMax(timeWindow);
-        scrollBar.setValue(0);
-        scrollBar.setVisibleAmount(timeWindow);
+        scrollBar.setMax(100);
+        scrollBar.setValue(scrollBar.getMax());
+
+
+        scrollBar.setVisibleAmount(20);
         scrollBar.setUnitIncrement(1);
         scrollBar.setBlockIncrement(5);
         scrollBar.setOrientation(javafx.geometry.Orientation.HORIZONTAL);
 
-        scrollBar.valueProperty().addListener((obs, oldVal, newVal) -> {
-            long newIndex = Math.max(0, newVal.intValue());
+        scrollBar.valueProperty().addListener((_, _, newVal) -> {
+            int dataSize = allCpuData.size();
 
-            newIndex = Math.min(newIndex, Math.max(0, allCpuData.size() - timeWindow));
+            long realDataStartIndex = timeWindow;
 
-            if (newIndex != newVal.intValue()) {
-                scrollBar.setValue(newIndex);
-            } else {
-                updateChartView(newIndex);
+            if (dataSize <= timeWindow * 2) {
+                updateChartView(realDataStartIndex);
+                return;
             }
+
+            long maxStartIndex = dataSize - timeWindow;
+
+            double percentage = newVal.doubleValue() / 100.0;
+            long newIndex = Math.round(percentage * (maxStartIndex - realDataStartIndex)) + realDataStartIndex;
+
+            newIndex = Math.max(realDataStartIndex, Math.min(newIndex, maxStartIndex));
+
+            updateChartView(newIndex);
         });
 
         HBox scrollBarBox = new HBox(scrollBar);
@@ -136,7 +145,7 @@ public class MetricsChartComponent extends VBox {
         tooltip.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
 
         final javafx.animation.PauseTransition hoverTimer = new javafx.animation.PauseTransition(javafx.util.Duration.millis(200));
-        final double[] lastMousePos = new double[2]; // [x, y]
+        final double[] lastMousePos = new double[2];
 
         chart.setOnMouseMoved(event -> {
             double currentX = event.getX();
@@ -151,7 +160,7 @@ public class MetricsChartComponent extends VBox {
 
                 tooltip.hide();
 
-                hoverTimer.setOnFinished(e -> {
+                hoverTimer.setOnFinished(_ -> {
                     XYChart.Data<String, Number> closestData = findClosestDataPoint(chart, series, currentX);
 
                     if (closestData != null) {
@@ -233,6 +242,9 @@ public class MetricsChartComponent extends VBox {
         }
 
         metricEvents.observe(metric -> {
+            if (allCpuData.size() > timeWindow * 2) {
+                scrollBar.setVisible(true);
+            }
             String formattedTime = metric.getTimeStamp().format(timeFormatter);
             double cpuValue = metric.getCpuUsage();
             double memoryInMB = metric.getMemoryUsage() / (1024.0 * 1024.0);
@@ -243,11 +255,13 @@ public class MetricsChartComponent extends VBox {
             allCpuData.add(cpuData);
             allMemoryData.add(memoryData);
 
-            updateScrollBarRange(allCpuData.size());
+            boolean isAtEnd = (scrollBar.getValue() >= 95) ||
+                    (viewStartIndex >= allCpuData.size() - timeWindow - 2);
 
-            if (viewStartIndex >= allCpuData.size() - timeWindow - 1) {
-                viewStartIndex = allCpuData.size() - timeWindow;
-                scrollBar.setValue(viewStartIndex);
+
+            if (isAtEnd) {
+                viewStartIndex = Math.max(0, allCpuData.size() - timeWindow);
+                updateChartView(viewStartIndex);
             } else {
                 updateChartView(viewStartIndex);
             }
@@ -280,26 +294,4 @@ public class MetricsChartComponent extends VBox {
         }
     }
 
-    private void updateScrollBarRange(int dataSize) {
-        scrollBar.setMin(0);
-
-        if (dataSize > timeWindow * 2) {
-            scrollBar.setVisible(true);
-            scrollBar.setMax(dataSize + timeWindow);
-            scrollBar.setMin(timeWindow);
-        } else {
-            scrollBar.setVisible(true);
-            scrollBar.setMax(dataSize);
-            scrollBar.setMin(dataSize - timeWindow);
-        }
-
-        scrollBar.setVisibleAmount(timeWindow);
-
-        double current = scrollBar.getValue();
-        if (current < scrollBar.getMin()) {
-            scrollBar.setValue(scrollBar.getMin());
-        } else if (current > scrollBar.getMax()) {
-            scrollBar.setValue(scrollBar.getMax());
-        }
-    }
 }

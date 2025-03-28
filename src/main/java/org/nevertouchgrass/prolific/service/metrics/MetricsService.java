@@ -40,9 +40,6 @@ public class MetricsService implements ProcessAware {
     private final Map<ProcessWrapper, AtomicBoolean> processActiveFlags = new ConcurrentHashMap<>();
     private final NotificationService notificationService;
 
-    public Map<ProcessWrapper, ProcessMetrics> getMetrics() {
-        return Map.copyOf(metrics);
-    }
 
     public void stopObserving() {
         observing.set(false);
@@ -175,7 +172,7 @@ public class MetricsService implements ProcessAware {
                 if ((reader.ready() && (line = reader.readLine()) != null)) {
                     try {
                         String finalLine = line;
-                        memoryUsage.updateAndGet(v -> (v + Long.parseLong(finalLine.trim().replaceAll("\\D", "")) * 1024L));
+                        memoryUsage.updateAndGet(v -> (v + Long.parseLong(finalLine.trim().replaceAll("[^0-9.]", "")) * 1024L));
                         break;
                     } catch (Exception e) {
                         i++;
@@ -204,7 +201,7 @@ public class MetricsService implements ProcessAware {
                 if ((reader.ready() && (line = reader.readLine()) != null)) {
                     try {
                         String finalLine = line;
-                        cpuUsage.updateAndGet(v -> (v + Double.parseDouble(finalLine.trim().replaceAll("\\D", ""))));
+                        cpuUsage.updateAndGet(v -> (v + Double.parseDouble(finalLine.trim().replaceAll("[^0-9.]", ""))));
                         break;
                     } catch (Exception e) {
                         i++;
