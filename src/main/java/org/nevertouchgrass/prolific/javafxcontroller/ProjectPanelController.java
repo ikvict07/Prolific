@@ -27,7 +27,7 @@ import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.*;
 import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
-import org.nevertouchgrass.prolific.service.metrics.ProcessService;
+import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;

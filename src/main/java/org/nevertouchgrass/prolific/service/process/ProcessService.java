@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service.metrics;
+package org.nevertouchgrass.prolific.service.process;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -34,10 +34,8 @@ public class ProcessService {
     public ProcessWrapper runProject(Project project, RunConfig runConfig) throws ProcessStartFailedException {
         var process = projectRunner.runProject(project, runConfig);
         addProcess(project, process);
-        process.getProcess().onExit().thenAccept(p -> {
-            onKillListeners.forEach(c -> {
-                c.accept(process);
-            });
+        process.getProcess().onExit().thenAccept(_ -> {
+            onKillListeners.forEach(c -> c.accept(process));
             dead.add(process);
             log.debug("Process died: PID {} - {}", process.getPid(), process.getOsProcess().getName());
             removeDeadProcess(process);
@@ -88,7 +86,7 @@ public class ProcessService {
         }
         if (dead.size() > 1000) {
             AtomicInteger toRemoveCount = new AtomicInteger(dead.size() - 500);
-            dead.removeIf(p -> toRemoveCount.getAndDecrement() > 0);
+            dead.removeIf(_ -> toRemoveCount.getAndDecrement() > 0);
         }
         log.debug("Removed {} dead process from tracking", toRemove.getName());
     }

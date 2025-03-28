@@ -22,8 +22,6 @@ public class MetricsChartComponent extends VBox {
     private final EventSource<Metric> metricEvents = new EventSource<>();
     private final ProcessMetrics processMetrics;
     private double maxCpuUsage = 100;
-    private AreaChart<Number, Number> cpuChart;
-    private AreaChart<Number, Number> memoryChart;
     private NumberAxis yCpuAxis;
     private NumberAxis yMemAxis;
 
@@ -79,7 +77,7 @@ public class MetricsChartComponent extends VBox {
         yCpuAxis = new NumberAxis("CPU %", 0, maxCpuUsage, 10);
         yCpuAxis.setAutoRanging(false);
 
-        cpuChart = new AreaChart<>(xCpuAxis, yCpuAxis);
+        AreaChart<Number, Number> cpuChart = new AreaChart<>(xCpuAxis, yCpuAxis);
         cpuChart.getData().add(cpuSeries);
         cpuChart.setLegendVisible(false);
         cpuChart.setCreateSymbols(false);
@@ -94,7 +92,7 @@ public class MetricsChartComponent extends VBox {
         yMemAxis = new NumberAxis("RAM (MB)", 0, 1000, 100);
         yMemAxis.setAutoRanging(false);
 
-        memoryChart = new AreaChart<>(xMemAxis, yMemAxis);
+        AreaChart<Number, Number> memoryChart = new AreaChart<>(xMemAxis, yMemAxis);
         memoryChart.getData().add(memorySeries);
         memoryChart.setLegendVisible(false);
         memoryChart.setCreateSymbols(false);
@@ -118,7 +116,7 @@ public class MetricsChartComponent extends VBox {
                 maxCpuUsage = cpuValue;
                 if (maxCpuUsage > yCpuAxis.getUpperBound()) {
                     double newUpperBound = Math.ceil(maxCpuUsage * 1.2 / 10) * 10;
-                    newUpperBound = Math.min(Runtime.getRuntime().availableProcessors() * 100, newUpperBound);
+                    newUpperBound = Math.min(Runtime.getRuntime().availableProcessors() * 100d, newUpperBound);
                     yCpuAxis.setUpperBound(newUpperBound);
                     yCpuAxis.setTickUnit(newUpperBound / 10);
                 }

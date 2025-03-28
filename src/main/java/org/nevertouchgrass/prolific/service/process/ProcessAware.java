@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service.metrics;
+package org.nevertouchgrass.prolific.service.process;
 
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 
