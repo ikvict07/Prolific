@@ -226,6 +226,6 @@ tasks.installDist {
     enabled = false
 }
 
-tasks.bootJar {
-    dependsOn(tasks.test)
-}
+//tasks.bootJar {
+//    dependsOn(tasks.test)
+//}
