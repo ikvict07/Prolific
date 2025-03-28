@@ -175,13 +175,14 @@ public class MetricsService implements ProcessAware {
                 if ((reader.ready() && (line = reader.readLine()) != null)) {
                     try {
                         String finalLine = line;
-                        memoryUsage.updateAndGet(v -> (v + Long.parseLong(finalLine.trim().replaceAll("[^0-9]", "")) * 1024L));
+                        memoryUsage.updateAndGet(v -> (v + Long.parseLong(finalLine.trim().replaceAll("\\D", "")) * 1024L));
                         break;
                     } catch (Exception e) {
                         i++;
                     }
                 }
             } catch (IOException e) {
+                notificationService.notifyError(ErrorNotification.of(e, "Couldn't read RAM usage"));
                 break;
             }
         }
@@ -203,13 +204,14 @@ public class MetricsService implements ProcessAware {
                 if ((reader.ready() && (line = reader.readLine()) != null)) {
                     try {
                         String finalLine = line;
-                        cpuUsage.updateAndGet(v -> (v + Double.parseDouble(finalLine.trim().replaceAll("[^0-9]", ""))));
+                        cpuUsage.updateAndGet(v -> (v + Double.parseDouble(finalLine.trim().replaceAll("\\D", ""))));
                         break;
                     } catch (Exception e) {
                         i++;
                     }
                 }
             } catch (IOException e) {
+                notificationService.notifyError(ErrorNotification.of(e, "Couldn't read cpu usage"));
                 break;
             }
         }

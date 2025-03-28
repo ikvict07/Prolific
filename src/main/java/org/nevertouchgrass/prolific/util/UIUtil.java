@@ -12,6 +12,8 @@ import java.io.IOException;
 @Slf4j
 public class UIUtil {
 
+    private UIUtil() {}
+
     public static void switchPaneChildren(@NonNull Pane pane, @NonNull String resource) {
         Platform.runLater(() -> {
             try {

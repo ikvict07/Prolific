@@ -53,7 +53,7 @@ public class LogsAndMetricsPanelController {
     @FXML
     private Label runningProjects;
 
-    private Boolean isLogsOpened = true;
+    private boolean isLogsOpened = true;
 
     private final ContextMenu contextMenu = new ContextMenu();
 
