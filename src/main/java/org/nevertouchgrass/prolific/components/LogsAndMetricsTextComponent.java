@@ -25,12 +25,16 @@ public class LogsAndMetricsTextComponent {
     @Getter
     private final VirtualizedScrollPane<StyleClassedTextArea> logsScrollPane = new VirtualizedScrollPane<>(logsTextArea);
 
+    private volatile boolean followCaret = true;
+
     public void init() {
         logsTextArea.getStyleClass().add("text-flow");
         logsScrollPane.getStyleClass().add("scroll-pane");
         logsTextArea.setEditable(false);
         logsScrollPane.setMaxWidth(Double.MAX_VALUE);
         logsScrollPane.setMaxHeight(Double.MAX_VALUE);
+
+        logsScrollPane.estimatedScrollYProperty().addListener((_, oldValue, newValue) -> setFollowCaret(newValue >= oldValue));
 
         HBox.setHgrow(logsScrollPane, Priority.ALWAYS);
         VBox.setVgrow(logsScrollPane, Priority.ALWAYS);
@@ -40,10 +44,12 @@ public class LogsAndMetricsTextComponent {
 
         logsFlux.bufferTimeout(50, Duration.ofMillis(500))
                 .subscribe(batch -> Platform.runLater(() -> {
-                        batch.stream().sorted().forEach(this::processLog);
+                    batch.stream().sorted().forEach(this::processLog);
 
-                    logsTextArea.moveTo(logsTextArea.getLength());
-                    logsTextArea.requestFollowCaret();
+                    if (getFollowCaret()) {
+                        logsTextArea.moveTo(logsTextArea.getLength());
+                        logsTextArea.requestFollowCaret();
+                    }
                 }));
     }
 
@@ -58,4 +64,11 @@ public class LogsAndMetricsTextComponent {
         logsTextArea.setStyleClass(startPos, logsTextArea.getLength(), styleClass);
     }
 
+    private synchronized void setFollowCaret(boolean followCaret) {
+        this.followCaret = followCaret;
+    }
+
+    private synchronized boolean getFollowCaret() {
+        return followCaret;
+    }
 }
