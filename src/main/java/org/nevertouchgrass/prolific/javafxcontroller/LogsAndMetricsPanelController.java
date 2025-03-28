@@ -19,6 +19,7 @@ import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
+import org.nevertouchgrass.prolific.model.ProcessMetrics;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
@@ -52,6 +53,8 @@ public class LogsAndMetricsPanelController {
     @FXML
     private Label runningProjects;
 
+    private Boolean isLogsOpened = true;
+
     private final ContextMenu contextMenu = new ContextMenu();
 
     private ProcessService processService;
@@ -62,6 +65,7 @@ public class LogsAndMetricsPanelController {
 
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
     private MetricsService metricsService;
+    private ProcessWrapper currentProcess;
 
 
     @Autowired
@@ -77,7 +81,6 @@ public class LogsAndMetricsPanelController {
     public void initialize() {
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
-//        logsAndMetrics.heightProperty().addListener((_, _, _) -> scrollPane.);
     }
 
     @Initialize
@@ -147,11 +150,16 @@ public class LogsAndMetricsPanelController {
             logsButton.getStyleClass().addAll(label, "logs-button-selected");
             metricsButton.getStyleClass().clear();
             metricsButton.getStyleClass().addAll(label, "logs-button");
+            isLogsOpened = true;
         } else if (event.getSource() == metricsButton) {
             metricsButton.getStyleClass().clear();
             metricsButton.getStyleClass().addAll(label, "logs-button-selected");
             logsButton.getStyleClass().clear();
             logsButton.getStyleClass().addAll(label, "logs-button");
+            isLogsOpened = false;
+        }
+        if (currentProcess != null) {
+            changeLogs(currentProcess);
         }
     }
 
@@ -160,22 +168,35 @@ public class LogsAndMetricsPanelController {
         menuItem.setHideOnClick(false);
         menuItem.setOnAction(_ -> Platform.runLater(() -> {
             projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
+            currentProcess = processWrapper;
             changeLogs(processWrapper);
         }));
     }
+
+    private final Map<ProcessWrapper, MetricsChartComponent> metricsComponents = new HashMap<>();
+
 
     private void changeLogs(ProcessWrapper processWrapper) {
         placeForScrollPane.getChildren().clear();
         var processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
         var flux = processLogsService.subscribeToLogs(processWrapper);
-        var component = logsAndMetricsTextComponents.computeIfAbsent(processWrapper,
-                _ -> {
-                    var componentProvider =  new LogsAndMetricsTextComponent(processLogs, flux);
-                    componentProvider.init();
-                    return componentProvider;
-                });
-        var component2 = new MetricsChartComponent(metricsService, processWrapper);
-        placeForScrollPane.getChildren().add(component2);
+        if (isLogsOpened) {
+            var component = logsAndMetricsTextComponents.computeIfAbsent(processWrapper,
+                    _ -> {
+                        var componentProvider = new LogsAndMetricsTextComponent(processLogs, flux);
+                        componentProvider.init();
+                        return componentProvider;
+                    });
+            placeForScrollPane.getChildren().add(component.getLogsScrollPane());
+        } else {
+            var component = metricsComponents.computeIfAbsent(processWrapper,
+                    _ -> {
+                        var componentProvider = new MetricsChartComponent(metricsService, processWrapper, metricsService.getMetrics().getOrDefault(processWrapper, new ProcessMetrics()));
+                        componentProvider.init();
+                        return componentProvider;
+                    });
+            placeForScrollPane.getChildren().add(component);
+        }
     }
 
     @Autowired

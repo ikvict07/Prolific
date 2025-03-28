@@ -27,12 +27,13 @@
         </HBox>
     </HBox>
 
-    <HBox fx:id="placeForScrollPane" VBox.vgrow="ALWAYS">
-        <ScrollPane styleClass="scroll-pane" fitToHeight="true" HBox.hgrow="ALWAYS">
-            <TextFlow styleClass="text-flow">
-                <Text text="Choose project first" styleClass="log-text"/>
-            </TextFlow>
-        </ScrollPane>
+    <HBox fx:id="placeForScrollPane" VBox.vgrow="ALWAYS" styleClass="logs-header" maxWidth="Infinity"
+          prefWidth="Infinity">
+        <padding>
+            <Insets left="24" right="24"/>
+        </padding>
+        <Label text="Choose a project first"/>
+        <Region HBox.hgrow="ALWAYS"/>
     </HBox>
 
     <HBox styleClass="logs-footer">
