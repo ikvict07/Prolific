@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.text.TextFlow?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      xmlns:rtfx="http://fxmisc.org/richtext"
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.LogsAndMetricsPanelController"
       stylesheets="@/css/styles.css">
 
@@ -27,13 +24,7 @@
         </HBox>
     </HBox>
 
-    <HBox fx:id="placeForScrollPane" VBox.vgrow="ALWAYS">
-        <ScrollPane styleClass="scroll-pane" fitToHeight="true" HBox.hgrow="ALWAYS">
-            <TextFlow styleClass="text-flow">
-                <Text text="Choose project first" styleClass="log-text"/>
-            </TextFlow>
-        </ScrollPane>
-    </HBox>
+    <HBox fx:id="placeForScrollPane" VBox.vgrow="ALWAYS"/>
 
     <HBox styleClass="logs-footer">
         <padding>

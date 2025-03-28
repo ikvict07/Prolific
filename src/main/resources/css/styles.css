@@ -356,6 +356,12 @@
     -fx-background-color: transparent;
 }
 
+.log-error-text {
+    -fx-fill: #DB5C5C;
+    -fx-font-family: "JetBrains Mono";
+    -fx-background-color: transparent;
+}
+
 .text-flow {
     -fx-padding: 4;
     -fx-background-color: #1E1F22;

@@ -77,7 +77,6 @@ public class LogsAndMetricsPanelController {
     public void initialize() {
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
-//        logsAndMetrics.heightProperty().addListener((_, _, _) -> scrollPane.);
     }
 
     @Initialize

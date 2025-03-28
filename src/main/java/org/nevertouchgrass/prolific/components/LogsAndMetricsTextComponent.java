@@ -37,23 +37,26 @@ public class LogsAndMetricsTextComponent {
         VBox.setVgrow(logsScrollPane, Priority.ALWAYS);
 
         Queue<LogWrapper> logs = processLogs.getLogs();
-        logs.forEach(log -> {
-            int startPos = logsTextArea.getLength();
-            logsTextArea.appendText(log.getLog() + "\n");
-            logsTextArea.setStyleClass(startPos, logsTextArea.getLength(), "log-text");
-        });
+        logs.forEach(this::processLog);
 
         logsFlux.bufferTimeout(50, Duration.ofMillis(500))
                 .subscribe(batch -> Platform.runLater(() -> {
-                        batch.stream().sorted().forEach(log -> {
-                        int startPos = logsTextArea.getLength();
-                        logsTextArea.appendText(log.getLog() + "\n");
-                        logsTextArea.setStyleClass(startPos, logsTextArea.getLength(), "log-text");
-                    });
+                        batch.stream().sorted().forEach(this::processLog);
 
                     logsTextArea.moveTo(logsTextArea.getLength());
                     logsTextArea.requestFollowCaret();
                 }));
+    }
+
+    private void processLog(LogWrapper log) {
+        String styleClass = switch(log.getLogType()) {
+            case INFO -> "log-text";
+            case ERROR -> "log-error-text";
+        };
+
+        int startPos = logsTextArea.getLength();
+        logsTextArea.appendText(log.getLog() + "\n");
+        logsTextArea.setStyleClass(startPos, logsTextArea.getLength(), styleClass);
     }
 
 }
