@@ -19,7 +19,6 @@ import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
-import org.nevertouchgrass.prolific.model.ProcessMetrics;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
@@ -190,11 +189,7 @@ public class LogsAndMetricsPanelController {
             placeForScrollPane.getChildren().add(component.getLogsScrollPane());
         } else {
             var component = metricsComponents.computeIfAbsent(processWrapper,
-                    _ -> {
-                        var componentProvider = new MetricsChartComponent(metricsService, processWrapper, metricsService.getMetrics().getOrDefault(processWrapper, new ProcessMetrics()));
-                        componentProvider.init();
-                        return componentProvider;
-                    });
+                    _ -> new MetricsChartComponent(metricsService, processWrapper));
             placeForScrollPane.getChildren().add(component);
         }
     }

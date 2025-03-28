@@ -66,7 +66,7 @@ public class MetricsService implements ProcessAware {
     }
 
     private void startMetricsCollection(ProcessWrapper process, Sinks.Many<Metric> sink, AtomicBoolean processActive) {
-        Flux.interval(Duration.ofSeconds(3))
+        Flux.interval(Duration.ofSeconds(1))
                 .takeWhile(_ -> observing.get() && processActive.get())
                 .flatMap(_ -> collectMetrics(process))
                 .doOnNext(metric -> {

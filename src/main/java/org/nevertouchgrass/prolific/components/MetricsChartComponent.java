@@ -2,36 +2,37 @@ package org.nevertouchgrass.prolific.components;
 
 import javafx.application.Platform;
 import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.nevertouchgrass.prolific.model.Metric;
-import org.nevertouchgrass.prolific.model.ProcessMetrics;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.reactfx.EventSource;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 public class MetricsChartComponent extends VBox {
-    private final XYChart.Series<Number, Number> cpuSeries = new XYChart.Series<>();
-    private final XYChart.Series<Number, Number> memorySeries = new XYChart.Series<>();
+    private final XYChart.Series<String, Number> cpuSeries = new XYChart.Series<>();
+    private final XYChart.Series<String, Number> memorySeries = new XYChart.Series<>();
     private final EventSource<Metric> metricEvents = new EventSource<>();
-    private final ProcessMetrics processMetrics;
     private double maxCpuUsage = 100;
     private NumberAxis yCpuAxis;
     private NumberAxis yMemAxis;
+    private final long timeWindow = 20;
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private CategoryAxis xCpuAxis;
+    private CategoryAxis xMemAxis;
 
-    public MetricsChartComponent(MetricsService metricsService, ProcessWrapper process, ProcessMetrics processMetrics) {
-        this.processMetrics = processMetrics;
+    public MetricsChartComponent(MetricsService metricsService, ProcessWrapper process) {
         setMaxWidth(Double.MAX_VALUE);
         this.getStyleClass().add("metrics-chart");
         HBox.setHgrow(this, Priority.ALWAYS);
         VBox.setVgrow(this, Priority.ALWAYS);
-
         createCharts();
 
         setupMetricEventHandler();
@@ -39,45 +40,16 @@ public class MetricsChartComponent extends VBox {
         if (metricsService != null && process != null) {
             metricsService.subscribeToMetrics(process)
                     .publishOn(Schedulers.single())
-                    .subscribe(metric -> {
-                        Platform.runLater(() -> metricEvents.push(metric));
-                    });
-        }
-    }
-
-    public void init() {
-        cpuSeries.getData().clear();
-        memorySeries.getData().clear();
-
-        if (processMetrics != null) {
-            List<Metric> historicalMetrics = processMetrics.getMetrics();
-            if (historicalMetrics != null && !historicalMetrics.isEmpty()) {
-                double maxCpu = 0;
-                double maxMem = 0;
-
-                for (int i = 0; i < historicalMetrics.size(); i++) {
-                    Metric metric = historicalMetrics.get(i);
-                    double cpuValue = metric.getCpuUsage();
-                    double memoryInMB = metric.getMemoryUsage() / (1024.0 * 1024.0);
-
-                    cpuSeries.getData().add(new XYChart.Data<>(i, cpuValue));
-                    memorySeries.getData().add(new XYChart.Data<>(i, memoryInMB));
-
-                    maxCpu = Math.max(maxCpu, cpuValue);
-                    maxMem = Math.max(maxMem, memoryInMB);
-                }
-
-                updateAxisScales(maxCpu, maxMem);
-            }
+                    .subscribe(metric -> Platform.runLater(() -> metricEvents.push(metric)));
         }
     }
 
     private void createCharts() {
-        NumberAxis xCpuAxis = new NumberAxis("Time", 0, 60, 10);
-        yCpuAxis = new NumberAxis("CPU %", 0, maxCpuUsage, 10);
+        xCpuAxis = new CategoryAxis();
+        yCpuAxis = new NumberAxis("CPU %", 0, maxCpuUsage, 50);
         yCpuAxis.setAutoRanging(false);
 
-        AreaChart<Number, Number> cpuChart = new AreaChart<>(xCpuAxis, yCpuAxis);
+        AreaChart<String, Number> cpuChart = new AreaChart<>(xCpuAxis, yCpuAxis);
         cpuChart.getData().add(cpuSeries);
         cpuChart.setLegendVisible(false);
         cpuChart.setCreateSymbols(false);
@@ -87,12 +59,11 @@ public class MetricsChartComponent extends VBox {
         cpuChart.getStyleClass().add("filled-chart-green");
         cpuChart.setStyle("-fx-stroke: #89C398;");
         HBox.setHgrow(cpuChart, Priority.ALWAYS);
-
-        NumberAxis xMemAxis = new NumberAxis("Time", 0, 60, 10);
+        xMemAxis = new CategoryAxis();
         yMemAxis = new NumberAxis("RAM (MB)", 0, 1000, 100);
         yMemAxis.setAutoRanging(false);
 
-        AreaChart<Number, Number> memoryChart = new AreaChart<>(xMemAxis, yMemAxis);
+        AreaChart<String, Number> memoryChart = new AreaChart<>(xMemAxis, yMemAxis);
         memoryChart.getData().add(memorySeries);
         memoryChart.setLegendVisible(false);
         memoryChart.setCreateSymbols(false);
@@ -107,55 +78,38 @@ public class MetricsChartComponent extends VBox {
     }
 
     private void setupMetricEventHandler() {
+        for (var i = 0; i < timeWindow; i++) {
+            cpuSeries.getData().add(new XYChart.Data<>(" ".repeat(i), 0));
+            memorySeries.getData().add(new XYChart.Data<>(" ".repeat(i), 0));
+        }
+
         metricEvents.observe(metric -> {
-            long x = cpuSeries.getData().size();
+            String formattedTime = metric.getTimeStamp().format(timeFormatter);
             double cpuValue = metric.getCpuUsage();
             double memoryInMB = metric.getMemoryUsage() / (1024.0 * 1024.0);
+            XYChart.Data<String, Number> cpuData = new XYChart.Data<>(formattedTime, cpuValue);
+            XYChart.Data<String, Number> memoryData = new XYChart.Data<>(formattedTime, memoryInMB);
+
+            cpuSeries.getData().add(cpuData);
+            memorySeries.getData().add(memoryData);
 
             if (cpuValue > maxCpuUsage) {
                 maxCpuUsage = cpuValue;
-                if (maxCpuUsage > yCpuAxis.getUpperBound()) {
-                    double newUpperBound = Math.ceil(maxCpuUsage * 1.2 / 10) * 10;
-                    newUpperBound = Math.min(Runtime.getRuntime().availableProcessors() * 100d, newUpperBound);
-                    yCpuAxis.setUpperBound(newUpperBound);
-                    yCpuAxis.setTickUnit(newUpperBound / 10);
-                }
+                yCpuAxis.setUpperBound(Math.min(
+                        Runtime.getRuntime().availableProcessors() * 100d + 10,
+                        Math.ceil(maxCpuUsage * 1.2 / 10) * 10 + 10
+                ));
             }
 
             if (memoryInMB > yMemAxis.getUpperBound()) {
-                double newUpperBound = Math.ceil(memoryInMB * 1.2 / 100) * 100;
-                yMemAxis.setUpperBound(newUpperBound);
-                yMemAxis.setTickUnit(newUpperBound / 10);
+                yMemAxis.setUpperBound(Math.ceil(memoryInMB * 1.2 / 100) * 100);
             }
 
-            cpuSeries.getData().add(new XYChart.Data<>(x, cpuValue));
-            memorySeries.getData().add(new XYChart.Data<>(x, memoryInMB));
-
-            if (cpuSeries.getData().size() > 100) {
+            while (cpuSeries.getData().size() > timeWindow) {
                 cpuSeries.getData().remove(0);
                 memorySeries.getData().remove(0);
             }
         });
     }
 
-    private void updateAxisScales(double maxCpu, double maxMem) {
-        if (maxCpu > 0) {
-            maxCpuUsage = maxCpu;
-            double newUpperBound = Math.ceil(maxCpuUsage * 1.2 / 10) * 10;
-            newUpperBound = Math.min(Runtime.getRuntime().availableProcessors() * 100d, newUpperBound);
-            yCpuAxis.setUpperBound(newUpperBound);
-            yCpuAxis.setTickUnit(newUpperBound / 10);
-        }
-
-        if (maxMem > 0) {
-            double newUpperBound = Math.ceil(maxMem * 1.2 / 100) * 100;
-            yMemAxis.setUpperBound(newUpperBound);
-            yMemAxis.setTickUnit(newUpperBound / 10);
-        }
-    }
-
-    public void clear() {
-        cpuSeries.getData().clear();
-        memorySeries.getData().clear();
-    }
 }
