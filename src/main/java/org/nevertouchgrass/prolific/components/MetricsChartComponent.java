@@ -142,7 +142,7 @@ public class MetricsChartComponent extends VBox {
         if (maxCpu > 0) {
             maxCpuUsage = maxCpu;
             double newUpperBound = Math.ceil(maxCpuUsage * 1.2 / 10) * 10;
-            newUpperBound = Math.min(Runtime.getRuntime().availableProcessors() * 100, newUpperBound);
+            newUpperBound = Math.min(Runtime.getRuntime().availableProcessors() * 100d, newUpperBound);
             yCpuAxis.setUpperBound(newUpperBound);
             yCpuAxis.setTickUnit(newUpperBound / 10);
         }
