@@ -18,13 +18,13 @@ jobs:
       - name: Check user permission
         id: check-permission
         run: |
-          ALLOWED_USERS=("ikvict07" "petukhoudzmitry")
+          ALLOWED_USERS=("ikvict07")
           if [[ " ${ALLOWED_USERS[@]} " =~ " ${GITHUB_ACTOR} " ]]; then
             echo "User $GITHUB_ACTOR is allowed. Skipping build."
-            echo "allowed=true" >> $GITHUB_ENV
+            echo "::set-output name=allowed::true"
           else
-            echo "User $GITHUB_ACTOR is not allowed. Exiting."
-            echo "allowed=false" >> $GITHUB_ENV
+            echo "User $GITHUB_ACTOR is not allowed. Processing to build."
+            echo "::set-output name=allowed::false"
           fi
         shell: bash
 
