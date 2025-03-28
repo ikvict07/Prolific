@@ -13,6 +13,11 @@ public class ProcessWrapper {
     @Setter
     private String name;
 
+    public int getPid() {
+
+        return osProcess.getProcessID();
+    }
+
     public ProcessWrapper(OSProcess osProcess) {
         this.osProcess = osProcess;
     }
@@ -29,11 +34,11 @@ public class ProcessWrapper {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         ProcessWrapper that = (ProcessWrapper) obj;
-        return this.osProcess.getProcessID() == that.osProcess.getProcessID();
+        return this.getPid() == that.getPid();
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(osProcess.getProcessID());
+        return Integer.hashCode(getPid());
     }
 }

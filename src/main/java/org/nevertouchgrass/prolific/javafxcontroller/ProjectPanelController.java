@@ -210,8 +210,8 @@ public class ProjectPanelController {
 
     public void onProcessDeath(ProcessWrapper process) {
         if (currentProcess != null) {
-            var myPid = currentProcess.getOsProcess().getProcessID();
-            var pid = process.getOsProcess().getProcessID();
+            var myPid = currentProcess.getPid();
+            var pid = process.getPid();
             if (myPid == pid) {
                 stopProject();
             }

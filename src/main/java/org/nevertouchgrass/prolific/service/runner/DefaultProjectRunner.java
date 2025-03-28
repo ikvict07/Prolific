@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.service.runner;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.exception.ProcessStartFailedException;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
@@ -22,18 +23,14 @@ public class DefaultProjectRunner implements ProjectRunner {
 
 
     @Override
+    @SneakyThrows
     public ProcessWrapper runProject(Project project, RunConfig runConfig) throws ProcessStartFailedException {
         var processBuilder = new ProcessBuilder(runConfig.getCommand());
         processBuilder.directory(Path.of(project.getPath()).toFile());
         try {
             Process process = processBuilder.start();
-            var procWrapper = ProcessWrapper.of(process);
-            var children = process.toHandle().children();
-            var descendants = process.toHandle().descendants();
-            process.onExit().thenAccept(_ -> {
-                children.forEach(ProcessHandle::destroy);
-                descendants.forEach(ProcessHandle::destroy);
-            });
+            ProcessWrapper procWrapper;
+            procWrapper = ProcessWrapper.of(process);
             procWrapper.setName(runConfig.getConfigName());
             processLogsService.observeProcess(procWrapper);
             metricsService.observeProcess(procWrapper);
