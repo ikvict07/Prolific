@@ -222,12 +222,18 @@
 .filled-chart-green .default-color0.chart-series-area-fill {
     -fx-fill: rgba(137, 195, 152, 0.5);
 }
+.filled-chart-green .chart-area-symbol {
+    -fx-background-color: #369650;
+}
 
 .filled-chart-blue .chart-series-area-line {
     -fx-stroke: #3574F0;
 }
 .filled-chart-blue .default-color0.chart-series-area-fill {
     -fx-fill: rgba(88, 140, 243, 0.5);
+}
+.filled-chart-blue .chart-area-symbol {
+    -fx-background-color: #3574F0;
 }
 
 .label {
@@ -412,12 +418,6 @@
 .scroll-pane .corner {
     -fx-background-color: transparent;
 }
-
-/*.scroll-bar-metrics .increment-button,*/
-/*.scroll-bar-metrics .decrement-button {*/
-/*    -fx-background-color: #2B2D30;*/
-/*    -fx-padding: 0;*/
-/*}*/
 
 .scroll-bar-metrics {
     -fx-fill: #2B2D30;

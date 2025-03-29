@@ -1,7 +1,6 @@
 package org.nevertouchgrass.prolific.components;
 
 import javafx.application.Platform;
-import javafx.event.Event;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -36,8 +35,6 @@ public class MetricsChartComponent extends VBox {
     private long viewStartIndex = 0;
 
     private ScrollBar scrollBar;
-    private AreaChart<String, Number> cpuChart;
-    private AreaChart<String, Number> memoryChart;
 
     public MetricsChartComponent(MetricsService metricsService, ProcessWrapper process) {
         setMaxWidth(Double.MAX_VALUE);
@@ -48,7 +45,6 @@ public class MetricsChartComponent extends VBox {
         createScrollBar();
 
         setupMetricEventHandler();
-        disableTouchpadScrolling();
 
 
         if (metricsService != null && process != null) {
@@ -63,10 +59,10 @@ public class MetricsChartComponent extends VBox {
         yCpuAxis = new NumberAxis("CPU %", 0, maxCpuUsage, 50);
         yCpuAxis.setAutoRanging(false);
 
-        cpuChart = new AreaChart<>(xCpuAxis, yCpuAxis);
+        AreaChart<String, Number> cpuChart = new AreaChart<>(xCpuAxis, yCpuAxis);
         cpuChart.getData().add(cpuSeries);
         cpuChart.setLegendVisible(false);
-        cpuChart.setCreateSymbols(false);
+        cpuChart.setCreateSymbols(true);
         cpuChart.getStyleClass().add("chart-plot-background");
         cpuChart.setHorizontalGridLinesVisible(false);
         cpuChart.setVerticalGridLinesVisible(false);
@@ -81,10 +77,10 @@ public class MetricsChartComponent extends VBox {
         yMemAxis = new NumberAxis("RAM (MB)", 0, 1000, 100);
         yMemAxis.setAutoRanging(false);
 
-        memoryChart = new AreaChart<>(xMemAxis, yMemAxis);
+        AreaChart<String, Number> memoryChart = new AreaChart<>(xMemAxis, yMemAxis);
         memoryChart.getData().add(memorySeries);
         memoryChart.setLegendVisible(false);
-        memoryChart.setCreateSymbols(false);
+        memoryChart.setCreateSymbols(true);
         memoryChart.getStyleClass().add("chart-plot-background");
         memoryChart.getStyleClass().add("filled-chart-blue");
         memoryChart.setHorizontalGridLinesVisible(false);
@@ -183,18 +179,6 @@ public class MetricsChartComponent extends VBox {
             hoverTimer.stop();
         });
 
-        chart.setOnScroll(Event::consume);
-
-
-    }
-
-    private void disableTouchpadScrolling() {
-        this.setOnScroll(Event::consume);
-
-        cpuChart.setOnScroll(Event::consume);
-        memoryChart.setOnScroll(Event::consume);
-
-        scrollBar.getParent().setOnScroll(Event::consume);
     }
 
 
