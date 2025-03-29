@@ -4,6 +4,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
@@ -21,6 +22,8 @@ public class MainScreenController {
 
     @FXML
     public AnchorPane mainScreen;
+    @FXML
+    public VBox logsAndMetricsPanel;
 
     @Initialize
     public void init() {
@@ -28,6 +31,5 @@ public class MainScreenController {
         ChangeListener<Number> block2 = (observable, oldValue, newValue) -> mainScreen.setPrefHeight(newValue.doubleValue());
         stage.widthProperty().addListener(block1);
         stage.heightProperty().addListener(block2);
-        projectsPanel.prefWidthProperty().bind(stage.widthProperty().multiply(0.5));
     }
 }

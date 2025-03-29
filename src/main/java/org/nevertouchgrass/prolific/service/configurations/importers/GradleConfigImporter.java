@@ -27,5 +27,6 @@ public class GradleConfigImporter extends BuildToolConfigImporter {
     public void normalize(RunConfig runConfig) {
         super.normalize(runConfig);
         runConfig.getCommand().addFirst("./gradlew");
+        runConfig.getCommand().addLast("--no-daemon");
     }
 }

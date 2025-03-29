@@ -15,16 +15,9 @@ import java.util.function.Consumer;
 public class ProcessMetrics {
     private List<Metric> metrics = Collections.synchronizedList(new ArrayList<>());
     private LocalDateTime startTime;
-    private final List<Consumer<Metric>> onAddListeners = new CopyOnWriteArrayList<>();
-
 
     public void addMetric(Metric metric) {
         metrics.add(metric);
-        onAddListeners.forEach(listener -> listener.accept(metric));
-    }
-
-    public void registerOnAddListener(Consumer<Metric> consumer) {
-        onAddListeners.add(consumer);
     }
 
     public void setStartTime(long startTime) {

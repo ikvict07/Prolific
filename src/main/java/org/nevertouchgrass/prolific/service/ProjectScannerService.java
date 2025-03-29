@@ -3,7 +3,7 @@ package org.nevertouchgrass.prolific.service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
@@ -117,12 +117,10 @@ public class ProjectScannerService {
     /**
      * Cancel the current scanning operation.
      * Has no effect if no scanning is in progress.
-     *
-     * @return true if scanning was cancelled, false if no scanning was in progress
      */
-    public boolean cancelScanning() {
+    public void cancelScanning() {
         if (!isScanning) {
-            return false;
+            return;
         }
 
         isScanningCancelled.set(true);
@@ -134,7 +132,6 @@ public class ProjectScannerService {
 
         notificationService.notifyInfo(new InfoNotification("Scanning cancelled"));
         log.info("Scanning cancelled by user");
-        return true;
     }
 
     /**
@@ -148,7 +145,11 @@ public class ProjectScannerService {
 
     private void addProject(Set<Path> where, Path path) {
         try {
-            where.add(path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS));
+            var dir = path.getParent().toRealPath(LinkOption.NOFOLLOW_LINKS);
+            if (dir.equals(Path.of(System.getProperty("user.home")))) {
+                return;
+            }
+            where.add(dir);
         } catch (IOException e) {
             log.error("{}", e.getMessage());
         }
@@ -158,8 +159,8 @@ public class ProjectScannerService {
         final Set<Path> projects = ConcurrentHashMap.newKeySet();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        try {
-            var subDirs = Files.list(root).toList();
+        try (var subDirsStream = Files.list(root)){
+            var subDirs = subDirsStream.toList();
             executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
             List<Future<?>> futures = new ArrayList<>();
@@ -179,7 +180,6 @@ public class ProjectScannerService {
                                 if (isScanningCancelled.get()) {
                                     return FileVisitResult.TERMINATE;
                                 }
-
                                 if (excludeMatcher.matches(file) && !pathMatcher.matches(file)) {
                                     return FileVisitResult.CONTINUE;
                                 }

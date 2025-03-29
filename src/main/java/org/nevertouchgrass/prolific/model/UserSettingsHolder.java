@@ -1,10 +1,9 @@
-package org.nevertouchgrass.prolific.configuration;
+package org.nevertouchgrass.prolific.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
-import org.nevertouchgrass.prolific.model.Project;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ public class UserSettingsHolder {
     private LocalDateTime lastScanDate = LocalDateTime.now().minusYears(100);
     private Integer rescanEveryHours;
     private List<Project> userProjects;
-    private Integer maximumProjectDepth;
+    private Integer maximumProjectDepth = 6;
     private List<String> excludedDirs;
 
     public void load(UserSettingsHolder userSettingsHolder) {

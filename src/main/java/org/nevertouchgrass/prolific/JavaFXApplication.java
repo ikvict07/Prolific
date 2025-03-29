@@ -57,18 +57,6 @@ public class JavaFXApplication implements ApplicationRunner {
             applicationEventPublisher.publishEvent(new JavaFxStartEvent(this));
             primaryStage.initStyle(StageStyle.TRANSPARENT);
             primaryStage.setTitle("Prolific");
-//            InputStream iconStream = getClass().getResourceAsStream("/icons/png/icon.png");
-//            var img = new Image(iconStream);
-//            primaryStage.getIcons().add(img);
-//            if (Taskbar.isTaskbarSupported()) {
-//                var taskbar = Taskbar.getTaskbar();
-//                if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
-//                    final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-//                    var dockIcon = defaultToolkit.getImage(getClass().getResource("/icons/png/icon.png"));
-//                    taskbar.setIconImage(dockIcon);
-//
-//                }
-//            }
             Scene scene = new Scene(mainScreenParent, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
 

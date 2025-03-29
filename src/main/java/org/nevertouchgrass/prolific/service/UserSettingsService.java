@@ -5,7 +5,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;

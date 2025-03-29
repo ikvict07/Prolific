@@ -43,7 +43,8 @@ dependencies {
     implementation(libs.jacksonTypes)
     implementation(libs.sqlite)
     implementation(libs.hikari)
-
+    implementation(libs.reactor)
+    implementation(libs.richtext)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
@@ -225,6 +226,6 @@ tasks.installDist {
     enabled = false
 }
 
-tasks.bootJar {
-    dependsOn(tasks.test)
-}
+//tasks.bootJar {
+//    dependsOn(tasks.test)
+//}

@@ -26,6 +26,27 @@ public class ColorService {
         return String.format("#%02X%02X%02X", red, green, blue);
     }
 
+    public String generateGradientBoxStyle(String baseColor) {
+        String highlightColor = generateSimilarBrightPastelColor(baseColor);
+
+        return String.format(
+                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, transparent 0%%, %4s99 30%%, transparent 100%%);",
+                highlightColor);
+    }
+
+    public String extractPrimaryColor(String style) {
+        int startIndex = style.indexOf("#");
+        int endIndex = style.indexOf(" ", startIndex);
+        return style.substring(startIndex, endIndex);
+    }
+
+    public String generateRandomColorStyle() {
+        String color1 = generateBrightPastelColor();
+        String color2 = generateSimilarBrightPastelColor(color1);
+
+        return String.format("-fx-background-color: linear-gradient(to bottom, %s 0%%, %s 100%%);", color1, color2);
+    }
+
     public String generateSimilarBrightPastelColor(String baseColor) {
         int red;
         int green;
