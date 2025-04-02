@@ -8,8 +8,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.constants.action.ExcludeProjectAction;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
+import org.nevertouchgrass.prolific.service.ProjectExcluderService;
+import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
+import org.nevertouchgrass.prolific.service.permissions.contract.PermissionChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,10 +35,23 @@ public class ProjectSettingDropdownController {
     public VBox root;
     @FXML
     public Label openInExplorerButton;
+    @FXML
+    public Label excludeProjectButton;
     private Project project;
 
     private ProjectsRepository projectsRepository;
+    private PermissionRegistry permissionRegistry;
+    private ProjectExcluderService projectExcluderService;
 
+    @Autowired
+    public void setPermissionRegistry(PermissionRegistry permissionRegistry) {
+        this.permissionRegistry = permissionRegistry;
+    }
+
+    @Autowired
+    public void setProjectExcluderService(ProjectExcluderService projectExcluderService) {
+        this.projectExcluderService = projectExcluderService;
+    }
 
     @Autowired
     public void setProjectsRepository(ProjectsRepository projectsRepository) {
@@ -70,7 +87,7 @@ public class ProjectSettingDropdownController {
 
         contextMenu.getItems().clear();
         starButton.setText((Boolean.TRUE.equals(project.getIsStarred()) ? "Unstar" : "Star"));
-
+        excludeProjectButton.setVisible(checkPermission());
         for (Node node : root.getChildren()) {
             MenuItem menuItem = new MenuItem(((Label) node).getText());
             if (((Label) node).getGraphic() != null) {
@@ -79,5 +96,23 @@ public class ProjectSettingDropdownController {
             menuItem.setOnAction(_ -> node.getOnMouseClicked().handle(null));
             contextMenu.getItems().add(menuItem);
         }
+    }
+
+    private boolean checkPermission() {
+        var action = new ExcludeProjectAction(project);
+        var checker = permissionRegistry.getChecker(action.getClass());
+        if (checker != null) {
+            @SuppressWarnings("unchecked")
+            PermissionChecker<ExcludeProjectAction> castedChecker =
+                    (PermissionChecker<ExcludeProjectAction>) checker;
+            return castedChecker.hasPermission(action);
+        } else {
+            log.error("No permission checker found for action {}", action.getClass().getName());
+            return false;
+        }
+    }
+
+    public void excludeProject() {
+        projectExcluderService.excludeProject(new ExcludeProjectAction(project));
     }
 }

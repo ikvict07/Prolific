@@ -206,4 +206,25 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
         }
     }
 
+    @Override
+    @SneakyThrows
+    public T delete(T t) {
+        try {
+            var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
+            var id = t.getClass().getDeclaredField("id");
+            id.setAccessible(true);
+            var idValue = (Integer) id.get(t);
+            var query = "DELETE FROM " + tableName + " WHERE id = ?";
+            log.info("Executing query: {}", query);
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, idValue);
+                preparedStatement.executeUpdate();
+            }
+            log.info("Deleted: {}", t);
+        } catch (Exception e) {
+            log.error("Error while deleting entity: {}", t, e);
+            throw e;
+        }
+        return t;
+    }
 }
