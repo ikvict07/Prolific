@@ -432,7 +432,7 @@
 .scroll-bar-metrics .increment-arrow,
 .scroll-bar-metrics .decrement-arrow {
     -fx-shape: " ";
-    -fx-padding: 0 0.25em;
+    -fx-padding: 0.1em 0.25em;
 }
 .scroll-bar-metrics .thumb:pressed,
 .scroll-bar-metrics .thumb:hover {
@@ -444,6 +444,10 @@
 }
 
 
+.scroll-bar .increment-button:hover,
+.scroll-bar .decrement-button:hover {
+    -fx-background-color: transparent;
+}
 
 /** {*/
 /*    -fx-border-width: 1px;*/

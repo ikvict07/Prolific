@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import lombok.Data;
 import lombok.NonNull;
@@ -142,6 +143,8 @@ public class ProjectPanelController {
             projectsRepository.update(project);
         });
         Tooltip tooltip = new Tooltip(project.getPath());
+        tooltip.setShowDelay(Duration.millis(300));
+        tooltip.setHideDelay(Duration.millis(0));
         projectTitleText.setTooltip(tooltip);
     }
 
