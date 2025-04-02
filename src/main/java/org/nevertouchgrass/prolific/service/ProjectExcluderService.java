@@ -28,7 +28,8 @@ public class ProjectExcluderService {
                     (PermissionChecker<ExcludeProjectAction>) permissionChecker;
 
             if (castedChecker.hasPermission(action)) {
-                userSettingsHolder.getExcludedDirs().add(action.project().getPath());
+                var pathTOExclude = action.project().getPath();
+                userSettingsHolder.getExcludedDirs().add(formatPath(pathTOExclude));
                 userSettingsService.saveSettings();
                 projectsRepository.delete(action.project());
                 notificationService.notifyInfo(InfoNotification.of("{} excluded", action.project().getTitle()));
@@ -36,6 +37,14 @@ public class ProjectExcluderService {
                 notificationService.notifyInfo(new InfoNotification("You don't have permission to exclude this project"));
             }
         }
+    }
 
+    private String formatPath(String path) {
+        var os = System.getProperty("os.name");
+        if (os.toLowerCase().contains("win")) {
+            return path.substring(3);
+        } else {
+            return path.substring(1);
+        }
     }
 }
