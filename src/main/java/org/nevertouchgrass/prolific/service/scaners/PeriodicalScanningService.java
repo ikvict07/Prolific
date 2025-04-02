@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service;
+package org.nevertouchgrass.prolific.service.scaners;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -7,6 +7,7 @@ import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
+import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;

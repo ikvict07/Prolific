@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service;
+package org.nevertouchgrass.prolific.service.configurations;
 
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class GradleTasksManager {
             var output = process.getInputStream();
             var reader = new java.io.BufferedReader(new java.io.InputStreamReader(output));
             var tasks = reader.lines().toList();
-            return tasks.stream().filter(this::filterGradleTasks).map((t) -> t.split("\\s-\\s")[0]).toList();
+            return tasks.stream().filter(this::filterGradleTasks).map(t -> t.split("\\s-\\s")[0]).toList();
         } catch (Exception e) {
             return List.of();
         }

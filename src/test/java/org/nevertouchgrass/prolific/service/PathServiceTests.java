@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.nevertouchgrass.prolific.BackendTestBase;
+import org.nevertouchgrass.prolific.service.settings.PathService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;

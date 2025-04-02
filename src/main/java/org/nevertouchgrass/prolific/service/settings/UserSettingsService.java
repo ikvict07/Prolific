@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service;
+package org.nevertouchgrass.prolific.service.settings;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jakarta.annotation.PostConstruct;

@@ -18,7 +18,7 @@ public class ServiceExceptionHandler {
     @Lazy
     private final NotificationService notificationService;
 
-    @Around("execution(* org.nevertouchgrass.prolific.service.*.*(..)) && !execution(* org.nevertouchgrass.prolific.service.UserSettingsService(..))")
+    @Around("execution(* org.nevertouchgrass.prolific.service.*.*(..)) && !execution(* org.nevertouchgrass.prolific.service.settings.UserSettingsService(..))")
     public Object handleException(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();

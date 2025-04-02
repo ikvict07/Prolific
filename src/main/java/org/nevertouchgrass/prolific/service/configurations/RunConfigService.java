@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service;
+package org.nevertouchgrass.prolific.service.configurations;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.Data;
@@ -9,6 +9,7 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
 import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.model.RunConfigFileModel;
+import org.nevertouchgrass.prolific.service.settings.PathService;
 import org.nevertouchgrass.prolific.service.configurations.importers.ConfigImporterStrategy;
 import org.springframework.stereotype.Service;
 

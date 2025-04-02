@@ -28,6 +28,7 @@ import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.*;
+import org.nevertouchgrass.prolific.service.configurations.RunConfigService;
 import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
@@ -79,7 +80,6 @@ public class ProjectPanelController {
     private Stage primaryStage;
     private ColorService colorService;
 
-    private AnchorPaneConstraintsService anchorPaneConstraintsService;
     private ProjectsRepository projectsRepository;
     private ProjectTypeIconRegistry projectTypeIconRegistry;
 
@@ -236,10 +236,9 @@ public class ProjectPanelController {
 
 
     @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Pair<ProjectSettingDropdownController, ContextMenu> projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry, NotificationService notificationService, DefaultProjectRunner projectRunner, FxmlProvider fxmlProvider, ProcessService processService) {
+    private void set(Stage primaryStage, ColorService colorService, ProjectsRepository projectsRepository, Pair<ProjectSettingDropdownController, ContextMenu> projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry, NotificationService notificationService, DefaultProjectRunner projectRunner, FxmlProvider fxmlProvider, ProcessService processService) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
-        this.anchorPaneConstraintsService = anchorPaneConstraintsService;
         this.projectsRepository = projectsRepository;
         this.projectSettingsPopup = projectSettingsPopup.getValue();
         this.projectSettingsDropdownController = projectSettingsPopup.getKey();

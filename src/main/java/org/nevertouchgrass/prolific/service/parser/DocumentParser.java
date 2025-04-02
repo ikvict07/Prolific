@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service;
+package org.nevertouchgrass.prolific.service.parser;
 
 import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.model.RunConfig;
