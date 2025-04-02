@@ -29,8 +29,8 @@ import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.*;
 import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
-import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
+import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,16 +102,15 @@ public class ProjectPanelController {
     private ProjectsService projectsService;
 
     public void init() {
-        String iconColorStyle = colorService.generateRandomColorStyle();
+        String iconColorStyle = colorService.generateRandomColorStyle(colorService.getSeedForProject(project));
         projectIcon.setStyle(iconColorStyle);
 
         String baseColor = colorService.extractPrimaryColor(iconColorStyle);
-        projectInfo.setStyle(colorService.generateGradientBoxStyle(baseColor));
+        projectInfo.setStyle(colorService.generateGradientBoxStyle(baseColor, colorService.getSeedForProject(project)));
         projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.8));
         configurationName.maxWidthProperty().bind(projectInfo.widthProperty().multiply(0.3));
 
         projectRunConfigs = runConfigService.getAllRunConfigs(project);
-
 
         contextMenu = new ContextMenu();
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
@@ -146,6 +145,7 @@ public class ProjectPanelController {
         tooltip.setShowDelay(Duration.millis(300));
         tooltip.setHideDelay(Duration.millis(0));
         projectTitleText.setTooltip(tooltip);
+        init();
     }
 
 

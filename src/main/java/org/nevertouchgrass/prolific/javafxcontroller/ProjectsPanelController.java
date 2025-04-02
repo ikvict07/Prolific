@@ -147,7 +147,6 @@ public class ProjectsPanelController {
         var parent = resource.getParent();
         parent.getProperties().put(PROJECT_KEY, project);
         content.getChildren().add(index, parent);
-        controller.init();
     }
 
     private String getIconTextFromTitle(String title) {
