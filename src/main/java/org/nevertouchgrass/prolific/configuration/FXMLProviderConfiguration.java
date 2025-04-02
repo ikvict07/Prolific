@@ -26,7 +26,17 @@ public class FXMLProviderConfiguration {
 
     @Bean
     public FxmlProvider fxmlProvider() {
-        return this::load;
+        return new FxmlProvider() {
+            @Override
+            public <T> FxmlLoadedResource<T> getFxmlResource(String parentName) {
+                return load(parentName);
+            }
+
+            @Override
+            public Parent getIcon(String parentName) {
+                return getParent(parentName);
+            }
+        };
     }
 
     @SneakyThrows
@@ -39,6 +49,15 @@ public class FXMLProviderConfiguration {
             parent.getProperties().put("controller", loader.getController());
             T controller = loader.getController();
             return new FxmlLoadedResource<>(parent, controller);
+        }
+        throw new FileNotFoundException("Couldn't find " + parentName);
+    }
+
+    @SneakyThrows
+    private Parent getParent(String parentName) {
+        List<String> xmls = FxmlUtilService.getIconNames(configurationProperties);
+        if (xmls.contains(parentName)) {
+            return FxmlUtilService.loadIcon(parentName, configurationProperties, context);
         }
         throw new FileNotFoundException("Couldn't find " + parentName);
     }

@@ -25,6 +25,7 @@ public class GradleTaskRunConfigurationCreator implements RunConfigurationCreato
         command.add("./gradlew");
         command.add(description.getTaskName());
         command.addAll(description.getOptions());
+        command.add("--no-daemon");
         runConfig.setCommand(command);
         runConfig.setType("Gradle");
         runConfig.setConfigName(description.getTitle());

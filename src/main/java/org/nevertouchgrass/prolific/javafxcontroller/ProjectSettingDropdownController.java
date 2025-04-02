@@ -47,20 +47,22 @@ public class ProjectSettingDropdownController {
     }
 
     public void openInExplorer() {
-        try {
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-                File file = Path.of(project.getPath()).toFile();
-                if (file.exists()) {
-                    Desktop.getDesktop().open(file);
+        new Thread(() -> {
+            try {
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+                    File file = Path.of(project.getPath()).toFile();
+                    if (file.exists()) {
+                        Desktop.getDesktop().open(file);
+                    } else {
+                        log.error("Path does not exist: {}", project.getPath());
+                    }
                 } else {
-                    log.error("Path does not exist: {}", project.getPath());
+                    log.error("Desktop is not supported");
                 }
-            } else {
-                log.error("Desktop is not supported");
+            } catch (IOException e) {
+                log.error("Error opening file in explorer: {}", e.getMessage());
             }
-        } catch (IOException e) {
-            log.error("Error opening file in explorer: {}", e.getMessage());
-        }
+        }).start();
     }
 
     public void setProject(Project project, ContextMenu contextMenu) {

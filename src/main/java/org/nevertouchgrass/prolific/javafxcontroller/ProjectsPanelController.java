@@ -8,17 +8,16 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
-import org.nevertouchgrass.prolific.annotation.StageComponent;
-import org.nevertouchgrass.prolific.configuration.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.service.searching.comparators.ProjectComparatorBuilder;
 import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +26,9 @@ import org.springframework.stereotype.Controller;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 
 @Controller
-@StageComponent("primaryStage")
 @SuppressWarnings("unused")
 @Getter
 @Setter
@@ -41,7 +38,6 @@ public class ProjectsPanelController {
     private ScrollPane scrollPane;
     @FXML
     private VBox content;
-    private Stage stage;
     @FXML
     private Region upperShadow;
     @FXML
@@ -54,7 +50,7 @@ public class ProjectsPanelController {
 
     private Predicate<Project> filterFunction = ProjectFilterService.getDefaultFilter();
     private Comparator<Project> projectComparator = ProjectComparatorBuilder.getDefault();
-    private Set<Project> beforeFiltering = Set.of();
+    private ProcessService processService;
 
     @Initialize
     private void init() {
@@ -87,9 +83,8 @@ public class ProjectsPanelController {
 
     private void updateContent() {
         content.getChildren().clear();
-        beforeFiltering.forEach(this::addProjectToList);
+        projectsService.getProjects().forEach(this::addProjectToList);
     }
-
 
 
     private void setupScrollBarFadeEffect() {
@@ -152,7 +147,6 @@ public class ProjectsPanelController {
         var parent = resource.getParent();
         parent.getProperties().put(PROJECT_KEY, project);
         content.getChildren().add(index, parent);
-        controller.init();
     }
 
     private String getIconTextFromTitle(String title) {
@@ -165,10 +159,11 @@ public class ProjectsPanelController {
     }
 
     @Autowired
-    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder, ProjectsRepository projectsRepository, ProjectsService projectsService) {
+    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder, ProjectsRepository projectsRepository, ProjectsService projectsService, ProcessService processService) {
         this.fxmlProvider = fxmlProvider;
         this.userSettingsHolder = userSettingsHolder;
         this.projectsRepository = projectsRepository;
         this.projectsService = projectsService;
+        this.processService = processService;
     }
 }
