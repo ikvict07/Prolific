@@ -1,6 +1,6 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
-import org.nevertouchgrass.prolific.service.PeriodicalScanningService;
+import org.nevertouchgrass.prolific.service.scaners.PeriodicalScanningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

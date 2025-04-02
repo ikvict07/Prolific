@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.BackendTestBase;
+import org.nevertouchgrass.prolific.service.scaners.ProjectScannerService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;

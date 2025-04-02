@@ -17,4 +17,10 @@
         </graphic>
         Open directory
     </Label>
+    <Label fx:id="excludeProjectButton" onMouseClicked="#excludeProject" textAlignment="JUSTIFY">
+        <graphic>
+            <fx:include source="/icons/fxml/exclude.fxml"/>
+        </graphic>
+        Exclude project
+    </Label>
 </VBox>

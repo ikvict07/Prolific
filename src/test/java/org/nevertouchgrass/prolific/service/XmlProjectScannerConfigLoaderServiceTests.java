@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.BackendTestBase;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
+import org.nevertouchgrass.prolific.service.settings.XmlProjectScannerConfigLoaderService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;

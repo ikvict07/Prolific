@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.service;
+package org.nevertouchgrass.prolific.service.scaners;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
+import org.nevertouchgrass.prolific.service.settings.XmlProjectScannerConfigLoaderService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +46,7 @@ public class ProjectResolver {
     @SneakyThrows
     public Project resolveProject(Path path, int depth) {
         for (var projectTypeModel : projectTypeModels) {
-            Visitor visitor = new Visitor(projectTypeModel, userSettingsHolder, excludeMatcher, depth);
+            Visitor visitor = new Visitor(projectTypeModel, excludeMatcher, depth);
             Files.walkFileTree(path, visitor);
             if (visitor.getProject().getType() != null) {
                 Project project = visitor.getProject();
@@ -72,7 +73,7 @@ class Visitor extends SimpleFileVisitor<Path> {
     private final PathMatcher excludeMatcher;
     private final int maxDepth;
 
-    Visitor(ProjectTypeModel projectTypeModel, UserSettingsHolder userSettingsHolder, PathMatcher excludeMatcher, int maxDepth) {
+    Visitor(ProjectTypeModel projectTypeModel, PathMatcher excludeMatcher, int maxDepth) {
         this.projectTypeModel = projectTypeModel;
         this.excludeMatcher = excludeMatcher;
         List<String> identifiers = projectTypeModel.getIdentifiers();
