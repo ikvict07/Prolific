@@ -15,14 +15,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getFieldPairs;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getFindAllQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getFindByIdQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getInsertQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getTableName;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getUpdateQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.prepareInsertQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.toSnakeCase;
+import static org.nevertouchgrass.prolific.repository.RepositoryUtils.*;
 
 /**
  * Simple implementation of a basic repository.
@@ -214,7 +207,7 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
             var id = t.getClass().getDeclaredField("id");
             id.setAccessible(true);
             var idValue = (Integer) id.get(t);
-            var query = "DELETE FROM " + tableName + " WHERE id = ?";
+            var query = getDeleteQuery(tableName);
             log.info("Executing query: {}", query);
             try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, idValue);
