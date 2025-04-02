@@ -84,11 +84,11 @@ public class ProjectPanelController {
     private RunConfig chosenConfig = null;
 
     public void init() {
-        String iconColorStyle = generateRandomColorStyle();
+        String iconColorStyle = colorService.generateRandomColorStyle(colorService.getSeedForProject(project));
         projectIcon.setStyle(iconColorStyle);
 
-        String baseColor = extractPrimaryColor(iconColorStyle);
-        projectInfo.setStyle(generateGradientBoxStyle(baseColor));
+        String baseColor = colorService.extractPrimaryColor(iconColorStyle);
+        projectInfo.setStyle(colorService.generateGradientBoxStyle(baseColor, colorService.getSeedForProject(project)));
         projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.8));
         configurationName.maxWidthProperty().bind(projectInfo.widthProperty().multiply(0.3));
 
@@ -102,27 +102,6 @@ public class ProjectPanelController {
         generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
     }
 
-
-    private String generateGradientBoxStyle(String baseColor) {
-        String highlightColor = colorService.generateSimilarBrightPastelColor(baseColor);
-
-        return String.format(
-                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, transparent 0%%, %4s99 30%%, transparent 100%%);",
-                highlightColor);
-    }
-
-    private String extractPrimaryColor(String style) {
-        int startIndex = style.indexOf("#");
-        int endIndex = style.indexOf(" ", startIndex);
-        return style.substring(startIndex, endIndex);
-    }
-
-    private String generateRandomColorStyle() {
-        String color1 = colorService.generateBrightPastelColor();
-        String color2 = colorService.generateSimilarBrightPastelColor(color1);
-
-        return String.format("-fx-background-color: linear-gradient(to bottom, %s 0%%, %s 100%%);", color1, color2);
-    }
 
     @Autowired
     private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Pair<ProjectSettingDropdownController, ContextMenu> projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry) {
@@ -145,6 +124,7 @@ public class ProjectPanelController {
             star.setVisible(false);
             projectsRepository.update(project);
         });
+        init();
     }
 
 
