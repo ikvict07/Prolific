@@ -69,7 +69,7 @@ public class FooterController implements NotificationListener<Notification> {
     private void onErrorNotification(ErrorNotification notification) {
         Platform.runLater(() -> {
             this.notification.setText(notification.getPayload().message());
-            this.notification.setStyle("-fx-text-fill: red;");
+            this.notification.setStyle("-fx-text-fill: #DB5C5C;");
         });
     }
 

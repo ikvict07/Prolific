@@ -3,11 +3,13 @@ package org.nevertouchgrass.prolific.service;
 import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.constants.action.ExcludeProjectAction;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
 import org.nevertouchgrass.prolific.service.permissions.contract.PermissionChecker;
+import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ public class ProjectExcluderService {
     private final PermissionRegistry permissionRegistry;
     private final NotificationService notificationService;
     private final ProjectsRepository projectsRepository;
+    private final ProcessService processService;
 
     public void excludeProject(ExcludeProjectAction action) {
         var permissionChecker = permissionRegistry.getChecker(action.getClass());
@@ -28,6 +31,10 @@ public class ProjectExcluderService {
                     (PermissionChecker<ExcludeProjectAction>) permissionChecker;
 
             if (castedChecker.hasPermission(action)) {
+                if (!processService.getObservableLiveProcesses().get(action.project()).isEmpty()) {
+                    notificationService.notifyError(ErrorNotification.of(null, "You can't exclude while process is running"));
+                    return;
+                }
                 var pathTOExclude = action.project().getPath();
                 userSettingsHolder.getExcludedDirs().add(formatPath(pathTOExclude));
                 userSettingsService.saveSettings();
