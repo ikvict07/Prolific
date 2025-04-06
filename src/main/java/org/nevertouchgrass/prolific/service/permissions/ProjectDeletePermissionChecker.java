@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class ProjectDeletePermissionChecker extends DefaultActionPermissionChecker<DeleteProjectAction> {
     @Override
     public boolean hasPermission(DeleteProjectAction action) {
-        return false;
+        return true;
     }
 
     @Override

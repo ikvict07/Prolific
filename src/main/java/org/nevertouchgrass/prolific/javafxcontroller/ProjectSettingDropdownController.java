@@ -8,9 +8,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.constants.action.DeleteProjectAction;
 import org.nevertouchgrass.prolific.constants.action.ExcludeProjectAction;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
+import org.nevertouchgrass.prolific.service.ProjectDeleteService;
 import org.nevertouchgrass.prolific.service.ProjectExcluderService;
 import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
 import org.nevertouchgrass.prolific.service.permissions.contract.PermissionChecker;
@@ -37,11 +39,19 @@ public class ProjectSettingDropdownController {
     public Label openInExplorerButton;
     @FXML
     public Label excludeProjectButton;
+    @FXML
+    public Label deleteProjectButton;
     private Project project;
 
     private ProjectsRepository projectsRepository;
     private PermissionRegistry permissionRegistry;
     private ProjectExcluderService projectExcluderService;
+    private ProjectDeleteService projectDeleteService;
+
+    @Autowired
+    public void setProjectDeleteService(ProjectDeleteService projectDeleteService) {
+        this.projectDeleteService = projectDeleteService;
+    }
 
     @Autowired
     public void setPermissionRegistry(PermissionRegistry permissionRegistry) {
@@ -87,8 +97,10 @@ public class ProjectSettingDropdownController {
 
         contextMenu.getItems().clear();
         starButton.setText((Boolean.TRUE.equals(project.getIsStarred()) ? "Unstar" : "Star"));
-        excludeProjectButton.setVisible(checkPermission());
+        excludeProjectButton.setVisible(checkExcludePermission());
+        deleteProjectButton.setVisible(checkDeletePermission());
         for (Node node : root.getChildren()) {
+            if (!node.isVisible()) continue;
             MenuItem menuItem = new MenuItem(((Label) node).getText());
             if (((Label) node).getGraphic() != null) {
                 menuItem.setGraphic(((Label) node).getGraphic());
@@ -98,7 +110,7 @@ public class ProjectSettingDropdownController {
         }
     }
 
-    private boolean checkPermission() {
+    private boolean checkExcludePermission() {
         var action = new ExcludeProjectAction(project);
         var checker = permissionRegistry.getChecker(action.getClass());
         if (checker != null) {
@@ -111,8 +123,25 @@ public class ProjectSettingDropdownController {
             return false;
         }
     }
+    private boolean checkDeletePermission() {
+        var action = new DeleteProjectAction(project);
+        var checker = permissionRegistry.getChecker(action.getClass());
+        if (checker != null) {
+            @SuppressWarnings("unchecked")
+            PermissionChecker<DeleteProjectAction> castedChecker =
+                    (PermissionChecker<DeleteProjectAction>) checker;
+            return castedChecker.hasPermission(action);
+        } else {
+            log.error("No permission checker found for action {}", action.getClass().getName());
+            return false;
+        }
+    }
 
     public void excludeProject() {
         projectExcluderService.excludeProject(new ExcludeProjectAction(project));
+    }
+
+    public void deleteProject() {
+        projectDeleteService.deleteProject(new DeleteProjectAction(project));
     }
 }
