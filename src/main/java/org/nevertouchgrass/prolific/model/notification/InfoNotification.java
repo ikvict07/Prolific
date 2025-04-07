@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.model.notification;
 
 import lombok.ToString;
+import org.nevertouchgrass.prolific.model.notification.contract.Notification;
 
 @ToString
 public class InfoNotification implements Notification {
