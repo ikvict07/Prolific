@@ -228,3 +228,7 @@ tasks.installDist {
 tasks.bootJar {
     dependsOn(tasks.test)
 }
+
+tasks.test {
+    outputs.upToDateWhen { false }
+}

@@ -1,17 +1,21 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import org.nevertouchgrass.prolific.localization.LocalizationBinding;
-import org.nevertouchgrass.prolific.localization.LocalizationManager;
+import javafx.scene.control.Label;
+import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
+import org.nevertouchgrass.prolific.model.notification.InfoNotification;
+import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.nevertouchgrass.prolific.service.PeriodicalScanningService;
+import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import javafx.scene.control.Label;
 import java.util.Locale;
 
 @Component
+@Log4j2
 public class SettingsDropdownController {
     @FXML
     private Label settingsLabel;
@@ -20,25 +24,25 @@ public class SettingsDropdownController {
     @FXML
     private Label pluginsLabel;
 
-    @Autowired
-    private LocalizationBinding localizationBinding;
-
-    @Autowired
-    private LocalizationManager localizationManager;
-
+    private LocalizationHolder localizationHolder;
+    private ApplicationEventPublisher applicationEventPublisher;
     private PeriodicalScanningService periodicalScanningService;
+    private NotificationService notificationService;
 
     @FXML
     public void initialize() {
-        settingsLabel.textProperty().bind(localizationBinding.settingsProperty());
-        scanLabel.textProperty().bind(localizationBinding.scanProperty());
-        pluginsLabel.textProperty().bind(localizationBinding.pluginsProperty());
+        settingsLabel.textProperty().bind(localizationHolder.getLocalization("settings"));
+        scanLabel.textProperty().bind(localizationHolder.getLocalization("scanner"));
+        pluginsLabel.textProperty().bind(localizationHolder.getLocalization("plugins"));
     }
 
 
     @Autowired
-    public void set(PeriodicalScanningService periodicalScanningService) {
+    public void set(PeriodicalScanningService periodicalScanningService, LocalizationHolder localizationHolder, ApplicationEventPublisher applicationEventPublisher, NotificationService notificationService) {
         this.periodicalScanningService = periodicalScanningService;
+        this.localizationHolder = localizationHolder;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.notificationService = notificationService;
     }
 
     public void rescan() {
@@ -46,8 +50,8 @@ public class SettingsDropdownController {
     }
 
     public void changeLanguage() {
-        localizationManager.setLocale(Locale.forLanguageTag("sk"));
-        localizationBinding.updateLanguage();
-        System.out.println("Updated settings text: " + settingsLabel.getText());
+        applicationEventPublisher.publishEvent(new LocalizationChangeEvent(this, Locale.forLanguageTag("sk")));
+        log.info("Language changed to Slovak");
+        notificationService.notifyInfo(InfoNotification.of("Language changed to Slovak"));
     }
 }

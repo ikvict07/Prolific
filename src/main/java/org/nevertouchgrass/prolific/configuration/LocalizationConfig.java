@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.localization;
+package org.nevertouchgrass.prolific.configuration;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

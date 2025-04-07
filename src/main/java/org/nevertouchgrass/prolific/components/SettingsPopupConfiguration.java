@@ -40,7 +40,8 @@ public class SettingsPopupConfiguration {
     private ContextMenu getContextMenu(ContextMenu contextMenu, FxmlLoadedResource<Object> options) {
         for (Node node : options.getParent().getChildrenUnmodifiable()) {
             Label label = (Label) node;
-            MenuItem menuItem = new MenuItem(label.getText());
+            MenuItem menuItem = new MenuItem();
+            menuItem.textProperty().bind(label.textProperty());
             menuItem.setGraphic(label.getGraphic());
             menuItem.setOnAction(_ -> node.getOnMouseClicked().handle(null));
             contextMenu.getItems().addAll(menuItem);
