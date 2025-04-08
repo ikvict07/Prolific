@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.javaFx)
     alias(libs.plugins.beryx)
     alias(libs.plugins.maven.publish)
+    alias(libs.plugins.generate.localization.provider)
 }
 
 group = "org.nevertouchgrass"

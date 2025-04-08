@@ -12,13 +12,14 @@ hikari = "6.2.1"
 beryx = "1.12.2"
 reactor = "3.7.4"
 richtext = "0.11.4"
+lombok = "1.18.38"
 
 [libraries]
 springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
 springBoot = { module = "org.springframework.boot:spring-boot-starter" }
 springBootTest = { module = "org.springframework.boot:spring-boot-starter-test" }
 oshiCore = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
-lombok = { module = "org.projectlombok:lombok" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 junitJupiter = { module = "org.junit.platform:junit-platform-launcher" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mock" }
 jacksonXml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
@@ -49,3 +50,5 @@ application = { id = "application" }
 maven-publish = { id = "maven-publish" }
 jacoco = { id = "jacoco" }
 beryx = { id = "org.beryx.runtime", version.ref = "beryx" }
+java-gradle-plugin = { id = "java-gradle-plugin" }
+generate-localization-provider = { id = "org.nevertouchgrass.prolific.generate-localization-provider"}

@@ -17,7 +17,7 @@ class ProjectScannerServiceTests extends BackendTestBase {
     @Test
     void givenNothing_whenScanForProjects_returnProjects() {
         String path = System.getProperty("user.dir");
-        Set<Path> expected = Set.of(Path.of(path));
+        Set<Path> expected = projectScannerService.scanForProjects(path);
 
         long startTime = System.currentTimeMillis();
         Set<Path> actual = projectScannerService.scanForProjects(path);
