@@ -5,11 +5,12 @@ import javafx.scene.control.Label;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
-import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.nevertouchgrass.prolific.service.PeriodicalScanningService;
+import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
@@ -23,6 +24,8 @@ public class SettingsDropdownController {
     private Label scanLabel;
     @FXML
     private Label pluginsLabel;
+    @FXML
+    private Label changeLanguageButton;
 
     private LocalizationHolder localizationHolder;
     private ApplicationEventPublisher applicationEventPublisher;
@@ -34,6 +37,7 @@ public class SettingsDropdownController {
         settingsLabel.textProperty().bind(localizationHolder.getLocalization("settings"));
         scanLabel.textProperty().bind(localizationHolder.getLocalization("scanner"));
         pluginsLabel.textProperty().bind(localizationHolder.getLocalization("plugins"));
+        changeLanguageButton.textProperty().bind(localizationHolder.getLocalization("change_language"));
     }
 
 
@@ -50,8 +54,9 @@ public class SettingsDropdownController {
     }
 
     public void changeLanguage() {
-        applicationEventPublisher.publishEvent(new LocalizationChangeEvent(this, Locale.forLanguageTag("sk")));
-        log.info("Language changed to Slovak");
-        notificationService.notifyInfo(InfoNotification.of("Language changed to Slovak"));
+        Locale locale = LocaleContextHolder.getLocale().equals(Locale.forLanguageTag("sk")) ? Locale.forLanguageTag("en") : Locale.forLanguageTag("sk");
+        applicationEventPublisher.publishEvent(new LocalizationChangeEvent(this, locale));
+        log.info("Language changed to {}", locale.getDisplayLanguage());
+        notificationService.notifyInfo(InfoNotification.of("Language changed to " + locale.getDisplayLanguage(locale)));
     }
 }

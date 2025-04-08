@@ -20,6 +20,7 @@ import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
@@ -51,6 +52,8 @@ public class LogsAndMetricsPanelController {
     private Label metricsButton;
     @FXML
     private Label runningProjects;
+    @FXML
+    private Label chooseProjectFirst;
 
     private boolean isLogsOpened = true;
 
@@ -65,21 +68,27 @@ public class LogsAndMetricsPanelController {
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
     private MetricsService metricsService;
     private ProcessWrapper currentProcess;
-
+    private LocalizationHolder localizationHolder;
 
     @Autowired
-    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService) {
+    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService, LocalizationHolder localizationHolder) {
         this.processService = processService;
         this.processLogsService = processLogsService;
         this.metricsService = metricsService;
+        this.localizationHolder = localizationHolder;
     }
 
-    private final SimpleStringProperty projectChoice = new SimpleStringProperty("None");
+    private final SimpleStringProperty projectChoice = new SimpleStringProperty();
 
     @FXML
     public void initialize() {
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
+        chooseProjectFirst.textProperty().bind(localizationHolder.getLocalization("choose_project_first"));
+        logsButton.textProperty().bind(localizationHolder.getLocalization("logs_button"));
+        metricsButton.textProperty().bind(localizationHolder.getLocalization("metrics_button"));
+        projectChoice.bind(localizationHolder.getLocalization("empty_chosen_project"));
+        runningProjects.textProperty().bind(localizationHolder.getLocalization("running_projects_count"));
     }
 
     @Initialize

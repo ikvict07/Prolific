@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
+import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -35,10 +36,18 @@ public class ProjectSettingDropdownController {
 
     private ProjectsRepository projectsRepository;
 
+    private LocalizationHolder localizationHolder;
+
+    @FXML
+    public void initialize() {
+        starButton.textProperty().bind(localizationHolder.getLocalization("star"));
+        openInExplorerButton.textProperty().bind(localizationHolder.getLocalization("directory"));
+    }
 
     @Autowired
-    public void setProjectsRepository(ProjectsRepository projectsRepository) {
+    public void set(ProjectsRepository projectsRepository, LocalizationHolder localizationHolder) {
         this.projectsRepository = projectsRepository;
+        this.localizationHolder = localizationHolder;
     }
 
     public void starProject() {
@@ -69,7 +78,7 @@ public class ProjectSettingDropdownController {
         this.project = project;
 
         contextMenu.getItems().clear();
-        starButton.setText((Boolean.TRUE.equals(project.getIsStarred()) ? "Unstar" : "Star"));
+        starButton.textProperty().bind(localizationHolder.getLocalization(Boolean.TRUE.equals(project.getIsStarred()) ? "unstar" : "star"));
 
         for (Node node : root.getChildren()) {
             MenuItem menuItem = new MenuItem(((Label) node).getText());

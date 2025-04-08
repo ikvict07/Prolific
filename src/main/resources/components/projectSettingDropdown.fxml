@@ -15,6 +15,5 @@
         <graphic>
             <fx:include source="/icons/fxml/folder.fxml"/>
         </graphic>
-        Open directory
     </Label>
 </VBox>

@@ -7,31 +7,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
 public class LocalizationHolder implements ApplicationListener<LocalizationChangeEvent> {
-    private final ResourceLoader resourceLoader;
     private final LocalizationManager localizationManager;
     private final Map<String, StringProperty> localizationMap = new ConcurrentHashMap<>();
 
     @PostConstruct
     @SneakyThrows
     public void init() {
-        var props = new BufferedReader(new InputStreamReader(resourceLoader.getResource("classpath:" + "messages.properties").getInputStream()));
-        props.lines().forEach(line -> {
-            var propName = line.split("=")[0];
-            var propValue = localizationManager.get(propName);
-            var ssp = new SimpleStringProperty(propValue);
-            localizationMap.put(propName, ssp);
-        });
+        Properties properties = localizationManager.getProperties(Locale.of("en"));
+        properties.forEach((key, value) -> localizationMap.put(key.toString(), new SimpleStringProperty(value.toString())));
     }
 
     public StringProperty getLocalization(String key) {

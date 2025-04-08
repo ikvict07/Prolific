@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="settings">Settings</entry>
+    <entry key="scanner">Run scanning</entry>
+    <entry key="plugins">Plugins</entry>
+    <entry key="star">Star</entry>
+    <entry key="unstar">Unstar</entry>
+    <entry key="directory">Open directory</entry>
+    <entry key="change_language">Change language</entry>
+    <entry key="choose_project_first">Choose a project first</entry>
+    <entry key="logs_button">Logs</entry>
+    <entry key="metrics_button">Metrics</entry>
+    <entry key="empty_chosen_project">None</entry>
+    <entry key="running_projects_count">You have 0 running projects</entry>
+</properties>

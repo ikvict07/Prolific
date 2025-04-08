@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="settings">Nastavenia</entry>
+    <entry key="scanner">Spustiť skenovanie</entry>
+    <entry key="plugins">Pluginy</entry>
+    <entry key="star">Hviezdiť</entry>
+    <entry key="unstar">Odhviezdiť</entry>
+    <entry key="directory">Otvoriť adresár</entry>
+    <entry key="change_language">Zmeniť jazyk</entry>
+    <entry key="choose_project_first">Najprv si vyberte projekt</entry>
+    <entry key="logs_button">Záznamy</entry>
+    <entry key="metrics_button">Metriky</entry>
+    <entry key="empty_chosen_project">Žiadny</entry>
+    <entry key="running_projects_count">Máte 0 bežiacich projektov</entry>
+</properties>
