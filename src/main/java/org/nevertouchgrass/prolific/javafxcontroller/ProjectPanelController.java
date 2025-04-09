@@ -28,7 +28,10 @@ import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
-import org.nevertouchgrass.prolific.service.*;
+import org.nevertouchgrass.prolific.service.ColorService;
+import org.nevertouchgrass.prolific.service.FxmlProvider;
+import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.nevertouchgrass.prolific.service.RunConfigService;
 import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
@@ -39,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
@@ -49,7 +51,7 @@ import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 @Scope("prototype")
 @Data
 public class ProjectPanelController {
-    public String PROJECT_RUN_ERROR_MESSAGE;
+    public final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
     @FXML
     public StackPane star;
     @FXML
@@ -111,8 +113,6 @@ public class ProjectPanelController {
     private ProjectsService projectsService;
 
     public void init() {
-        PROJECT_RUN_ERROR_MESSAGE = localizationProvider.log_error_running_project().get();
-
         String iconColorStyle = colorService.generateRandomColorStyle(colorService.getSeedForProject(project));
         projectIcon.setStyle(iconColorStyle);
 
@@ -222,8 +222,7 @@ public class ProjectPanelController {
             new Thread(this::runProjectLambda).start();
         } catch (Exception e) {
             notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_running_project(), project.getTitle()));
-            String error = MessageFormat.format(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
-            log.error(error);
+            log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
         }
     }
 
@@ -255,8 +254,7 @@ public class ProjectPanelController {
             isProjectRunning.setValue(true);
         } catch (Exception e) {
             notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_running_project(), project.getTitle()));
-            String error = MessageFormat.format(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
-            log.error(error);
+            log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
             throw new IllegalStateException(e);
         }
     }

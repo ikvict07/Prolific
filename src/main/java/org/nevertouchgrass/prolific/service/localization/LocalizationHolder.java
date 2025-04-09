@@ -23,7 +23,7 @@ public class LocalizationHolder implements ApplicationListener<LocalizationChang
     @PostConstruct
     @SneakyThrows
     public void init() {
-        Properties properties = localizationManager.getProperties(Locale.of("en"));
+        Properties properties = localizationManager.getProperties(Locale.forLanguageTag("en"));
         properties.forEach((key, value) -> localizationMap.put(key.toString(), new SimpleStringProperty(value.toString())));
     }
 

@@ -36,11 +36,6 @@ public class ProjectSettingDropdownController {
     @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
 
-    @FXML
-    public void initialize() {
-        starButton.textProperty().bind(localizationProvider.star());
-        openInExplorerButton.textProperty().bind(localizationProvider.directory());
-    }
     public void starProject() {
         project.setIsStarred(!project.getIsStarred());
         projectsRepository.update(project);
