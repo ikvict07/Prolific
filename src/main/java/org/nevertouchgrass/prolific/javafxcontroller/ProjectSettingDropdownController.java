@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
-import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,18 +36,19 @@ public class ProjectSettingDropdownController {
 
     private ProjectsRepository projectsRepository;
 
-    private LocalizationHolder localizationHolder;
+    private LocalizationProvider localizationProvider;
 
     @FXML
     public void initialize() {
-        starButton.textProperty().bind(localizationHolder.getLocalization("star"));
-        openInExplorerButton.textProperty().bind(localizationHolder.getLocalization("directory"));
+        starButton.textProperty().bind(localizationProvider.getStarProperty());
+        openInExplorerButton.textProperty().bind(localizationProvider.getDirectoryProperty());
     }
 
     @Autowired
-    public void set(ProjectsRepository projectsRepository, LocalizationHolder localizationHolder) {
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    public void set(ProjectsRepository projectsRepository, LocalizationProvider localizationProvider) {
         this.projectsRepository = projectsRepository;
-        this.localizationHolder = localizationHolder;
+        this.localizationProvider = localizationProvider;
     }
 
     public void starProject() {
@@ -78,7 +79,7 @@ public class ProjectSettingDropdownController {
         this.project = project;
 
         contextMenu.getItems().clear();
-        starButton.textProperty().bind(localizationHolder.getLocalization(Boolean.TRUE.equals(project.getIsStarred()) ? "unstar" : "star"));
+        starButton.textProperty().bind(Boolean.TRUE.equals(project.getIsStarred()) ? localizationProvider.getUnstarProperty() : localizationProvider.getStarProperty());
 
         for (Node node : root.getChildren()) {
             MenuItem menuItem = new MenuItem(((Label) node).getText());

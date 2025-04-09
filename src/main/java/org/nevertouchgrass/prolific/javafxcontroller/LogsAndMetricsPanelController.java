@@ -20,7 +20,7 @@ import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
-import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
@@ -68,14 +68,19 @@ public class LogsAndMetricsPanelController {
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
     private MetricsService metricsService;
     private ProcessWrapper currentProcess;
-    private LocalizationHolder localizationHolder;
+    private LocalizationProvider localizationProvider;
 
     @Autowired
-    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService, LocalizationHolder localizationHolder) {
+    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService) {
         this.processService = processService;
         this.processLogsService = processLogsService;
         this.metricsService = metricsService;
-        this.localizationHolder = localizationHolder;
+    }
+
+    @Autowired
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    public void setLocalizationHolder(LocalizationProvider localizationProvider) {
+        this.localizationProvider = localizationProvider;
     }
 
     private final SimpleStringProperty projectChoice = new SimpleStringProperty();
@@ -84,11 +89,12 @@ public class LogsAndMetricsPanelController {
     public void initialize() {
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
-        chooseProjectFirst.textProperty().bind(localizationHolder.getLocalization("choose_project_first"));
-        logsButton.textProperty().bind(localizationHolder.getLocalization("logs_button"));
-        metricsButton.textProperty().bind(localizationHolder.getLocalization("metrics_button"));
-        projectChoice.bind(localizationHolder.getLocalization("empty_chosen_project"));
-        runningProjects.textProperty().bind(localizationHolder.getLocalization("running_projects_count"));
+        chooseProjectFirst.textProperty().bind(localizationProvider.getChooseProjectFirstProperty());
+        logsButton.textProperty().bind(localizationProvider.getLogsButtonProperty());
+        metricsButton.textProperty().bind(localizationProvider.getMetricsButtonProperty());
+        projectChoice.set(localizationProvider.getEmptyChosenProjectProperty().get());
+        runningProjects.setText(localizationProvider.getRunningProjectsCountProperty().get());
+        localizationProvider.getRunningProjectsCountProperty().addListener((_, _, _) -> runningProjects.setText(localizationProvider.getRunningProjectsCountProperty().get().replaceAll("\\d+", String.valueOf(runningProjectsCount.get()))));
     }
 
     @Initialize
@@ -96,7 +102,7 @@ public class LogsAndMetricsPanelController {
     public void init() {
         processes = processService.getObservableLiveProcesses();
         runningProjectsCount = new SimpleIntegerProperty(processes.size());
-        runningProjectsCount.addListener((_, _, newValue) -> Platform.runLater(() -> runningProjects.setText(runningProjects.getText().replaceAll("\\d+", String.valueOf(newValue)))));
+        runningProjectsCount.addListener((_, _, newValue) -> Platform.runLater(() -> runningProjects.textProperty().set(runningProjects.getText().replaceAll("\\d+", String.valueOf(newValue)))));
 
         processes.addListener((MapChangeListener<? super Project, ? super Set<ProcessWrapper>>) change -> {
             if (change.wasAdded()) {

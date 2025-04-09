@@ -44,10 +44,10 @@ public class GenerateLocalizationProviderInterfaceTask extends DefaultTask {
 
         try (BufferedWriter writer = Files.newBufferedWriter(interfaceFile.toPath())) {
             writer.write("package " + packageName + ";\n\n");
-            writer.write("import javafx.beans.property.StringProperty;\n\n");
+            writer.write("import javafx.beans.property.StringProperty;\nimport javafx.beans.property.SimpleStringProperty;\n\n");
             writer.write("public interface " + interfaceName + " {\n");
             for (String key : properties.stringPropertyNames()) {
-                writer.write("\t    StringProperty get" + normalize(key) + "Property();\n");
+                writer.write("\tdefault StringProperty get" + normalize(key) + "Property() { return new SimpleStringProperty(\"" + key + "\"); }\n");
             }
             writer.write("}");
         }
