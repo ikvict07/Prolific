@@ -38,11 +38,6 @@ public class ProjectSettingDropdownController {
 
     private LocalizationHolder localizationHolder;
 
-    @FXML
-    public void initialize() {
-        starButton.textProperty().bind(localizationHolder.getLocalization("star"));
-        openInExplorerButton.textProperty().bind(localizationHolder.getLocalization("directory"));
-    }
 
     @Autowired
     public void set(ProjectsRepository projectsRepository, LocalizationHolder localizationHolder) {

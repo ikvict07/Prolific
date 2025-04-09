@@ -6,12 +6,12 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectSettingDropdownController"
       styleClass="popup" stylesheets="@/css/styles.css">
-    <Label fx:id="starButton" onMouseClicked="#starProject" textAlignment="JUSTIFY">
+    <Label fx:id="starButton" userData="localization:star" onMouseClicked="#starProject" textAlignment="JUSTIFY">
         <graphic>
             <fx:include disable="true" maxWidth="10" maxHeight="10" source="star.fxml"/>
         </graphic>
     </Label>
-    <Label fx:id="openInExplorerButton" onMouseClicked="#openInExplorer" textAlignment="JUSTIFY">
+    <Label fx:id="openInExplorerButton" userData="localization:directory" onMouseClicked="#openInExplorer" textAlignment="JUSTIFY">
         <graphic>
             <fx:include source="/icons/fxml/folder.fxml"/>
         </graphic>

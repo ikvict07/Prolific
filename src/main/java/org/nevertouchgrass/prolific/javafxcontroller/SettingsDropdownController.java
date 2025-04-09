@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.PeriodicalScanningService;
-import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,24 +26,13 @@ public class SettingsDropdownController {
     @FXML
     private Label changeLanguageButton;
 
-    private LocalizationHolder localizationHolder;
     private ApplicationEventPublisher applicationEventPublisher;
     private PeriodicalScanningService periodicalScanningService;
     private NotificationService notificationService;
 
-    @FXML
-    public void initialize() {
-        settingsLabel.textProperty().bind(localizationHolder.getLocalization("settings"));
-        scanLabel.textProperty().bind(localizationHolder.getLocalization("scanner"));
-        pluginsLabel.textProperty().bind(localizationHolder.getLocalization("plugins"));
-        changeLanguageButton.textProperty().bind(localizationHolder.getLocalization("change_language"));
-    }
-
-
     @Autowired
-    public void set(PeriodicalScanningService periodicalScanningService, LocalizationHolder localizationHolder, ApplicationEventPublisher applicationEventPublisher, NotificationService notificationService) {
+    public void set(PeriodicalScanningService periodicalScanningService, ApplicationEventPublisher applicationEventPublisher, NotificationService notificationService) {
         this.periodicalScanningService = periodicalScanningService;
-        this.localizationHolder = localizationHolder;
         this.applicationEventPublisher = applicationEventPublisher;
         this.notificationService = notificationService;
     }
