@@ -1,14 +1,15 @@
-package org.nevertouchgrass.prolific.service;
+package org.nevertouchgrass.prolific.service.scaners;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
+import org.nevertouchgrass.prolific.service.settings.XmlProjectScannerConfigLoaderService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 

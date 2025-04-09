@@ -88,8 +88,6 @@ public class ProjectSettingDropdownController {
 
         contextMenu.getItems().clear();
         starButton.textProperty().bind(Boolean.TRUE.equals(project.getIsStarred()) ? localizationProvider.unstar() : localizationProvider.star());
-
-        starButton.setText((Boolean.TRUE.equals(project.getIsStarred()) ? "Unstar" : "Star"));
         excludeProjectButton.setVisible(checkExcludePermission());
         deleteProjectButton.setVisible(checkDeletePermission());
         for (Node node : root.getChildren()) {

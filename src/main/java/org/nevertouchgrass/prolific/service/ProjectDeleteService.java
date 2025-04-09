@@ -3,8 +3,6 @@ package org.nevertouchgrass.prolific.service;
 import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.constants.action.DeleteProjectAction;
 import org.nevertouchgrass.prolific.constants.action.ExcludeProjectAction;
-import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
-import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
 import org.nevertouchgrass.prolific.service.permissions.contract.PermissionChecker;
@@ -33,15 +31,15 @@ public class ProjectDeleteService {
 
             if (castedChecker.hasPermission(action)) {
                 if (!processService.getObservableLiveProcesses().get(action.project()).isEmpty()) {
-                    notificationService.notifyError(ErrorNotification.of(null, "You can't exclude while process is running"));
+//                    notificationService.notifyError(ErrorNotification.of(null, "You can't exclude while process is running")); TODO: localize
                     return;
                 }
                 projectExcluderService.excludeProject(new ExcludeProjectAction(action.project()));
 
                 deleteDirectory(Path.of(action.project().getPath()));
-                notificationService.notifyInfo(InfoNotification.of("{} deleted", action.project().getTitle()));
+//                notificationService.notifyInfo(InfoNotification.of("{} deleted", action.project().getTitle())); TODO: localize
             } else {
-                notificationService.notifyInfo(new InfoNotification("You don't have permission to delete this project"));
+//                notificationService.notifyInfo(new InfoNotification("You don't have permission to delete this project")); TODO: localize
             }
         }
     }
@@ -54,11 +52,11 @@ public class ProjectDeleteService {
                             try {
                                 Files.delete(path);
                             } catch (IOException e) {
-                                notificationService.notifyInfo(new InfoNotification("Error occurred while deleting " + path));
+//                                notificationService.notifyInfo(new InfoNotification("Error occurred while deleting " + path)); TODO: localize
                             }
                         });
             } catch (IOException e) {
-                notificationService.notifyInfo(new InfoNotification("Error occurred while deleting " + directory));
+//                notificationService.notifyInfo(new InfoNotification("Error occurred while deleting " + directory)); TODO: localize
             }
         }
     }

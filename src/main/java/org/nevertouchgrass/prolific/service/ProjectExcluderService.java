@@ -3,8 +3,6 @@ package org.nevertouchgrass.prolific.service;
 import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.constants.action.ExcludeProjectAction;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
-import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
-import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
@@ -32,16 +30,16 @@ public class ProjectExcluderService {
 
             if (castedChecker.hasPermission(action)) {
                 if (!processService.getObservableLiveProcesses().get(action.project()).isEmpty()) {
-                    notificationService.notifyError(ErrorNotification.of(null, "You can't exclude while process is running"));
+//                    notificationService.notifyError(ErrorNotification.of(null, "You can't exclude while process is running")); TODO: localize
                     return;
                 }
                 var pathTOExclude = action.project().getPath();
                 userSettingsHolder.getExcludedDirs().add(formatPath(pathTOExclude));
                 userSettingsService.saveSettings();
                 projectsRepository.delete(action.project());
-                notificationService.notifyInfo(InfoNotification.of("{} excluded", action.project().getTitle()));
+//                notificationService.notifyInfo(InfoNotification.of("{} excluded", action.project().getTitle())); TODO: localize
             } else {
-                notificationService.notifyInfo(new InfoNotification("You don't have permission to exclude this project"));
+//                notificationService.notifyInfo(new InfoNotification("You don't have permission to exclude this project")); TODO: localize
             }
         }
     }

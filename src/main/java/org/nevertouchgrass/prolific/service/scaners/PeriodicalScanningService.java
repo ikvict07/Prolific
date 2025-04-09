@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
-import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
@@ -63,7 +62,7 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
 
     public void rescan() {
         if (!processService.getLiveProcesses().isEmpty()) {
-            notificationService.notifyInfo(InfoNotification.of("You can't scan while processes are running"));
+//            notificationService.notifyInfo(InfoNotification.of("You can't scan while processes are running")); TODO: localize
             return;
         }
 
