@@ -93,6 +93,7 @@ public class LogsAndMetricsPanelController {
         logsButton.textProperty().bind(localizationProvider.getLogsButtonProperty());
         metricsButton.textProperty().bind(localizationProvider.getMetricsButtonProperty());
         projectChoice.set(localizationProvider.getEmptyChosenProjectProperty().get());
+        localizationProvider.getEmptyChosenProjectProperty().addListener((_, _, newValue) -> projectChoice.set(newValue));
         runningProjects.setText(localizationProvider.getRunningProjectsCountProperty().get());
         localizationProvider.getRunningProjectsCountProperty().addListener((_, _, _) -> runningProjects.setText(localizationProvider.getRunningProjectsCountProperty().get().replaceAll("\\d+", String.valueOf(runningProjectsCount.get()))));
     }
