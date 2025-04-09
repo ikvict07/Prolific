@@ -7,6 +7,7 @@ import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import java.util.function.Consumer;
 public class ProjectScannerService {
 
     private final XmlProjectScannerConfigLoaderService configLoaderService;
+    private final LocalizationProvider localizationProvider;
     private PathMatcher pathMatcher;
     private PathMatcher excludeMatcher;
     private final UserSettingsHolder userSettingsHolder;
@@ -79,7 +81,7 @@ public class ProjectScannerService {
         isScanning = true;
         isScanningCancelled.set(false);
 
-        notificationService.notifyInfo(new InfoNotification("Scanning for projects"));
+        notificationService.notifyInfo(new InfoNotification(localizationProvider.log_info_scanning_for_projects()));
         notificationService.notifyEvent(new EventNotification(EventNotification.EventType.START_PROJECT_SCAN));
         log.info("Scanning for projects in {}", rootDirectory);
 
@@ -92,10 +94,10 @@ public class ProjectScannerService {
 
         if (isScanningCancelled.get()) {
             log.info("Scanning was cancelled. Found {} projects so far", result.size());
-            notificationService.notifyInfo(InfoNotification.of("Scanning cancelled. Found {} projects", result.size()));
+            notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_scanning_for_projects_cancelled(), result.size()));
         } else {
             log.info("Scanning finished, found {} projects", result.size());
-            notificationService.notifyInfo(InfoNotification.of("Scanning finished, found {} projects", result.size()));
+            notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_scanning_for_projects_finished(), result.size()));
         }
 
         notificationService.notifyEvent(new EventNotification(EventNotification.EventType.END_PROJECT_SCAN));
@@ -130,7 +132,7 @@ public class ProjectScannerService {
             executor.shutdownNow();
         }
 
-        notificationService.notifyInfo(new InfoNotification("Scanning cancelled"));
+        notificationService.notifyInfo(new InfoNotification(localizationProvider.log_info_scanning_cancelled()));
         log.info("Scanning cancelled by user");
     }
 

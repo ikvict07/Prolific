@@ -52,8 +52,6 @@ public class LogsAndMetricsPanelController {
     private Label metricsButton;
     @FXML
     private Label runningProjects;
-    @FXML
-    private Label chooseProjectFirst;
 
     private boolean isLogsOpened = true;
 
@@ -70,6 +68,8 @@ public class LogsAndMetricsPanelController {
     private ProcessWrapper currentProcess;
 
     private LocalizationProvider localizationProvider;
+    private final SimpleStringProperty projectChoice = new SimpleStringProperty();
+
 
     @Autowired
     public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService, LocalizationProvider localizationProvider) {
@@ -77,9 +77,8 @@ public class LogsAndMetricsPanelController {
         this.processLogsService = processLogsService;
         this.metricsService = metricsService;
         this.localizationProvider = localizationProvider;
+        this.projectChoice.bind(localizationProvider.empty_chosen_project());
     }
-
-    private final SimpleStringProperty projectChoice = new SimpleStringProperty();
 
     @FXML
     public void initialize() {
@@ -113,6 +112,7 @@ public class LogsAndMetricsPanelController {
                     menuItem.fire();
                 } else {
                     menuItem.addEventHandler(ActionEvent.ACTION, _ -> {
+                        projectChoice.unbind();
                         projectChoice.set(project.getTitle());
 
                         ContextMenu subMenu = new ContextMenu();
@@ -173,6 +173,7 @@ public class LogsAndMetricsPanelController {
         menuItem.setContent(new Label(text));
         menuItem.setHideOnClick(false);
         menuItem.setOnAction(_ -> Platform.runLater(() -> {
+            projectChoice.unbind();
             projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
             currentProcess = processWrapper;
             changeLogs(processWrapper);

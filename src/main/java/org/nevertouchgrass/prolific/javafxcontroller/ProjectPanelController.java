@@ -3,6 +3,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -29,6 +30,7 @@ import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.*;
 import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
@@ -37,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
@@ -46,7 +49,7 @@ import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 @Scope("prototype")
 @Data
 public class ProjectPanelController {
-    public static final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
+    public String PROJECT_RUN_ERROR_MESSAGE;
     @FXML
     public StackPane star;
     @FXML
@@ -100,8 +103,11 @@ public class ProjectPanelController {
     private ProcessWrapper currentProcess = null;
     private Property<Boolean> isProjectRunning = new SimpleBooleanProperty(false);
     private ProjectsService projectsService;
+    private LocalizationProvider localizationProvider;
 
     public void init() {
+        PROJECT_RUN_ERROR_MESSAGE = localizationProvider.log_error_running_project().get();
+
         String iconColorStyle = colorService.generateRandomColorStyle(colorService.getSeedForProject(project));
         projectIcon.setStyle(iconColorStyle);
 
@@ -115,8 +121,8 @@ public class ProjectPanelController {
         contextMenu = new ContextMenu();
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
 
-        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), "Your configurations");
-        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
+        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
+        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
         isProjectRunning.addListener((_, _, newValue) -> Platform.runLater(() -> {
             if (newValue) {
                 runContent.getChildren().clear();
@@ -173,10 +179,11 @@ public class ProjectPanelController {
     }
 
 
-    private void generateContextMenuItems(@NonNull List<RunConfig> runConfigs, String label) {
+    private void generateContextMenuItems(@NonNull List<RunConfig> runConfigs, StringProperty label) {
         ObservableList<MenuItem> menuItems = contextMenu.getItems();
         if (label != null && !runConfigs.isEmpty()) {
-            MenuItem menuItem = new MenuItem(label);
+            MenuItem menuItem = new MenuItem();
+            menuItem.textProperty().bind(label);
             menuItem.addEventFilter(ActionEvent.ANY, Event::consume);
             menuItem.getStyleClass().add("menu-item-disabled");
             menuItems.add(menuItem);
@@ -202,15 +209,16 @@ public class ProjectPanelController {
 
     public void runProject() {
         if (chosenConfig == null) {
-            notificationService.notifyInfo(new InfoNotification("No configuration selected"));
+            notificationService.notifyInfo(new InfoNotification(localizationProvider.log_no_configuration_selected()));
             return;
         }
         try {
-            notificationService.notifyInfo(InfoNotification.of("Running project {}", project.getTitle()));
+            notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_running_project(), project.getTitle()));
             new Thread(this::runProjectLambda).start();
         } catch (Exception e) {
-            notificationService.notifyError(ErrorNotification.of(e, PROJECT_RUN_ERROR_MESSAGE, project.getTitle()));
-            log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
+            notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_running_project(), project.getTitle()));
+            String error = MessageFormat.format(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
+            log.error(error);
         }
     }
 
@@ -228,7 +236,7 @@ public class ProjectPanelController {
         if (currentProcess != null) {
             currentProcess.getProcess().destroy();
             currentProcess = null;
-            notificationService.notifyInfo(InfoNotification.of("Project {} stopped", project.getTitle()));
+            notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_project_stopped(), project.getTitle()));
             log.info("Project {} stopped", project.getTitle());
         }
         isProjectRunning.setValue(false);
@@ -236,7 +244,7 @@ public class ProjectPanelController {
 
 
     @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Pair<ProjectSettingDropdownController, ContextMenu> projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry, NotificationService notificationService, DefaultProjectRunner projectRunner, FxmlProvider fxmlProvider, ProcessService processService) {
+    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Pair<ProjectSettingDropdownController, ContextMenu> projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry, NotificationService notificationService, DefaultProjectRunner projectRunner, FxmlProvider fxmlProvider, ProcessService processService, LocalizationProvider localizationProvider) {
         this.primaryStage = primaryStage;
         this.colorService = colorService;
         this.anchorPaneConstraintsService = anchorPaneConstraintsService;
@@ -249,6 +257,7 @@ public class ProjectPanelController {
         this.projectRunner = projectRunner;
         this.fxmlProvider = fxmlProvider;
         this.processService = processService;
+        this.localizationProvider = localizationProvider;
     }
 
     private void runProjectLambda() {
@@ -258,8 +267,9 @@ public class ProjectPanelController {
             processService.registerOnKillListener(this::onProcessDeath);
             isProjectRunning.setValue(true);
         } catch (Exception e) {
-            notificationService.notifyError(ErrorNotification.of(e, PROJECT_RUN_ERROR_MESSAGE, project.getTitle()));
-            log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
+            notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_running_project(), project.getTitle()));
+            String error = MessageFormat.format(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
+            log.error(error);
             throw new IllegalStateException(e);
         }
     }

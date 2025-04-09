@@ -13,4 +13,18 @@
     <entry key="metrics_button">Metrics</entry>
     <entry key="empty_chosen_project">None</entry>
     <entry key="running_projects_count">You have 0 running projects</entry>
+    <entry key="custom_configurations">Custom configurations</entry>
+    <entry key="imported_configurations">Imported configurations</entry>
+    <entry key="log_no_configuration_selected">No configuration selected</entry>
+    <entry key="log_error_running_project">Error while running project {0}</entry>
+    <entry key="log_error_calling_method">Error occurred while calling method: {0}</entry>
+    <entry key="log_error_reading_ram">Couldn't read RAM usage</entry>
+    <entry key="log_error_reading_cpu">Couldn't read CPU usage</entry>
+    <entry key="log_info_scanning_for_projects">Scanning for projects</entry>
+    <entry key="log_info_scanning_for_projects_cancelled">Scanning cancelled. Found {0} projects</entry>
+    <entry key="log_info_scanning_for_projects_finished">Scanning finished, found {0} projects</entry>
+    <entry key="log_info_scanning_cancelled">Scanning cancelled</entry>
+    <entry key="log_info_language_changed">Language changed to {0}</entry>
+    <entry key="log_info_running_project">Running project {0}</entry>
+    <entry key="log_info_project_stopped">Project {0} stopped</entry>
 </properties>

@@ -45,7 +45,6 @@ public class ProjectSettingDropdownController {
     }
 
     @Autowired
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public void set(ProjectsRepository projectsRepository, LocalizationProvider localizationProvider) {
         this.projectsRepository = projectsRepository;
         this.localizationProvider = localizationProvider;

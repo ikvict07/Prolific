@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Metric;
 import org.nevertouchgrass.prolific.model.ProcessMetrics;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.process.ProcessAware;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
@@ -22,7 +23,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,7 +43,7 @@ public class MetricsService implements ProcessAware {
 
     private final Map<ProcessWrapper, AtomicBoolean> processActiveFlags = new ConcurrentHashMap<>();
     private final NotificationService notificationService;
-
+    private final LocalizationProvider localizationProvider;
 
     public void stopObserving() {
         observing.set(false);
@@ -162,9 +166,9 @@ public class MetricsService implements ProcessAware {
         try {
             p = pb.start();
         } catch (IOException e) {
-            notificationService.notifyError(ErrorNotification.of(e, "Couldn't read RAM usage"));
+            notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_reading_ram()));
         }
-        var reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(p).getInputStream()));
         String line;
         int i = 0;
         while (i < 2) {
@@ -179,7 +183,7 @@ public class MetricsService implements ProcessAware {
                     }
                 }
             } catch (IOException e) {
-                notificationService.notifyError(ErrorNotification.of(e, "Couldn't read RAM usage"));
+                notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_reading_ram()));
                 break;
             }
         }
@@ -191,9 +195,9 @@ public class MetricsService implements ProcessAware {
         try {
             p = pb.start();
         } catch (IOException e) {
-            notificationService.notifyError(ErrorNotification.of(e, "Couldn't read cpu usage"));
+            notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_reading_cpu()));
         }
-        var reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(p).getInputStream()));
         String line;
         int i = 0;
         while (i < 2) {
@@ -208,7 +212,7 @@ public class MetricsService implements ProcessAware {
                     }
                 }
             } catch (IOException e) {
-                notificationService.notifyError(ErrorNotification.of(e, "Couldn't read cpu usage"));
+                notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_reading_cpu()));
                 break;
             }
         }

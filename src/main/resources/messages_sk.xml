@@ -13,4 +13,18 @@
     <entry key="metrics_button">Metriky</entry>
     <entry key="empty_chosen_project">Žiadny</entry>
     <entry key="running_projects_count">Máte 0 bežiacich projektov</entry>
+    <entry key="custom_configurations">Vlastné konfigurácie</entry>
+    <entry key="imported_configurations">Importované konfigurácie</entry>
+    <entry key="log_no_configuration_selected">Žiadna konfigurácia nie je vybraná</entry>
+    <entry key="log_error_running_project">Chyba pri spúšťaní projektu {0}</entry>
+    <entry key="log_error_calling_method">Pri volaní metódy došlo k chybe: {0}</entry>
+    <entry key="log_error_reading_ram">Nemožno prečítať využitie RAM</entry>
+    <entry key="log_error_reading_cpu">Nemožno prečítať využitie CPU</entry>
+    <entry key="log_info_scanning_for_projects">Skenovanie projektov</entry>
+    <entry key="log_info_scanning_for_projects_cancelled">Skenovanie zrušené. Nájdených {0} projektov</entry>
+    <entry key="log_info_scanning_for_projects_finished">Skenovanie dokončené, nájdených {0} projektov</entry>
+    <entry key="log_info_scanning_cancelled">Skenovanie zrušené</entry>
+    <entry key="log_info_language_changed">Jazyk zmenený na {0}</entry>
+    <entry key="log_info_running_project">Spúšťanie projektu {0}</entry>
+    <entry key="log_info_project_stopped">Projekt {0} zastavený</entry>
 </properties>
