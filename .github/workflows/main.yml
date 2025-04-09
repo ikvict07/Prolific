@@ -31,6 +31,7 @@ jobs:
           echo "Pull request author: $PR_AUTHOR"
           if [[ "$PR_AUTHOR" == "ikvict07" ]]; then
             echo "PR author is ikvict07, skipping auto-approval."
+            echo "APPROVE_ALLOWED=false" >> $GITHUB_ENV
             exit 0
           else
             echo "PR author is not ikvict07, continuing with auto-approval."
