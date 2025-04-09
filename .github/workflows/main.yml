@@ -21,6 +21,7 @@ jobs:
             echo "APPROVE_ALLOWED=true" >> $GITHUB_ENV
           else
             echo "User $GITHUB_ACTOR is NOT allowed to auto-approve."
+            echo "APPROVE_ALLOWED=false" >> $GITHUB_ENV
             exit 0
           fi
 
