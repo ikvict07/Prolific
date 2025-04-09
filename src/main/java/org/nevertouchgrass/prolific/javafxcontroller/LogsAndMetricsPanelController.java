@@ -86,8 +86,12 @@ public class LogsAndMetricsPanelController {
         chosenProject.textProperty().bind(projectChoice);
     }
 
+    /**
+     * Will be called by InitializeAnnotationProcessor
+     * @see org.nevertouchgrass.prolific.listener.InitializeAnnotationProcessor
+     */
     @Initialize
-    @SuppressWarnings("unused") // Will be called by BPP
+    @SuppressWarnings("unused")
     public void init() {
         runningProjects.textProperty().set(localizationProvider.running_projects_count().get());
         processes = processService.getObservableLiveProcesses();
