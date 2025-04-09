@@ -9,4 +9,5 @@ public class GenerateLocalizationProviderInterfacePluginExtension {
     private String resourceFile = "src/main/resources/messages_en.xml";
     private String packageName = "org.nevertouchgrass.prolific.service.localization";
     private String interfaceName = "LocalizationProvider";
+    private String outputDir = "build/generated/sources/java/";
 }

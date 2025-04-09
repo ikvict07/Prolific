@@ -18,6 +18,7 @@ public class GenerateLocalizationProviderInterfaceTask extends DefaultTask {
     private String resourceFile;
     private String packageName;
     private String interfaceName;
+    private String buildDir;
 
     public GenerateLocalizationProviderInterfaceTask() {
         setGroup("build");
@@ -33,7 +34,7 @@ public class GenerateLocalizationProviderInterfaceTask extends DefaultTask {
             properties.loadFromXML(inputStream);
         }
 
-        File outputDir = new File(getProject().getProjectDir(), "src/main/java/");
+        File outputDir = new File(getProject().getProjectDir(), buildDir);
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
