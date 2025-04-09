@@ -20,7 +20,6 @@ import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
-import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
@@ -68,7 +67,6 @@ public class LogsAndMetricsPanelController {
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
     private MetricsService metricsService;
     private ProcessWrapper currentProcess;
-    private LocalizationProvider localizationProvider;
 
     @Autowired
     public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService) {
@@ -77,25 +75,12 @@ public class LogsAndMetricsPanelController {
         this.metricsService = metricsService;
     }
 
-    @Autowired
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public void setLocalizationHolder(LocalizationProvider localizationProvider) {
-        this.localizationProvider = localizationProvider;
-    }
-
     private final SimpleStringProperty projectChoice = new SimpleStringProperty();
 
     @FXML
     public void initialize() {
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
-        chooseProjectFirst.textProperty().bind(localizationProvider.choose_project_first());
-        logsButton.textProperty().bind(localizationProvider.logs_button());
-        metricsButton.textProperty().bind(localizationProvider.metrics_button());
-        projectChoice.set(localizationProvider.empty_chosen_project().get());
-        localizationProvider.empty_chosen_project().addListener((_, _, newValue) -> projectChoice.set(newValue));
-        runningProjects.setText(localizationProvider.running_projects_count().get());
-        localizationProvider.running_projects_count().addListener((_, _, _) -> runningProjects.setText(localizationProvider.running_projects_count().get().replaceAll("\\d+", String.valueOf(runningProjectsCount.get()))));
     }
 
     @Initialize

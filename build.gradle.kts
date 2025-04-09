@@ -105,7 +105,12 @@ tasks.register<Exec>("runMac") {
     group = "application"
     dependsOn(tasks.bootJar)
     workingDir = rootDir
-    commandLine("java", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
+    commandLine(
+        "java",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "-jar",
+        "${tasks.bootJar.get().archiveFile.get().asFile}"
+    )
 }
 
 runtime {
@@ -227,6 +232,6 @@ tasks.installDist {
     enabled = false
 }
 
-tasks.bootJar {
-    dependsOn(tasks.test)
-}
+//tasks.bootJar {
+//    dependsOn(tasks.test)
+//}

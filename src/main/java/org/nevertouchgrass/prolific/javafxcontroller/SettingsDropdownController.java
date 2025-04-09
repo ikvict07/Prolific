@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.PeriodicalScanningService;
-import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,28 +29,12 @@ public class SettingsDropdownController {
     private ApplicationEventPublisher applicationEventPublisher;
     private PeriodicalScanningService periodicalScanningService;
     private NotificationService notificationService;
-    private LocalizationProvider localizationProvider;
-
-    @FXML
-    public void initialize() {
-        settingsLabel.textProperty().bind(localizationProvider.settings());
-        scanLabel.textProperty().bind(localizationProvider.scanner());
-        pluginsLabel.textProperty().bind(localizationProvider.plugins());
-        changeLanguageButton.textProperty().bind(localizationProvider.change_language());
-    }
-
 
     @Autowired
     public void set(PeriodicalScanningService periodicalScanningService, ApplicationEventPublisher applicationEventPublisher, NotificationService notificationService) {
         this.periodicalScanningService = periodicalScanningService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.notificationService = notificationService;
-    }
-
-    @Autowired
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public void setLocalizationProvider(LocalizationProvider localizationProvider) {
-        this.localizationProvider = localizationProvider;
     }
 
     public void rescan() {
