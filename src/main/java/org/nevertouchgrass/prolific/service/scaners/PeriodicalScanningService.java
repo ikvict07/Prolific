@@ -1,12 +1,16 @@
-package org.nevertouchgrass.prolific.service;
+package org.nevertouchgrass.prolific.service.scaners;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
+import org.nevertouchgrass.prolific.service.notification.NotificationService;
+import org.nevertouchgrass.prolific.service.process.ProcessService;
+import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
@@ -31,8 +35,10 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     private final ProjectResolver projectResolver;
     private final UserSettingsService userSettingsService;
     private final ProjectsRepository projectsRepository;
+    private final ProcessService processService;
 
     private PeriodicalScanningService it;
+    private final NotificationService notificationService;
 
     @Autowired
     private void setSelf(@Lazy PeriodicalScanningService it) {
@@ -56,6 +62,11 @@ public class PeriodicalScanningService implements ApplicationListener<StageShowE
     }
 
     public void rescan() {
+        if (!processService.getLiveProcesses().isEmpty()) {
+            notificationService.notifyInfo(InfoNotification.of("You can't scan while processes are running"));
+            return;
+        }
+
         String baseScanDirectory = userSettingsHolder.getBaseScanDirectory();
         log.info("Deleting projects that are not starred and not manually added");
         projectsRepository.deleteWhereIsStarredIsFalseAndIsManuallyAddedIsFalse();

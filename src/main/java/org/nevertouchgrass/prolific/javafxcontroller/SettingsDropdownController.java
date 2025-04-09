@@ -40,11 +40,4 @@ public class SettingsDropdownController {
     public void rescan() {
         periodicalScanningService.rescan();
     }
-
-    public void changeLanguage() {
-        Locale locale = LocaleContextHolder.getLocale().equals(Locale.forLanguageTag("sk")) ? Locale.forLanguageTag("en") : Locale.forLanguageTag("sk");
-        applicationEventPublisher.publishEvent(new LocalizationChangeEvent(this, locale));
-        log.info("Language changed to {}", locale.getDisplayLanguage());
-        notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_language_changed(), locale.getDisplayLanguage(locale)));
-    }
 }

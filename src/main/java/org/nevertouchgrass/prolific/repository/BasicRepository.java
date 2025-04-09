@@ -12,4 +12,6 @@ public interface BasicRepository<T> {
 
     T update(T t);
 
+    T delete(T t);
+
 }
