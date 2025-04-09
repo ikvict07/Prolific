@@ -27,4 +27,5 @@
     <entry key="log_info_language_changed">Language changed to {0}</entry>
     <entry key="log_info_running_project">Running project {0}</entry>
     <entry key="log_info_project_stopped">Project {0} stopped</entry>
+    <entry key="cancel_scanning">Cancel scanning</entry>
 </properties>

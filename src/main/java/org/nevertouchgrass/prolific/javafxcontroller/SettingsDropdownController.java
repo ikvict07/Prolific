@@ -2,6 +2,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
@@ -27,19 +28,14 @@ public class SettingsDropdownController {
     private Label pluginsLabel;
     @FXML
     private Label changeLanguageButton;
-
+    @Setter(onMethod_ = @Autowired)
     private ApplicationEventPublisher applicationEventPublisher;
+    @Setter(onMethod_ = @Autowired)
     private PeriodicalScanningService periodicalScanningService;
+    @Setter(onMethod_ = @Autowired)
     private NotificationService notificationService;
+    @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
-
-    @Autowired
-    public void set(PeriodicalScanningService periodicalScanningService, ApplicationEventPublisher applicationEventPublisher, NotificationService notificationService, LocalizationProvider localizationProvider) {
-        this.periodicalScanningService = periodicalScanningService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.notificationService = notificationService;
-        this.localizationProvider = localizationProvider;
-    }
 
     public void rescan() {
         periodicalScanningService.rescan();

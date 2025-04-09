@@ -10,7 +10,7 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.CancellingDropdownController"
       styleClass="popup" stylesheets="@/css/styles.css">
-    <Label fx:id="cancelButton" onMouseClicked="#cancel" textAlignment="JUSTIFY">
+    <Label fx:id="cancelButton" userData="localization:cancel_scanning" onMouseClicked="#cancel" textAlignment="JUSTIFY">
         <graphic>
             <fx:include disable="true" maxWidth="10" maxHeight="10" source="/icons/fxml/stop.fxml"/>
         </graphic>

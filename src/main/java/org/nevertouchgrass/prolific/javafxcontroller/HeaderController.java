@@ -16,6 +16,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
@@ -35,8 +36,12 @@ import java.util.HashSet;
 @Log4j2
 @SuppressWarnings("unused")
 public class HeaderController {
-
+    @Setter(onMethod_ = @Autowired)
     private ApplicationContext applicationContext;
+    @Setter(onMethod_ = @Autowired)
+    private ProjectsService projectsService;
+    @Setter(onMethod_ = @Autowired)
+    private ObjectFactory<Alert> alertFactory;
     @FXML
     public StackPane settingsButton;
     @FXML
@@ -47,15 +52,10 @@ public class HeaderController {
     public HBox gradientBox;
     @FXML
     public Label titleText;
-
     @FXML
     private AnchorPane header;
-
     @FXML
     private Circle closeButton;
-    private ProjectsService projectsService;
-
-    private ObjectFactory<Alert> alertFactory;
 
     @Autowired
     public void setSettingsPopup(ContextMenu settingsPopup) {
@@ -264,19 +264,6 @@ public class HeaderController {
             showAlert();
         }
     }
-
-    @Autowired
-    public void set(ApplicationContext applicationContext, ProjectsService projectsService, ObjectFactory<Alert> alert) {
-        this.applicationContext = applicationContext;
-        this.projectsService = projectsService;
-        this.alertFactory = alert;
-    }
-
-    @Autowired
-    public void setProjectsService(ProjectsService projectsService) {
-        this.projectsService = projectsService;
-    }
-
     private void showAlert() {
         var alert = alertFactory.getObject();
         alert.setTitle("Error");

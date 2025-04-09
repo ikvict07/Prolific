@@ -9,7 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
@@ -34,18 +34,10 @@ public class FooterController implements NotificationListener<Notification> {
     public StackPane logPane;
     @FXML
     public Label notification;
-
+    @Setter(onMethod_ = @Autowired)
     private Loader loader;
-
+    @Setter(onMethod_ = @Autowired)
     private ContextMenu cancellingPopup;
-
-
-    @Autowired
-    private void set(Loader loader, Pair<CancellingDropdownController, ContextMenu> cancelPopup) {
-        this.loader = loader;
-        cancellingPopup = cancelPopup.getValue();
-    }
-
     @Override
     public void onNotification(Notification notification) {
         if (notification instanceof InfoNotification in) {

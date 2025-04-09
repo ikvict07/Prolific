@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import lombok.Data;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
@@ -33,9 +34,9 @@ public class ProjectSettingDropdownController {
     @FXML
     public Label openInExplorerButton;
     private Project project;
-
+    @Setter(onMethod_ = @Autowired)
     private ProjectsRepository projectsRepository;
-
+    @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
 
     @FXML
@@ -43,13 +44,6 @@ public class ProjectSettingDropdownController {
         starButton.textProperty().bind(localizationProvider.star());
         openInExplorerButton.textProperty().bind(localizationProvider.directory());
     }
-
-    @Autowired
-    public void set(ProjectsRepository projectsRepository, LocalizationProvider localizationProvider) {
-        this.projectsRepository = projectsRepository;
-        this.localizationProvider = localizationProvider;
-    }
-
     public void starProject() {
         project.setIsStarred(!project.getIsStarred());
         projectsRepository.update(project);

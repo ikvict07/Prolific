@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
@@ -56,26 +57,23 @@ public class LogsAndMetricsPanelController {
     private boolean isLogsOpened = true;
 
     private final ContextMenu contextMenu = new ContextMenu();
-
+    @Setter(onMethod_ = @Autowired)
     private ProcessService processService;
+    @Setter(onMethod_ = @Autowired)
     private ProcessLogsService processLogsService;
-
+    @Setter(onMethod_ = @Autowired)
+    private MetricsService metricsService;
+    private LocalizationProvider localizationProvider;
     private ObservableMap<Project, Set<ProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
 
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
-    private MetricsService metricsService;
     private ProcessWrapper currentProcess;
-
-    private LocalizationProvider localizationProvider;
     private final SimpleStringProperty projectChoice = new SimpleStringProperty();
 
 
     @Autowired
-    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService, LocalizationProvider localizationProvider) {
-        this.processService = processService;
-        this.processLogsService = processLogsService;
-        this.metricsService = metricsService;
+    public void setLocalizationProvider(LocalizationProvider localizationProvider) {
         this.localizationProvider = localizationProvider;
         this.projectChoice.bind(localizationProvider.empty_chosen_project());
     }
@@ -204,10 +202,5 @@ public class LogsAndMetricsPanelController {
                     _ -> new MetricsChartComponent(metricsService, processWrapper));
             placeForScrollPane.getChildren().add(component);
         }
-    }
-
-    @Autowired
-    public void setMetricsService(MetricsService metricsService) {
-        this.metricsService = metricsService;
     }
 }

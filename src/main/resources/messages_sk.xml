@@ -27,4 +27,5 @@
     <entry key="log_info_language_changed">Jazyk zmenený na {0}</entry>
     <entry key="log_info_running_project">Spúšťanie projektu {0}</entry>
     <entry key="log_info_project_stopped">Projekt {0} zastavený</entry>
+    <entry key="cancel_scanning">Zrušiť skenovanie</entry>
 </properties>

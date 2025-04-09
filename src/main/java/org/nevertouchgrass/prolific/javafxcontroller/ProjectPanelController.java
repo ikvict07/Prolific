@@ -18,9 +18,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.Pair;
 import lombok.Data;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
@@ -76,34 +76,39 @@ public class ProjectPanelController {
     private HBox controlPanel;
     @FXML
     private StackPane configTypeIcon;
-
     private Project project;
-
+    @Setter(onMethod_ = @Autowired)
     private Stage primaryStage;
+    @Setter(onMethod_ = @Autowired)
     private ColorService colorService;
-
-    private AnchorPaneConstraintsService anchorPaneConstraintsService;
+    @Setter(onMethod_ = @Autowired)
     private ProjectsRepository projectsRepository;
+    @Setter(onMethod_ = @Autowired)
     private ProjectTypeIconRegistry projectTypeIconRegistry;
-
+    @Setter(onMethod_ = @Autowired)
     private ContextMenu projectSettingsPopup;
+    @Setter(onMethod_ = @Autowired)
     private ProjectSettingDropdownController projectSettingsDropdownController;
-
+    @Setter(onMethod_ = @Autowired)
     private RunConfigService runConfigService;
+    @Setter(onMethod_ = @Autowired)
+    private NotificationService notificationService;
+    @Setter(onMethod_ = @Autowired)
+    private DefaultProjectRunner projectRunner;
+    @Setter(onMethod_ = @Autowired)
+    private FxmlProvider fxmlProvider;
+    @Setter(onMethod_ = @Autowired)
+    private ProcessService processService;
+    @Setter(onMethod_ = @Autowired)
+    private LocalizationProvider localizationProvider;
 
     private ContextMenu contextMenu;
     private ProjectRunConfigs projectRunConfigs;
-    private FxmlProvider fxmlProvider;
-
-    private DefaultProjectRunner projectRunner;
-    private NotificationService notificationService;
-    private ProcessService processService;
 
     private RunConfig chosenConfig = null;
     private ProcessWrapper currentProcess = null;
     private Property<Boolean> isProjectRunning = new SimpleBooleanProperty(false);
     private ProjectsService projectsService;
-    private LocalizationProvider localizationProvider;
 
     public void init() {
         PROJECT_RUN_ERROR_MESSAGE = localizationProvider.log_error_running_project().get();
@@ -240,24 +245,6 @@ public class ProjectPanelController {
             log.info("Project {} stopped", project.getTitle());
         }
         isProjectRunning.setValue(false);
-    }
-
-
-    @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Pair<ProjectSettingDropdownController, ContextMenu> projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry, NotificationService notificationService, DefaultProjectRunner projectRunner, FxmlProvider fxmlProvider, ProcessService processService, LocalizationProvider localizationProvider) {
-        this.primaryStage = primaryStage;
-        this.colorService = colorService;
-        this.anchorPaneConstraintsService = anchorPaneConstraintsService;
-        this.projectsRepository = projectsRepository;
-        this.projectSettingsPopup = projectSettingsPopup.getValue();
-        this.projectSettingsDropdownController = projectSettingsPopup.getKey();
-        this.runConfigService = runConfigService;
-        this.projectTypeIconRegistry = projectTypeIconRegistry;
-        this.notificationService = notificationService;
-        this.projectRunner = projectRunner;
-        this.fxmlProvider = fxmlProvider;
-        this.processService = processService;
-        this.localizationProvider = localizationProvider;
     }
 
     private void runProjectLambda() {
