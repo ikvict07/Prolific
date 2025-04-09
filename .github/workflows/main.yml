@@ -21,15 +21,6 @@ jobs:
             echo "APPROVE_ALLOWED=true" >> $GITHUB_ENV
           else
             echo "User $GITHUB_ACTOR is NOT allowed to auto-approve."
-            exit 0
-          fi
-
-      - name: Check if PR is self-authored
-        if: env.APPROVE_ALLOWED == 'true'
-        run: |
-          PR_AUTHOR=$(jq --raw-output .pull_request.user.login "$GITHUB_EVENT_PATH")
-          if [[ "$PR_AUTHOR" == "$GITHUB_ACTOR" ]]; then
-            echo "Self-approval is not allowed. Exiting the auto-approve step..."
             echo "APPROVE_ALLOWED=false" >> $GITHUB_ENV
             exit 0
           fi
