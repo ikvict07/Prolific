@@ -13,7 +13,6 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -23,10 +22,8 @@ import java.nio.file.Path;
 
 @Component
 @Data
-@Scope("prototype")
 @Log4j2
 public class ProjectSettingDropdownController {
-
     @FXML
     public Label starButton;
     @FXML
