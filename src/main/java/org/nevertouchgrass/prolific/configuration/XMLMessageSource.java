@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.configuration;
 
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractMessageSource;
@@ -17,17 +18,12 @@ import java.util.Properties;
 @Component
 @Slf4j
 public class XMLMessageSource extends AbstractMessageSource {
-
+    @Setter(onMethod_ = @Autowired)
     private ResourceLoader resourceLoader;
 
     private String baseName;
     private final Map<Locale, Properties> messages = new HashMap<>();
     private Properties defaultProperties;
-
-    @Autowired
-    public void set(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
 
     public void setBaseName(String baseName) {
         this.baseName = baseName;
