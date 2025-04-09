@@ -20,6 +20,7 @@ import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
@@ -68,11 +69,14 @@ public class LogsAndMetricsPanelController {
     private MetricsService metricsService;
     private ProcessWrapper currentProcess;
 
+    private LocalizationProvider localizationProvider;
+
     @Autowired
-    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService) {
+    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService, LocalizationProvider localizationProvider) {
         this.processService = processService;
         this.processLogsService = processLogsService;
         this.metricsService = metricsService;
+        this.localizationProvider = localizationProvider;
     }
 
     private final SimpleStringProperty projectChoice = new SimpleStringProperty();
@@ -86,10 +90,12 @@ public class LogsAndMetricsPanelController {
     @Initialize
     @SuppressWarnings("unused") // Will be called by BPP
     public void init() {
+        runningProjects.textProperty().set(localizationProvider.running_projects_count().get());
         processes = processService.getObservableLiveProcesses();
         runningProjectsCount = new SimpleIntegerProperty(processes.size());
-        runningProjectsCount.addListener((_, _, newValue) -> Platform.runLater(() -> runningProjects.textProperty().set(runningProjects.getText().replaceAll("\\d+", String.valueOf(newValue)))));
-
+        runningProjectsCount.addListener((_, oldValue, newValue) -> Platform.runLater(() -> runningProjects.textProperty().set(localizationProvider.running_projects_count().get().replaceAll("\\d+", String.valueOf(newValue)))));
+        localizationProvider.running_projects_count().addListener((_, oldValue, newValue) -> Platform.runLater(() -> runningProjects.textProperty().set(newValue.replaceAll("\\d+", String.valueOf(runningProjectsCount.getValue())))));
+        runningProjects.textProperty().bindBidirectional(localizationProvider.running_projects_count());
         processes.addListener((MapChangeListener<? super Project, ? super Set<ProcessWrapper>>) change -> {
             if (change.wasAdded()) {
                 Project project = change.getKey();

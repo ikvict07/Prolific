@@ -12,7 +12,7 @@
         <padding>
             <Insets top="12" bottom="12" right="16" left="16"/>
         </padding>
-        <Label userData="localization:running_projects_count" fx:id="runningProjects" styleClass="running-projects-label" textOverrun="CENTER_ELLIPSIS"/>
+        <Label fx:id="runningProjects" styleClass="running-projects-label" textOverrun="CENTER_ELLIPSIS"/>
         <Region HBox.hgrow="ALWAYS"/>
         <HBox fx:id="projectLogsDropdown" spacing="10" styleClass="project-logs-dropdown" onMouseClicked="#showRunningProjects">
             <padding>

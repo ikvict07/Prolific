@@ -1,5 +1,6 @@
 package org.nevertouchgrass.prolific.configuration;
 
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -20,5 +21,10 @@ public class LocalizationConfig {
         messageSource.setUseCodeAsDefaultMessage(true);
         messageSource.setBaseName("messages");
         return messageSource;
+    }
+
+    @Bean
+    public LocalizationProvider localizationProvider(LocalizationProvider provider) {
+        return provider;
     }
 }
