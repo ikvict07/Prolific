@@ -89,13 +89,13 @@ public class LogsAndMetricsPanelController {
     public void initialize() {
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         chosenProject.textProperty().bind(projectChoice);
-        chooseProjectFirst.textProperty().bind(localizationProvider.getChooseProjectFirstProperty());
-        logsButton.textProperty().bind(localizationProvider.getLogsButtonProperty());
-        metricsButton.textProperty().bind(localizationProvider.getMetricsButtonProperty());
-        projectChoice.set(localizationProvider.getEmptyChosenProjectProperty().get());
-        localizationProvider.getEmptyChosenProjectProperty().addListener((_, _, newValue) -> projectChoice.set(newValue));
-        runningProjects.setText(localizationProvider.getRunningProjectsCountProperty().get());
-        localizationProvider.getRunningProjectsCountProperty().addListener((_, _, _) -> runningProjects.setText(localizationProvider.getRunningProjectsCountProperty().get().replaceAll("\\d+", String.valueOf(runningProjectsCount.get()))));
+        chooseProjectFirst.textProperty().bind(localizationProvider.choose_project_first());
+        logsButton.textProperty().bind(localizationProvider.logs_button());
+        metricsButton.textProperty().bind(localizationProvider.metrics_button());
+        projectChoice.set(localizationProvider.empty_chosen_project().get());
+        localizationProvider.empty_chosen_project().addListener((_, _, newValue) -> projectChoice.set(newValue));
+        runningProjects.setText(localizationProvider.running_projects_count().get());
+        localizationProvider.running_projects_count().addListener((_, _, _) -> runningProjects.setText(localizationProvider.running_projects_count().get().replaceAll("\\d+", String.valueOf(runningProjectsCount.get()))));
     }
 
     @Initialize

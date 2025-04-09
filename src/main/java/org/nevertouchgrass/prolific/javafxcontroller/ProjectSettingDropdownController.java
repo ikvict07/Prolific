@@ -40,8 +40,8 @@ public class ProjectSettingDropdownController {
 
     @FXML
     public void initialize() {
-        starButton.textProperty().bind(localizationProvider.getStarProperty());
-        openInExplorerButton.textProperty().bind(localizationProvider.getDirectoryProperty());
+        starButton.textProperty().bind(localizationProvider.star());
+        openInExplorerButton.textProperty().bind(localizationProvider.directory());
     }
 
     @Autowired
@@ -79,7 +79,7 @@ public class ProjectSettingDropdownController {
         this.project = project;
 
         contextMenu.getItems().clear();
-        starButton.textProperty().bind(Boolean.TRUE.equals(project.getIsStarred()) ? localizationProvider.getUnstarProperty() : localizationProvider.getStarProperty());
+        starButton.textProperty().bind(Boolean.TRUE.equals(project.getIsStarred()) ? localizationProvider.unstar() : localizationProvider.star());
 
         for (Node node : root.getChildren()) {
             MenuItem menuItem = new MenuItem(((Label) node).getText());

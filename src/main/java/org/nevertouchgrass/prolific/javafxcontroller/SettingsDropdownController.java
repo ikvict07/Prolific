@@ -34,10 +34,10 @@ public class SettingsDropdownController {
 
     @FXML
     public void initialize() {
-        settingsLabel.textProperty().bind(localizationProvider.getSettingsProperty());
-        scanLabel.textProperty().bind(localizationProvider.getScannerProperty());
-        pluginsLabel.textProperty().bind(localizationProvider.getPluginsProperty());
-        changeLanguageButton.textProperty().bind(localizationProvider.getChangeLanguageProperty());
+        settingsLabel.textProperty().bind(localizationProvider.settings());
+        scanLabel.textProperty().bind(localizationProvider.scanner());
+        pluginsLabel.textProperty().bind(localizationProvider.plugins());
+        changeLanguageButton.textProperty().bind(localizationProvider.change_language());
     }
 
 

@@ -1,6 +1,5 @@
 package org.nevertouchgrass.prolific.gradle.tasks;
 
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.gradle.api.DefaultTask;
@@ -44,28 +43,14 @@ public class GenerateLocalizationProviderInterfaceTask extends DefaultTask {
 
         try (BufferedWriter writer = Files.newBufferedWriter(interfaceFile.toPath())) {
             writer.write("package " + packageName + ";\n\n");
-            writer.write("import javafx.beans.property.StringProperty;\nimport javafx.beans.property.SimpleStringProperty;\n\n");
+            writer.write("import javafx.beans.property.StringProperty;\n\n");
             writer.write("public interface " + interfaceName + " {\n");
             for (String key : properties.stringPropertyNames()) {
-                writer.write("\tdefault StringProperty get" + normalize(key) + "Property() { return new SimpleStringProperty(\"" + key + "\"); }\n");
+                writer.write("\tStringProperty " + key + "();\n");
             }
             writer.write("}");
         }
 
         getLogger().lifecycle("Generated interface: " + interfaceFile.getAbsolutePath());
-    }
-
-    private String normalize(@NonNull String str) {
-        str = str.trim();
-        if (!str.isEmpty()) {
-            str = str.substring(0, 1).toUpperCase() + str.substring(1);
-        }
-
-        while (str.contains("_")) {
-            int index = str.indexOf("_");
-            str = str.substring(0, index) + str.substring(index + 1, index + 2).toUpperCase() + str.substring(index + 2);
-        }
-
-        return str.replace("_", "");
     }
 }
