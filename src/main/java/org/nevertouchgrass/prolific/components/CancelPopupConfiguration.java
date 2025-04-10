@@ -1,49 +1,30 @@
 package org.nevertouchgrass.prolific.components;
 
-import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.util.Pair;
-import org.nevertouchgrass.prolific.javafxcontroller.CancellingDropdownController;
-import org.nevertouchgrass.prolific.model.FxmlLoadedResource;
-import org.nevertouchgrass.prolific.service.FxmlProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.nevertouchgrass.prolific.util.ContextMenuCreator.getContextMenu;
+
 @Configuration
-
+@RequiredArgsConstructor
 public class CancelPopupConfiguration {
-    private FxmlProvider fxmlProvider;
-
-    @Autowired
-    public void set(FxmlProvider fxmlProvider) {
-        this.fxmlProvider = fxmlProvider;
-    }
+    private final ApplicationContext applicationContext;
 
     @Bean
     public ContextMenu cancellingPopup() {
         ContextMenu contextMenu = new ContextMenu();
-        var options = fxmlProvider.getFxmlResource("cancellingDropdown");
+        var options = (Parent) applicationContext.getBean("cancellingDropdownParent");
         return getContextMenu(contextMenu, options);
     }
 
     @Bean
-    public Pair<CancellingDropdownController, ContextMenu> cancelPopup() {
+    public ContextMenu cancelPopup() {
         ContextMenu contextMenu = new ContextMenu();
-        var options = fxmlProvider.getFxmlResource("cancellingDropdown");
-        return new Pair<>((CancellingDropdownController) options.getController(), getContextMenu(contextMenu, options));
-    }
-
-    private ContextMenu getContextMenu(ContextMenu contextMenu, FxmlLoadedResource<Object> options) {
-        for (Node node : options.getParent().getChildrenUnmodifiable()) {
-            Label label = (Label) node;
-            MenuItem menuItem = new MenuItem(label.getText());
-            menuItem.setGraphic(label.getGraphic());
-            menuItem.setOnAction(_ -> node.getOnMouseClicked().handle(null));
-            contextMenu.getItems().addAll(menuItem);
-        }
-        return contextMenu;
+        var options = (Parent) applicationContext.getBean("cancellingDropdownParent");
+        return getContextMenu(contextMenu, options);
     }
 }

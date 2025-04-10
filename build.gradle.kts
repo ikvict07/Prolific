@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.javaFx)
     alias(libs.plugins.beryx)
     alias(libs.plugins.maven.publish)
+    alias(libs.plugins.generate.localization.provider)
 }
 
 group = "org.nevertouchgrass"
@@ -47,13 +48,19 @@ dependencies {
     implementation(libs.richtext)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+    implementation(libs.jakarta)
 
-    testCompileOnly(libs.lombok)
+    testImplementation(libs.lombok)
     testAnnotationProcessor(libs.lombok)
     testImplementation(libs.bundles.testing)
-    testImplementation(libs.mockito)
-    testRuntimeOnly(libs.junitJupiter)
+    testImplementation(libs.jakarta)
     mockitoAgent("org.mockito:mockito-core:5.14.0") { isTransitive = false }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom(libs.junitBom.get().toString())
+    }
 }
 
 tasks {
@@ -104,7 +111,12 @@ tasks.register<Exec>("runMac") {
     group = "application"
     dependsOn(tasks.bootJar)
     workingDir = rootDir
-    commandLine("java", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
+    commandLine(
+        "java",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "-jar",
+        "${tasks.bootJar.get().archiveFile.get().asFile}"
+    )
 }
 
 runtime {

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="settings">Settings</entry>
+    <entry key="scanner">Run scanning</entry>
+    <entry key="plugins">Plugins</entry>
+    <entry key="star">Star</entry>
+    <entry key="unstar">Unstar</entry>
+    <entry key="directory">Open directory</entry>
+    <entry key="change_language">Change language</entry>
+    <entry key="choose_project_first">Choose a project first</entry>
+    <entry key="logs_button">Logs</entry>
+    <entry key="metrics_button">Metrics</entry>
+    <entry key="empty_chosen_project">None</entry>
+    <entry key="running_projects_count">You have 0 running projects</entry>
+    <entry key="custom_configurations">Custom configurations</entry>
+    <entry key="imported_configurations">Imported configurations</entry>
+    <entry key="log_no_configuration_selected">No configuration selected</entry>
+    <entry key="log_error_running_project">Error while running project {0}</entry>
+    <entry key="log_error_calling_method">Error occurred while calling method: {0}</entry>
+    <entry key="log_error_reading_ram">Couldn't read RAM usage</entry>
+    <entry key="log_error_reading_cpu">Couldn't read CPU usage</entry>
+    <entry key="log_info_scanning_for_projects">Scanning for projects</entry>
+    <entry key="log_info_scanning_for_projects_cancelled">Scanning cancelled. Found {0} projects</entry>
+    <entry key="log_info_scanning_for_projects_finished">Scanning finished, found {0} projects</entry>
+    <entry key="log_info_scanning_cancelled">Scanning cancelled</entry>
+    <entry key="log_info_language_changed">Language changed to {0}</entry>
+    <entry key="log_info_running_project">Running project {0}</entry>
+    <entry key="log_info_project_stopped">Project {0} stopped</entry>
+    <entry key="cancel_scanning">Cancel scanning</entry>
+    <entry key="log_error_cant_exclude_project_while_running">You can't exclude while process is running</entry>
+    <entry key="log_info_excluded_project">{0} excluded</entry>
+    <entry key="log_error_cant_delete_project_while_running">You can't delete while process is running</entry>
+    <entry key="log_info_deleted_project">{0} deleted</entry>
+    <entry key="log_info_cant_exclude_project_permission">You don't have permission to exclude this project</entry>
+    <entry key="log_info_cant_delete_project_permission">"You don't have permission to delete this project"</entry>
+    <entry key="log_error_deleting_project">Error occurred while deleting {0}</entry>
+    <entry key="log_info_cant_scan_while_running">You can't scan while processes are running</entry>
+    <entry key="exclude_project">Exclude project</entry>
+    <entry key="delete_project">Delete project</entry>
+</properties>

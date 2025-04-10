@@ -42,15 +42,19 @@ public class ProjectsPanelController {
     private Region upperShadow;
     @FXML
     private Region lowerShadow;
-
+    @Setter(onMethod_ = @Autowired)
     private FxmlProvider fxmlProvider;
+    @Setter(onMethod_ = @Autowired)
     private UserSettingsHolder userSettingsHolder;
+    @Setter(onMethod_ = @Autowired)
     private ProjectsRepository projectsRepository;
+    @Setter(onMethod_ = @Autowired)
     private ProjectsService projectsService;
+    @Setter(onMethod_ = @Autowired)
+    private ProcessService processService;
 
     private Predicate<Project> filterFunction = ProjectFilterService.getDefaultFilter();
     private Comparator<Project> projectComparator = ProjectComparatorBuilder.getDefault();
-    private ProcessService processService;
 
     @Initialize
     private void init() {
@@ -156,14 +160,5 @@ public class ProjectsPanelController {
         } else {
             return (parts[0].charAt(0) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
         }
-    }
-
-    @Autowired
-    private void set(FxmlProvider fxmlProvider, UserSettingsHolder userSettingsHolder, ProjectsRepository projectsRepository, ProjectsService projectsService, ProcessService processService) {
-        this.fxmlProvider = fxmlProvider;
-        this.userSettingsHolder = userSettingsHolder;
-        this.projectsRepository = projectsRepository;
-        this.projectsService = projectsService;
-        this.processService = processService;
     }
 }

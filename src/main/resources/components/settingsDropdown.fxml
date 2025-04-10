@@ -4,7 +4,8 @@
 <?import javafx.scene.layout.VBox?>
 <VBox id="settingsDropdown" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsDropdownController" stylesheets="@/css/styles.css">
-    <Label maxWidth="Infinity" text="Settings..." textAlignment="JUSTIFY"/>
-    <Label maxWidth="Infinity" onMouseClicked="#rescan" text="Run scanning" textAlignment="JUSTIFY"/>
-    <Label maxWidth="Infinity" text="Plugins" textAlignment="JUSTIFY"/>
+    <Label maxWidth="Infinity" userData="localization:settings" fx:id="settingsLabel" textAlignment="JUSTIFY"/>
+    <Label maxWidth="Infinity" userData="localization:scanner" fx:id="scanLabel" onMouseClicked="#rescan" textAlignment="JUSTIFY"/>
+    <Label maxWidth="Infinity" userData="localization:plugins" fx:id="pluginsLabel" textAlignment="JUSTIFY"/>
+    <Label maxWidth="Infinity" userData="localization:change_language" fx:id="changeLanguageButton" onMouseClicked="#changeLanguage" textAlignment="JUSTIFY"/>
 </VBox>

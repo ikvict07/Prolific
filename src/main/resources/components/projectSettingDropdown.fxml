@@ -6,15 +6,24 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectSettingDropdownController"
       styleClass="popup" stylesheets="@/css/styles.css">
-    <Label fx:id="starButton" onMouseClicked="#starProject" textAlignment="JUSTIFY">
+    <Label fx:id="starButton" userData="localization:star" onMouseClicked="#starProject" textAlignment="JUSTIFY">
         <graphic>
             <fx:include disable="true" maxWidth="10" maxHeight="10" source="star.fxml"/>
         </graphic>
     </Label>
-    <Label fx:id="openInExplorerButton" onMouseClicked="#openInExplorer" textAlignment="JUSTIFY">
+    <Label fx:id="openInExplorerButton" userData="localization:directory" onMouseClicked="#openInExplorer" textAlignment="JUSTIFY">
         <graphic>
             <fx:include source="/icons/fxml/folder.fxml"/>
         </graphic>
-        Open directory
+    </Label>
+    <Label fx:id="excludeProjectButton" userData="localization:exclude_project" onMouseClicked="#excludeProject" textAlignment="JUSTIFY" visible="false">
+        <graphic>
+            <fx:include source="/icons/fxml/exclude.fxml"/>
+        </graphic>
+    </Label>
+    <Label fx:id="deleteProjectButton" userData="localization:delete_project" onMouseClicked="#deleteProject" textAlignment="JUSTIFY" visible="false">
+        <graphic>
+            <fx:include source="/icons/fxml/removeBin.fxml"/>
+        </graphic>
     </Label>
 </VBox>

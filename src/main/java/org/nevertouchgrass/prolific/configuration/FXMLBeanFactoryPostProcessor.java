@@ -35,7 +35,6 @@ public class FXMLBeanFactoryPostProcessor
 
         FxmlUtilService.getFxmlNames(projectConfigurationProperties).forEach(fxmlName -> {
             String beanName = fxmlName + "Parent";
-
             BeanDefinition beanDefinition = BeanDefinitionBuilder
                     .genericBeanDefinition(Parent.class, () -> FxmlUtilService.loadFxml(fxmlName, projectConfigurationProperties, applicationContext))
                     .setScope(BeanDefinition.SCOPE_SINGLETON).setLazyInit(true).getBeanDefinition();

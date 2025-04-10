@@ -8,6 +8,7 @@ import org.nevertouchgrass.prolific.annotation.OnSave;
 import org.nevertouchgrass.prolific.annotation.OnUpdate;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
+import org.nevertouchgrass.prolific.service.scaners.ProjectResolver;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 

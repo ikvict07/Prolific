@@ -14,12 +14,14 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
@@ -55,26 +57,26 @@ public class LogsAndMetricsPanelController {
     private boolean isLogsOpened = true;
 
     private final ContextMenu contextMenu = new ContextMenu();
-
+    @Setter(onMethod_ = @Autowired)
     private ProcessService processService;
+    @Setter(onMethod_ = @Autowired)
     private ProcessLogsService processLogsService;
-
+    @Setter(onMethod_ = @Autowired)
+    private MetricsService metricsService;
+    private LocalizationProvider localizationProvider;
     private ObservableMap<Project, Set<ProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
 
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
-    private MetricsService metricsService;
     private ProcessWrapper currentProcess;
+    private final SimpleStringProperty projectChoice = new SimpleStringProperty();
 
 
     @Autowired
-    public void set(ProcessService processService, ProcessLogsService processLogsService, MetricsService metricsService) {
-        this.processService = processService;
-        this.processLogsService = processLogsService;
-        this.metricsService = metricsService;
+    public void setLocalizationProvider(LocalizationProvider localizationProvider) {
+        this.localizationProvider = localizationProvider;
+        this.projectChoice.bind(localizationProvider.empty_chosen_project());
     }
-
-    private final SimpleStringProperty projectChoice = new SimpleStringProperty("None");
 
     @FXML
     public void initialize() {
@@ -82,13 +84,19 @@ public class LogsAndMetricsPanelController {
         chosenProject.textProperty().bind(projectChoice);
     }
 
+    /**
+     * Will be called by InitializeAnnotationProcessor
+     * @see org.nevertouchgrass.prolific.listener.InitializeAnnotationProcessor
+     */
     @Initialize
-    @SuppressWarnings("unused") // Will be called by BPP
+    @SuppressWarnings("unused")
     public void init() {
+        runningProjects.textProperty().set(localizationProvider.running_projects_count().get());
         processes = processService.getObservableLiveProcesses();
         runningProjectsCount = new SimpleIntegerProperty(processes.size());
-        runningProjectsCount.addListener((_, _, newValue) -> Platform.runLater(() -> runningProjects.setText(runningProjects.getText().replaceAll("\\d+", String.valueOf(newValue)))));
-
+        runningProjectsCount.addListener((_, oldValue, newValue) -> Platform.runLater(() -> runningProjects.textProperty().set(localizationProvider.running_projects_count().get().replaceAll("\\d+", String.valueOf(newValue)))));
+        localizationProvider.running_projects_count().addListener((_, oldValue, newValue) -> Platform.runLater(() -> runningProjects.textProperty().set(newValue.replaceAll("\\d+", String.valueOf(runningProjectsCount.getValue())))));
+        runningProjects.textProperty().bindBidirectional(localizationProvider.running_projects_count());
         processes.addListener((MapChangeListener<? super Project, ? super Set<ProcessWrapper>>) change -> {
             if (change.wasAdded()) {
                 Project project = change.getKey();
@@ -106,6 +114,7 @@ public class LogsAndMetricsPanelController {
                     menuItem.fire();
                 } else {
                     menuItem.addEventHandler(ActionEvent.ACTION, _ -> {
+                        projectChoice.unbind();
                         projectChoice.set(project.getTitle());
 
                         ContextMenu subMenu = new ContextMenu();
@@ -166,6 +175,7 @@ public class LogsAndMetricsPanelController {
         menuItem.setContent(new Label(text));
         menuItem.setHideOnClick(false);
         menuItem.setOnAction(_ -> Platform.runLater(() -> {
+            projectChoice.unbind();
             projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
             currentProcess = processWrapper;
             changeLogs(processWrapper);
@@ -192,10 +202,5 @@ public class LogsAndMetricsPanelController {
                     _ -> new MetricsChartComponent(metricsService, processWrapper));
             placeForScrollPane.getChildren().add(component);
         }
-    }
-
-    @Autowired
-    public void setMetricsService(MetricsService metricsService) {
-        this.metricsService = metricsService;
     }
 }

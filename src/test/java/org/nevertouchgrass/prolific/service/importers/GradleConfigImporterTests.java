@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.BackendTestBase;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.configurations.importers.GradleConfigImporter;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.nio.file.Path;
 
@@ -18,6 +20,9 @@ class GradleConfigImporterTests extends BackendTestBase {
     public GradleConfigImporterTests(GradleConfigImporter importer) {
         this.importer = importer;
     }
+
+    @MockitoBean
+    private LocalizationProvider localizationProvider;
 
     @Test
     void shouldResolveRunConfigs() {
