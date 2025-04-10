@@ -36,4 +36,6 @@
     <entry key="log_info_cant_delete_project_permission">Nemáte oprávnenie na zmazanie tohto projektu</entry>
     <entry key="log_error_deleting_project">Pri mazání {0} došlo k chybě</entry>
     <entry key="log_info_cant_scan_while_running">Nemôžete skenovať, zatiaľ čo procesy bežia</entry>
+    <entry key="exclude_project">Vylúčiť projekt</entry>
+    <entry key="delete_project">Zmazať projekt</entry>
 </properties>

@@ -36,4 +36,6 @@
     <entry key="log_info_cant_delete_project_permission">"You don't have permission to delete this project"</entry>
     <entry key="log_error_deleting_project">Error occurred while deleting {0}</entry>
     <entry key="log_info_cant_scan_while_running">You can't scan while processes are running</entry>
+    <entry key="exclude_project">Exclude project</entry>
+    <entry key="delete_project">Delete project</entry>
 </properties>

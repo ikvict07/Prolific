@@ -16,16 +16,14 @@
             <fx:include source="/icons/fxml/folder.fxml"/>
         </graphic>
     </Label>
-    <Label fx:id="excludeProjectButton" onMouseClicked="#excludeProject" textAlignment="JUSTIFY" visible="false">
+    <Label fx:id="excludeProjectButton" userData="localization:exclude_project" onMouseClicked="#excludeProject" textAlignment="JUSTIFY" visible="false">
         <graphic>
             <fx:include source="/icons/fxml/exclude.fxml"/>
         </graphic>
-        Exclude project
     </Label>
-    <Label fx:id="deleteProjectButton" onMouseClicked="#deleteProject" textAlignment="JUSTIFY" visible="false">
+    <Label fx:id="deleteProjectButton" userData="localization:delete_project" onMouseClicked="#deleteProject" textAlignment="JUSTIFY" visible="false">
         <graphic>
             <fx:include source="/icons/fxml/removeBin.fxml"/>
         </graphic>
-        Delete project
     </Label>
 </VBox>
