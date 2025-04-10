@@ -16,6 +16,7 @@ lombok = "1.18.38"
 springBootTest = "3.4.4"
 junitBom = "5.13.0-M2"
 jakarta = "3.0.0"
+freeFair = "8.13.1"
 
 [libraries]
 springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
@@ -60,5 +61,5 @@ application = { id = "application" }
 maven-publish = { id = "maven-publish" }
 jacoco = { id = "jacoco" }
 beryx = { id = "org.beryx.runtime", version.ref = "beryx" }
-java-gradle-plugin = { id = "java-gradle-plugin" }
 generate-localization-provider = { id = "org.nevertouchgrass.prolific.generate-localization-provider"}
+lombok = { id = "io.freefair.lombok", version.ref = "freeFair" }

@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     java
     alias(libs.plugins.jacoco)
@@ -8,6 +10,7 @@ plugins {
     alias(libs.plugins.beryx)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.generate.localization.provider)
+    alias(libs.plugins.lombok)
 }
 
 group = "org.nevertouchgrass"
