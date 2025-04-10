@@ -31,5 +31,6 @@ public class GenerateLocalizationProviderInterfacePlugin implements Plugin<Proje
         });
 
         project.getTasks().named("compileJava", JavaCompile.class).configure(task -> task.dependsOn(taskName));
+        project.getTasks().named("processResources").configure(task -> task.dependsOn(taskName));
     }
 }

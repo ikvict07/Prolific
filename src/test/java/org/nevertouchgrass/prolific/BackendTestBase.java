@@ -9,7 +9,6 @@ import org.nevertouchgrass.prolific.configuration.StageComponentAnnotationBeanPo
 import org.nevertouchgrass.prolific.javafxcontroller.FooterController;
 import org.nevertouchgrass.prolific.javafxcontroller.HeaderController;
 import org.nevertouchgrass.prolific.javafxcontroller.LogsAndMetricsPanelController;
-import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -38,6 +37,4 @@ public abstract class BackendTestBase {
     private LogsAndMetricsPanelController logsAndMetricsPanelController;
     @MockitoBean
     private LocalizationProviderBeanFactoryPostProcessor localizationProviderBeanFactoryPostProcessor;
-    @MockitoBean
-    private LocalizationProvider localizationProvider;
 }

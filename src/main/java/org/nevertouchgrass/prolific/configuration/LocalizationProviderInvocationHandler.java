@@ -1,21 +1,16 @@
 package org.nevertouchgrass.prolific.configuration;
 
 import javafx.beans.property.StringProperty;
+import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationHandler;
 
 @Component
+@RequiredArgsConstructor
 public class LocalizationProviderInvocationHandler implements InvocationHandler {
-
-    private LocalizationHolder localizationHolder;
-
-    @Autowired
-    public void setLocalizationHolder(LocalizationHolder localizationHolder) {
-        this.localizationHolder = localizationHolder;
-    }
+    private final LocalizationHolder localizationHolder;
 
     @Override
     public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) {

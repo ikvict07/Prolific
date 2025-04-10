@@ -3,7 +3,10 @@ package org.nevertouchgrass.prolific.service;
 import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.constants.action.ExcludeProjectAction;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
+import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
+import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
 import org.nevertouchgrass.prolific.service.permissions.contract.PermissionChecker;
@@ -20,6 +23,7 @@ public class ProjectExcluderService {
     private final NotificationService notificationService;
     private final ProjectsRepository projectsRepository;
     private final ProcessService processService;
+    private final LocalizationProvider localizationProvider;
 
     public void excludeProject(ExcludeProjectAction action) {
         var permissionChecker = permissionRegistry.getChecker(action.getClass());
@@ -29,17 +33,18 @@ public class ProjectExcluderService {
                     (PermissionChecker<ExcludeProjectAction>) permissionChecker;
 
             if (castedChecker.hasPermission(action)) {
-                if (!processService.getObservableLiveProcesses().get(action.project()).isEmpty()) {
-//                    notificationService.notifyError(ErrorNotification.of(null, "You can't exclude while process is running")); TODO: localize
+                var observableLiveProcesses = processService.getObservableLiveProcesses().get(action.project());
+                if (observableLiveProcesses != null && !observableLiveProcesses.isEmpty()) {
+                    notificationService.notifyError(ErrorNotification.of(null, localizationProvider.log_error_cant_exclude_project_while_running()));
                     return;
                 }
                 var pathTOExclude = action.project().getPath();
                 userSettingsHolder.getExcludedDirs().add(formatPath(pathTOExclude));
                 userSettingsService.saveSettings();
                 projectsRepository.delete(action.project());
-//                notificationService.notifyInfo(InfoNotification.of("{} excluded", action.project().getTitle())); TODO: localize
+                notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_excluded_project(), action.project().getTitle()));
             } else {
-//                notificationService.notifyInfo(new InfoNotification("You don't have permission to exclude this project")); TODO: localize
+                notificationService.notifyInfo(new InfoNotification(localizationProvider.log_info_cant_exclude_project_permission()));
             }
         }
     }

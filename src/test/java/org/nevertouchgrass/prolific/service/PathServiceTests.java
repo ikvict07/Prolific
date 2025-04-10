@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.nevertouchgrass.prolific.BackendTestBase;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.settings.PathService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.net.URI;
 import java.nio.file.FileSystems;
@@ -16,6 +18,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class PathServiceTests extends BackendTestBase {
     @Autowired
     private PathService ps;
+
+    @MockitoBean
+    private LocalizationProvider localizationProvider;
 
     @ParameterizedTest
     @CsvSource({"jar:/usr/local/bin, /usr/local/bin, linux", "jar:/C:/Users/user, C:/Users/user, Windows", "jar:/Users/user, /Users/user, macOS"})

@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ public class LocalizationHolder implements ApplicationListener<LocalizationChang
     private final Map<String, StringProperty> localizationMap = new ConcurrentHashMap<>();
 
     @PostConstruct
-    @SneakyThrows
     public void init() {
         Properties properties = localizationManager.getProperties(Locale.forLanguageTag("en"));
         properties.forEach((key, value) -> localizationMap.put(key.toString(), new SimpleStringProperty(value.toString())));

@@ -48,13 +48,19 @@ dependencies {
     implementation(libs.richtext)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+    implementation(libs.jakarta)
 
-    testCompileOnly(libs.lombok)
+    testImplementation(libs.lombok)
     testAnnotationProcessor(libs.lombok)
     testImplementation(libs.bundles.testing)
-    testImplementation(libs.mockito)
-    testRuntimeOnly(libs.junitJupiter)
+    testImplementation(libs.jakarta)
     mockitoAgent("org.mockito:mockito-core:5.14.0") { isTransitive = false }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom(libs.junitBom.get().toString())
+    }
 }
 
 tasks {

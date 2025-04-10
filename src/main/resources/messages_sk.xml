@@ -28,4 +28,12 @@
     <entry key="log_info_running_project">Spúšťanie projektu {0}</entry>
     <entry key="log_info_project_stopped">Projekt {0} zastavený</entry>
     <entry key="cancel_scanning">Zrušiť skenovanie</entry>
+    <entry key="log_error_cant_exclude_project_while_running">Nemôžete vylúčiť, zatiaľ čo proces beží</entry>
+    <entry key="log_info_excluded_project">{0} vylúčený</entry>
+    <entry key="log_info_cant_exclude_project_permission">Nemáte oprávnenie na vylúčenie tohto projektu</entry>
+    <entry key="log_error_cant_delete_project_while_running">Nemôžete zmazať, zatiaľ čo proces beží</entry>
+    <entry key="log_info_deleted_project">{0} zmazaný</entry>
+    <entry key="log_info_cant_delete_project_permission">Nemáte oprávnenie na zmazanie tohto projektu</entry>
+    <entry key="log_error_deleting_project">Pri mazání {0} došlo k chybě</entry>
+    <entry key="log_info_cant_scan_while_running">Nemôžete skenovať, zatiaľ čo procesy bežia</entry>
 </properties>
