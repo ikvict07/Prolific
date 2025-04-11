@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ import java.util.Locale;
 @Component
 @Log4j2
 @SuppressWarnings("unused")
+@Lazy
 public class SettingsDropdownController {
     @Setter(onMethod_ = {@Qualifier("settingsStage") ,@Autowired})
     private Stage settingsStage;

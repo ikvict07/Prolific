@@ -16,12 +16,14 @@ import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 
 @Component
 @Slf4j
 @SuppressWarnings("unused")
+@Lazy
 public class SettingsHeaderController extends AbstractHeaderController {
     @FXML
     public AnchorPane settingsHeader;
