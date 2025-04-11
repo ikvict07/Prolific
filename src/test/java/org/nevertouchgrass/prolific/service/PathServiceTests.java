@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.nevertouchgrass.prolific.BackendTestBase;
+import org.nevertouchgrass.prolific.annotation.ProlificTestApplication;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.settings.PathService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+@ProlificTestApplication
 class PathServiceTests extends BackendTestBase {
     @Autowired
     private PathService ps;
