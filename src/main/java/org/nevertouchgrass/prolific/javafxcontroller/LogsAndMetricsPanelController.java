@@ -27,6 +27,7 @@ import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import java.util.Set;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
+@Lazy
 @Slf4j
 @Component
 @SuppressWarnings("java:S1450")

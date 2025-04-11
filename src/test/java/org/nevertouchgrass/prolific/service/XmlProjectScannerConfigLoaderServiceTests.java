@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.BackendTestBase;
+import org.nevertouchgrass.prolific.annotation.ProlificTestApplication;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.settings.XmlProjectScannerConfigLoaderService;
@@ -12,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
+@ProlificTestApplication
 class XmlProjectScannerConfigLoaderServiceTests extends BackendTestBase {
 
 	@Autowired

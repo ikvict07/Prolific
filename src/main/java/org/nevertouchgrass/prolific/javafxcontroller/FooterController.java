@@ -17,10 +17,12 @@ import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.model.notification.contract.Notification;
 import org.nevertouchgrass.prolific.service.notification.contract.NotificationListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+@Lazy
 @Component
 @Log4j2
 public class FooterController implements NotificationListener<Notification> {
