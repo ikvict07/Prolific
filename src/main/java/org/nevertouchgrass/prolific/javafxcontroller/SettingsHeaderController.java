@@ -8,11 +8,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 
 @Component
 @SuppressWarnings("unused")
+@Lazy
 public class SettingsHeaderController {
     @FXML
     private AnchorPane header;
