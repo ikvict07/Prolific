@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(SpringFXConfigurationProperties.class)
 public class JavaFXConfiguration {
 
-	@Bean(destroyMethod = "")
+	@Bean(name = "primaryStage", destroyMethod = "")
 	public Stage primaryStage() {
 		CompletableFuture<Stage> future = new CompletableFuture<>();
 		Platform.runLater(() -> future.complete(new Stage()));

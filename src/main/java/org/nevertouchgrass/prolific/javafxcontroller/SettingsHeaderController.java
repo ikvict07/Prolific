@@ -1,72 +1,85 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.stage.Screen;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@Slf4j
 @SuppressWarnings("unused")
-public class SettingsHeaderController {
+public class SettingsHeaderController extends AbstractHeaderController {
+    @FXML
+    public AnchorPane settingsHeader;
     @FXML
     private AnchorPane header;
+    @FXML
     public Circle closeButton;
+    @FXML
     public Circle minimizeButton;
+    @FXML
     public Circle maximizeButton;
+    @FXML
     public Label titleText;
-    public HBox gradientBox;
+    @FXML
+    public HBox settingsGradientBox;
 
-    private Stage stage;
-
-    private final double xOffset = 0;
-    private final double yOffset = 0;
-
-    private double heightBeforeMaximizing;
-    private double widthBeforeMaximizing;
-
-    private double xBeforeMaximizing;
-    private double yBeforeMaximizing;
-
-    private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
-
-    private final double minWidth = visualBounds.getMaxX() / 1.5;
-    private final double minHeight = visualBounds.getMaxY() / 1.5;
-
-    @FXML public void initialize() {
-        stage = new Stage();
+    @Autowired
+    public void setStage(@Qualifier("settingsStage") Stage stage) {
+        this.stage = stage;
     }
 
+    @Setter(onMethod_ = {@Qualifier("primaryStage"), @Autowired})
+    private Stage primaryStage;
 
-    public void handleHeaderMaximize() {
-        if (stage.isMaximized()) {
-            stage.setMaximized(false);
-            stage.setWidth(widthBeforeMaximizing);
-            stage.setHeight(heightBeforeMaximizing);
-            stage.setX(xBeforeMaximizing);
-            stage.setY(yBeforeMaximizing);
-            double endX = stage.getX() + stage.getWidth();
-        } else {
-            xBeforeMaximizing = stage.getX();
-            yBeforeMaximizing = stage.getY();
-            widthBeforeMaximizing = stage.getWidth();
-            heightBeforeMaximizing = stage.getHeight();
-            stage.setMaximized(true);
-        }
+    @Setter(onMethod_ = @Autowired)
+    private ApplicationContext applicationContext;
 
+    @Initialize
+    public void init() {
+        var settingsScreen = (AnchorPane) applicationContext.getBean("settingsScreenParent");
+
+        double minWidth = visualBounds.getMaxX() / 2;
+        double minHeight = visualBounds.getMaxY() / 2;
+        setMinWidth(minWidth);
+        setMinHeight(minHeight);
+
+        Scene scene = new Scene(settingsScreen, minWidth, minHeight);
+        scene.setFill(Color.TRANSPARENT);
+
+        stage.setScene(scene);
+        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(primaryStage);
+
+
+        setHeader(header);
+        setupDragging();
+        setupResizing();
+
+        draggablePanes.add(header);
+        draggablePanes.add(settingsGradientBox);
+        draggablePanes.add(titleText);
     }
 
+    @Override
     public void handleClose() {
-    }
-
-    public void handleMinimize() {
-    }
-
-    public void handleMaximize() {
+        log.info("Closing settings");
+        super.handleClose();
+        log.info("Settings closed");
     }
 }

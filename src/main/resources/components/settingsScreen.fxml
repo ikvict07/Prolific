@@ -5,7 +5,6 @@
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsScreenController"
             stylesheets="@/css/styles.css"
             fx:id="settingsScreen">
-    <fx:include fx:id="headerComponent" source="/components/header.fxml" AnchorPane.leftAnchor="0"
+    <fx:include fx:id="headerComponent" source="/components/settingsHeader.fxml" AnchorPane.leftAnchor="0"
                 AnchorPane.rightAnchor="0"/>
-    <fx:include source="footer.fxml"  AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
 </AnchorPane>

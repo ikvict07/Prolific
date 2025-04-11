@@ -3,7 +3,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
-<AnchorPane id="header" fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
+<!--suppress JavaFxEventHandler -->
+<AnchorPane fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsHeaderController">
 
@@ -12,15 +13,14 @@
 
         <Label fx:id="titleText" textFill="#ebecf0" userData="localization:settings" textAlignment="CENTER"/>
 
-        <HBox id="gradientBox" fx:id="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
+        <HBox fx:id="settingsGradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>
                 <Insets left="16"/>
             </padding>
             <HBox spacing="10">
                 <Circle fx:id="closeButton" fill="transparent" onMouseClicked="#handleClose" radius="5"
                         styleClass="circle-close"/>
-                <Circle fx:id="minimizeButton" fill="transparent" onMouseClicked="#handleMinimize" radius="5"
-                        styleClass="circle-minimize"/>
+                <Circle fx:id="minimizeButton" fill="transparent" radius="5" styleClass="circle-minimize"/>
                 <Circle fx:id="maximizeButton" fill="transparent" onMouseClicked="#handleMaximize" radius="5"
                         styleClass="circle-maximize"/>
             </HBox>

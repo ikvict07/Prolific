@@ -1,10 +1,7 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -28,8 +25,6 @@ import java.util.Locale;
 public class SettingsDropdownController {
     @Setter(onMethod_ = {@Qualifier("settingsStage") ,@Autowired})
     private Stage settingsStage;
-    @Setter(onMethod_ = {@Qualifier("primaryStage"), @Autowired})
-    private Stage primaryStage;
     @FXML
     private Label settingsLabel;
     @FXML
@@ -49,7 +44,6 @@ public class SettingsDropdownController {
     @Setter(onMethod_ = @Autowired)
     private ApplicationContext applicationContext;
 
-
     public void rescan() {
         periodicalScanningService.rescan();
     }
@@ -62,10 +56,6 @@ public class SettingsDropdownController {
     }
 
     public void openSettings() {
-        var settingsScreen = (AnchorPane) applicationContext.getBean("settingsScreenParent");
-        settingsStage.setScene(new Scene(settingsScreen));
-        settingsStage.initModality(Modality.WINDOW_MODAL);
-        settingsStage.initOwner(primaryStage);
         settingsStage.show();
     }
 }

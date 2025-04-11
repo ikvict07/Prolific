@@ -6,20 +6,22 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
-import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Lazy
 @Slf4j
 @Component
-@StageComponent("primaryStage")
 @SuppressWarnings("unused")
 public class MainScreenController {
     @FXML
     public StackPane projectsPanel;
+    @Setter(onMethod_ = {@Qualifier("primaryStage"), @Autowired})
     private Stage stage;
 
     @FXML

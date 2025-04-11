@@ -3,7 +3,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
-<AnchorPane id="header" fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
+<!--suppress JavaFxEventHandler -->
+<AnchorPane fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController">
 
@@ -12,7 +13,7 @@
 
         <Label fx:id="titleText" textFill="#ebecf0" text="Prolific" textAlignment="CENTER"/>
 
-        <HBox id="gradientBox" fx:id="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
+        <HBox fx:id="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>
                 <Insets left="16"/>
             </padding>
