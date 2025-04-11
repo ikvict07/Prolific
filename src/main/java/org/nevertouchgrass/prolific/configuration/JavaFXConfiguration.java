@@ -17,4 +17,11 @@ public class JavaFXConfiguration {
 		Platform.runLater(() -> future.complete(new Stage()));
 		return future.join();
 	}
+
+	@Bean(name = "settingsStage")
+	public Stage settingsStage() {
+		CompletableFuture<Stage> future = new CompletableFuture<>();
+		Platform.runLater(() -> future.complete(new Stage()));
+		return future.join();
+	}
 }

@@ -26,7 +26,7 @@
 
     <HBox fx:id="placeForScrollPane" VBox.vgrow="ALWAYS" styleClass="logs-center">
         <StackPane HBox.hgrow="ALWAYS">
-            <Label userData="localization:choose_project_first"/>
+            <Label fx:id="chooseProjectFirst" userData="localization:choose_project_first"/>
         </StackPane>
     </HBox>
 

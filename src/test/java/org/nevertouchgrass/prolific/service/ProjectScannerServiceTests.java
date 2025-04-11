@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.nevertouchgrass.prolific.BackendTestBase;
+import org.nevertouchgrass.prolific.annotation.ProlificTestApplication;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
@@ -19,6 +20,7 @@ import java.util.Set;
 
 
 @Log4j2
+@ProlificTestApplication
 class ProjectScannerServiceTests extends BackendTestBase {
     @Autowired
     private ProjectScannerService projectScannerService;
