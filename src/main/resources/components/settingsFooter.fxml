@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsFooterController"
+            fx:id="settingsFooter"
+            stylesheets="@/css/styles.css" styleClass="settings-footer">
+
+    <fx:include source="/icons/fxml/help.fxml" AnchorPane.leftAnchor="24" AnchorPane.topAnchor="0"
+                AnchorPane.bottomAnchor="0"/>
+    
+    <HBox fx:id="content" AnchorPane.rightAnchor="16" spacing="8">
+        <padding>
+            <Insets top="8" bottom="8"/>
+        </padding>
+        <Label fx:id="cancelButton" userData="localization:settings_cancel_button" styleClass="settings-cancel-button"/>
+        <Label text="Apply" styleClass="settings-apply-button"/>
+        <Label text="OK" styleClass="settings-submit-button"/>
+    </HBox>
+</AnchorPane>

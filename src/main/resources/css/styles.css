@@ -10,6 +10,80 @@
     -fx-background-radius: 16px 16px 0 0;
 }
 
+#settingsScreen {
+    -fx-background-radius: 16px;
+    -fx-background-color: #2B2D30;
+    -fx-border-width: 0.5;
+    -fx-border-color: #393B40;
+    -fx-border-radius: 16;
+
+}
+
+.settings-header {
+    -fx-font-size: 1.25em;
+    -fx-background-radius: 16px 16px 0 0;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #393B40;
+}
+
+.settings-footer {
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #393B40;
+    -fx-background-radius: 0 0 16 16;
+}
+
+.settings-cancel-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 1em;
+    -fx-font-weight: normal;
+
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 6 12 6 12;
+    -fx-border-color: #4E5157;
+    -fx-border-width: 1;
+}
+
+.settings-cancel-button:hover {
+    -fx-background-color: #2D2F33;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #6A6E75;
+}
+
+.settings-apply-button {
+    -fx-background-color: #4E5157;
+    -fx-text-fill: #868A91;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 1em;
+    -fx-font-weight: normal;
+
+    -fx-background-radius: 4;
+    -fx-padding: 6 12 6 12;
+}
+
+.settings-apply-button:hover {
+    -fx-background-color: #5A5E65;
+    -fx-text-fill: #DFE1E5;
+}
+
+.settings-submit-button {
+    -fx-background-color: #3574F0;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 4;
+    -fx-padding: 6 12 6 12;
+}
+
+.settings-submit-button:hover {
+    -fx-background-color: #2C63CE;
+    -fx-text-fill: #F0F0F0;
+}
+
 #footer {
     -fx-background-color: #2B2D30;
     -fx-font-size: 1.25em;
@@ -83,6 +157,14 @@
     -fx-background-color: rgba(90, 155, 213, 0.3);
 }
 
+.rounded-icon-button {
+    -fx-fill: transparent;
+}
+
+.rounded-icon-button:hover {
+    -fx-fill: rgba(90, 155, 213, 0.3);
+}
+
 .projectIcon {
     -fx-background-color: linear-gradient(to bottom, #E08855 0%, #E9806F 100%);
     -fx-background-radius: 4px;
@@ -106,11 +188,6 @@
 }
 
 #mainScreen {
-    -fx-background-radius: 16px;
-    -fx-background-color: #1E1F22;
-}
-
-#settingsScreen {
     -fx-background-radius: 16px;
     -fx-background-color: #1E1F22;
 }

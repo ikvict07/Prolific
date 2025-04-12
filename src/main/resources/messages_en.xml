@@ -38,4 +38,7 @@
     <entry key="log_info_cant_scan_while_running">You can't scan while processes are running</entry>
     <entry key="exclude_project">Exclude project</entry>
     <entry key="delete_project">Delete project</entry>
+    <entry key="settings_cancel_button">Cancel</entry>
+    <entry key="settings_apply_button">Apply</entry>
+    <entry key="settings_submit_button">OK</entry>
 </properties>

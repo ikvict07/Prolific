@@ -7,4 +7,7 @@
             fx:id="settingsScreen">
     <fx:include fx:id="headerComponent" source="/components/settingsHeader.fxml" AnchorPane.leftAnchor="0"
                 AnchorPane.rightAnchor="0"/>
+    <fx:include fx:id="settingsList" source="settingsList.fxml" AnchorPane.leftAnchor="16" AnchorPane.rightAnchor="16"
+                AnchorPane.topAnchor="128"/>
+    <fx:include source="settingsFooter.fxml" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
 </AnchorPane>

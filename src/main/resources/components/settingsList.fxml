@@ -1,0 +1,23 @@
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Label?>
+<SplitPane dividerPositions="0.25"
+           xmlns="http://javafx.com/javafx" stylesheets="@/css/styles.css">
+
+    <VBox spacing="32" style="-fx-padding: 24;">
+        <Label text="Root path to scan" />
+        <Label text="Excluded dirs" />
+        <Label text="Maximum depth" />
+        <Label text="Rescan Every Hours" />
+    </VBox>
+
+    <VBox spacing="28" style="-fx-padding: 24;">
+        <TextField promptText="Enter path" />
+        <TextField promptText="Enter patterns" />
+        <Spinner />
+        <Spinner />
+    </VBox>
+
+</SplitPane>

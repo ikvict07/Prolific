@@ -47,9 +47,18 @@ public class InitializeAnnotationProcessor implements ApplicationListener<StageI
                 field.setAccessible(true);
                 try {
                     if (Node.class.isAssignableFrom(field.getType())) {
+                        if ("cancelButton".equals(field.getName())) {
+                            System.out.println("cancelButton");
+                        }
                         var object = field.get(bean);
                         if (object == null) {
+                            if (field.getName().equals("cancelButton")) {
+                                System.out.println("debug 1");
+                            }
                             return;
+                        }
+                        if ("cancelButton".equals(field.getName())) {
+                            System.out.println("debug 2");
                         }
                         var node = (Node) object;
                         var userData = node.getUserData();
@@ -57,6 +66,10 @@ public class InitializeAnnotationProcessor implements ApplicationListener<StageI
                             return;
                         }
                         var userDataString = userData.toString();
+                        if ("cancelButton".equals(field.getName())) {
+                            System.out.println("debug 3");
+                            System.out.println(userDataString);
+                        }
                         var localizationPart = Arrays.stream(userDataString.split(",")).filter(d ->
                                 d.startsWith("localization:")).findFirst();
                         if (localizationPart.isEmpty()) {
