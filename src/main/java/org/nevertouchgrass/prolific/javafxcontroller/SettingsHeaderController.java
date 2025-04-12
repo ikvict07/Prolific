@@ -54,9 +54,6 @@ public class SettingsHeaderController extends AbstractHeaderController {
     @Setter(onMethod_ = {@Qualifier("primaryStage"), @Autowired})
     private Stage primaryStage;
 
-    @Setter(onMethod_ = @Autowired)
-    private ApplicationContext applicationContext;
-
     @Setter(onMethod_ = {@Lazy, @Autowired})
     private ObjectProvider<Parent> settingsScreenParent;
 
