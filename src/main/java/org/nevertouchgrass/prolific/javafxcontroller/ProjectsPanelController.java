@@ -67,6 +67,7 @@ public class ProjectsPanelController {
 
         upperShadow.visibleProperty().bind(scrollPane.vvalueProperty().greaterThan(0));
         lowerShadow.visibleProperty().bind(scrollPane.vvalueProperty().lessThan(1));
+        scrollPane.requestFocus();
     }
 
     private void registerListeners() {

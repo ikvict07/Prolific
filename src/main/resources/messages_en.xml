@@ -41,4 +41,7 @@
     <entry key="settings_cancel_button">Cancel</entry>
     <entry key="settings_apply_button">Apply</entry>
     <entry key="settings_submit_button">OK</entry>
+    <entry key="search">Search</entry>
+    <entry key="BY_IS_STARRED">Only stared</entry>
+    <entry key="BY_IS_MANUALLY_ADDED">Only manually added</entry>
 </properties>

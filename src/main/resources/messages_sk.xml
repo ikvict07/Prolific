@@ -41,4 +41,7 @@
     <entry key="settings_cancel_button">Zrušiť</entry>
     <entry key="settings_apply_button">Použiť</entry>
     <entry key="settings_submit_button">OK</entry>
+    <entry key="search">Hľadať</entry>
+    <entry key="BY_IS_STARRED">Iba obľúbené</entry>
+    <entry key="BY_IS_MANUALLY_ADDED">Pridané ručne</entry>
 </properties>
