@@ -17,6 +17,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
@@ -28,7 +29,6 @@ import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +38,7 @@ import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
 @Lazy
 @Slf4j
-@Component
+@StageComponent
 @SuppressWarnings("java:S1450")
 public class LogsAndMetricsPanelController {
     @FXML

@@ -5,7 +5,9 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
+import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
@@ -16,11 +18,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
-@Component
+@StageComponent
 @Log4j2
 @SuppressWarnings("unused")
 @Lazy
@@ -45,6 +46,8 @@ public class SettingsDropdownController {
     private LocalizationProvider localizationProvider;
     @Setter(onMethod_ = @Autowired)
     private ApplicationContext applicationContext;
+    @Setter(onMethod_ = @Autowired)
+    private ApplicationEventPublisher eventPublisher;
 
     public void rescan() {
         periodicalScanningService.rescan();
@@ -58,6 +61,14 @@ public class SettingsDropdownController {
     }
 
     public void openSettings() {
-        settingsStage.show();
+        if (settingsStage.getUserData() != null && ((String)settingsStage.getUserData()).contains("initialized:true")) {
+            settingsStage.show();
+            settingsStage.toFront();
+            settingsStage.requestFocus();
+        } else  {
+            settingsStage.show();
+            settingsStage.setUserData("initialized:true");
+            eventPublisher.publishEvent(new StageInitializeEvent("settingsStage"));
+        }
     }
 }

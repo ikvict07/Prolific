@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.service.ProjectsService;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
 @Lazy
-@Component
+@StageComponent
 @Log4j2
 @SuppressWarnings("unused")
 public class HeaderController extends AbstractHeaderController {

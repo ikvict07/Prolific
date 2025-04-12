@@ -1,11 +1,12 @@
 package org.nevertouchgrass.prolific.configuration;
 
-import java.util.concurrent.CompletableFuture;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.CompletableFuture;
 
 @Configuration
 @EnableConfigurationProperties(SpringFXConfigurationProperties.class)

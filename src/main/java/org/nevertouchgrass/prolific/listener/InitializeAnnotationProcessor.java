@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.springframework.context.ApplicationContext;
@@ -29,7 +30,10 @@ public class InitializeAnnotationProcessor implements ApplicationListener<StageI
 
     @Override
     public void onApplicationEvent(StageInitializeEvent event) {
-        applicationContext.getBeansWithAnnotation(Component.class).forEach((_, bean) -> {
+        applicationContext.getBeansWithAnnotation(StageComponent.class).forEach((_, bean) -> {
+            if (!bean.getClass().getAnnotation(StageComponent.class).stage().equals(event.getStage())) {
+                return;
+            }
             var methods = bean.getClass().getDeclaredMethods();
             Arrays.stream(methods).filter(method -> method.isAnnotationPresent(Initialize.class)).forEach(method -> {
                 method.setAccessible(true);

@@ -11,6 +11,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
@@ -18,12 +19,11 @@ import org.nevertouchgrass.prolific.model.notification.contract.Notification;
 import org.nevertouchgrass.prolific.service.notification.contract.NotificationListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 @Lazy
-@Component
+@StageComponent
 @Log4j2
 public class FooterController implements NotificationListener<Notification> {
     @FXML

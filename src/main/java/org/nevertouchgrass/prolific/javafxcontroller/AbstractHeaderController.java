@@ -12,7 +12,6 @@ import lombok.Setter;
 import java.util.HashSet;
 
 public abstract class AbstractHeaderController {
-
     protected Stage stage;
     private Pane header;
 

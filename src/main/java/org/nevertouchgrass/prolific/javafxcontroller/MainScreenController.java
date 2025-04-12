@@ -9,14 +9,14 @@ import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 @Lazy
 @Slf4j
-@Component
+@StageComponent
 @SuppressWarnings("unused")
 public class MainScreenController {
     @FXML

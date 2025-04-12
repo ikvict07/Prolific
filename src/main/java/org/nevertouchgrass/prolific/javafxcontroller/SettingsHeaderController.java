@@ -1,6 +1,8 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
+import jakarta.annotation.PostConstruct;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -13,14 +15,14 @@ import javafx.stage.StageStyle;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
-
-@Component
+@StageComponent(stage = "settingsStage")
 @Slf4j
 @SuppressWarnings("unused")
 @Lazy
@@ -51,23 +53,28 @@ public class SettingsHeaderController extends AbstractHeaderController {
     @Setter(onMethod_ = @Autowired)
     private ApplicationContext applicationContext;
 
+    @Setter(onMethod_ = {@Lazy, @Autowired})
+    private ObjectProvider<Parent> settingsScreenParent;
+
+
+    @PostConstruct
+    public void setupStage() {
+        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(primaryStage);
+    }
+
     @Initialize
     public void init() {
-        var settingsScreen = (AnchorPane) applicationContext.getBean("settingsScreenParent");
-
         double minWidth = visualBounds.getMaxX() / 2;
         double minHeight = visualBounds.getMaxY() / 2;
         setMinWidth(minWidth);
         setMinHeight(minHeight);
 
-        Scene scene = new Scene(settingsScreen, minWidth, minHeight);
+        Scene scene = new Scene(settingsScreenParent.getIfAvailable(), minWidth, minHeight);
         scene.setFill(Color.TRANSPARENT);
 
         stage.setScene(scene);
-        stage.initStyle(StageStyle.TRANSPARENT);
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(primaryStage);
-
 
         setHeader(header);
         setupDragging();

@@ -12,8 +12,9 @@ import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
-import org.nevertouchgrass.prolific.model.UserSettingsHolder;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
@@ -21,14 +22,13 @@ import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.service.searching.comparators.ProjectComparatorBuilder;
 import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-@Controller
+@StageComponent
 @SuppressWarnings("unused")
 @Getter
 @Setter
