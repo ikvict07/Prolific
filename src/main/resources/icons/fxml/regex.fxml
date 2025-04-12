@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.SVGPath?>
+<StackPane xmlns="http://javafx.com/javafx/17.0.12" styleClass="icon-button">
+    <padding>
+        <Insets top="6" bottom="6" right="6" left="6"/>
+    </padding>
+    <Group>
+        <!-- Rectangle -->
+        <SVGPath
+                content="M9.6175 17.35V19H7.9675V17.35H9.6175Z"
+                fill="#CED0D6">
+        </SVGPath>
+        <!-- Complex Path 1 -->
+        <SVGPath
+                content="M14.709 11.687L15.389 11.126L17.4205 13.404L16.613 14.0925L14.709 11.687ZM12.516 13.404L14.5475 11.126L15.2275 11.687L13.3235 14.0925L12.516 13.404ZM11.751 10.854L12.0315 9.8255L14.964 10.701L14.7345 11.5595L11.751 10.854ZM14.9725 11.6105C14.8478 11.6105 14.7402 11.568 14.6495 11.483C14.5645 11.3923 14.522 11.2847 14.522 11.16C14.522 11.0353 14.5645 10.9305 14.6495 10.8455C14.7402 10.7605 14.8478 10.718 14.9725 10.718C15.0972 10.718 15.202 10.7605 15.287 10.8455C15.372 10.9305 15.4145 11.0353 15.4145 11.16C15.4145 11.2847 15.372 11.3923 15.287 11.483C15.202 11.568 15.0972 11.6105 14.9725 11.6105ZM14.437 8.1H15.4995L15.4145 11.16H14.522L14.437 8.1ZM14.9725 10.701L17.905 9.8255L18.1855 10.854L15.202 11.5595L14.9725 10.701Z"
+                fill="#CED0D6">
+        </SVGPath>
+    </Group>
+</StackPane>

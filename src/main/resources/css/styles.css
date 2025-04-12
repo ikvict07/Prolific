@@ -234,9 +234,11 @@
 .filled-chart-green .chart-series-area-line {
     -fx-stroke: #369650
 }
+
 .filled-chart-green .default-color0.chart-series-area-fill {
     -fx-fill: rgba(137, 195, 152, 0.5);
 }
+
 .filled-chart-green .chart-area-symbol {
     -fx-background-color: #369650;
 }
@@ -244,9 +246,11 @@
 .filled-chart-blue .chart-series-area-line {
     -fx-stroke: #3574F0;
 }
+
 .filled-chart-blue .default-color0.chart-series-area-fill {
     -fx-fill: rgba(88, 140, 243, 0.5);
 }
+
 .filled-chart-blue .chart-area-symbol {
     -fx-background-color: #3574F0;
 }
@@ -449,6 +453,7 @@
     -fx-shape: " ";
     -fx-padding: 0.1em 0.25em;
 }
+
 .scroll-bar-metrics .thumb:pressed,
 .scroll-bar-metrics .thumb:hover {
     -fx-background-color: rgba(255, 255, 255, 0.4);
@@ -462,6 +467,20 @@
 .scroll-bar .increment-button:hover,
 .scroll-bar .decrement-button:hover {
     -fx-background-color: transparent;
+}
+
+.search-bar-text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 4 8 4 8;
+    -fx-text-fill: #DFE1E5;
+}
+
+.search-bar-hbox {
+    -fx-border-color: transparent #6F737A transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+.selected {
+    -fx-background-color: rgba(90, 155, 213, 0.3);
 }
 
 /** {*/

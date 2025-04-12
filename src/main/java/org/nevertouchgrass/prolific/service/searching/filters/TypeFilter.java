@@ -4,11 +4,11 @@ import org.nevertouchgrass.prolific.constants.Filters;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.searching.filters.contract.ProjectFilter;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class TypeFilter implements ProjectFilter {
     @Override
-    public Function<Project, Boolean> getFilter(Object value) {
+    public Predicate<Project> getFilter(Object value) {
         return project -> project.getType().equalsIgnoreCase((String) value);
     }
 

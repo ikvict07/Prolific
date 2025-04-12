@@ -38,4 +38,7 @@
     <entry key="log_info_cant_scan_while_running">Nemôžete skenovať, zatiaľ čo procesy bežia</entry>
     <entry key="exclude_project">Vylúčiť projekt</entry>
     <entry key="delete_project">Zmazať projekt</entry>
+    <entry key="search">Hľadať</entry>
+    <entry key="BY_IS_STARRED">Iba obľúbené</entry>
+    <entry key="BY_IS_MANUALLY_ADDED">Pridané ručne</entry>
 </properties>
