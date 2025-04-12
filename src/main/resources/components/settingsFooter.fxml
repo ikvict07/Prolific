@@ -11,13 +11,16 @@
 
     <fx:include source="/icons/fxml/help.fxml" AnchorPane.leftAnchor="24" AnchorPane.topAnchor="0"
                 AnchorPane.bottomAnchor="0"/>
-    
+
     <HBox fx:id="content" AnchorPane.rightAnchor="16" spacing="8">
         <padding>
             <Insets top="8" bottom="8"/>
         </padding>
-        <Label fx:id="cancelButton" userData="localization:settings_cancel_button" styleClass="settings-cancel-button"/>
-        <Label text="Apply" styleClass="settings-apply-button"/>
-        <Label text="OK" styleClass="settings-submit-button"/>
+        <Label fx:id="cancelButton" userData="localization:settings_cancel_button" styleClass="settings-cancel-button"
+               onMouseClicked="#cancel"/>
+        <Label fx:id="applyButton" userData="localization:settings_apply_button" styleClass="settings-submit-button"
+               disable="true" onMouseClicked="#apply"/>
+        <Label fx:id="submitButton" userData="localization:settings_submit_button" styleClass="settings-submit-button"
+               onMouseClicked="#submit"/>
     </HBox>
 </AnchorPane>

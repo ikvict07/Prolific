@@ -84,6 +84,13 @@
     -fx-text-fill: #F0F0F0;
 }
 
+.settings-split-pane > .split-pane-divider {
+    -fx-background-color: transparent;
+    -fx-stroke-width: 1;
+    -fx-border-color: #393B40;
+    -fx-padding: 0;
+}
+
 #footer {
     -fx-background-color: #2B2D30;
     -fx-font-size: 1.25em;

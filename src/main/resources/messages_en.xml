@@ -44,4 +44,9 @@
     <entry key="search">Search</entry>
     <entry key="BY_IS_STARRED">Only stared</entry>
     <entry key="BY_IS_MANUALLY_ADDED">Only manually added</entry>
+    <entry key="setting_root_path_to_scan">Root path to scan</entry>
+    <entry key="setting_excluded_dirs">Excluded dirs</entry>
+    <entry key="setting_max_scan_depth">Max scan depth</entry>
+    <entry key="setting_rescan_every_hours">Rescan every hours</entry>
+    <entry key="setting_language">Language</entry>
 </properties>

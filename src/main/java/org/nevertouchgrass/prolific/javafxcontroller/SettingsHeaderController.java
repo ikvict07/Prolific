@@ -62,17 +62,13 @@ public class SettingsHeaderController extends AbstractHeaderController {
         stage.initOwner(primaryStage);
     }
 
+    double minWidth = visualBounds.getMaxX() / 2;
+    double minHeight = visualBounds.getMaxY() / 2;
+
     @Initialize
     public void init() {
-        double minWidth = visualBounds.getMaxX() / 2;
-        double minHeight = visualBounds.getMaxY() / 2;
         setMinWidth(minWidth);
         setMinHeight(minHeight);
-
-        Scene scene = new Scene(settingsScreenParent.getIfAvailable(), minWidth, minHeight);
-        scene.setFill(Color.TRANSPARENT);
-
-        stage.setScene(scene);
 
         setHeader(settingsHeader);
         setupDragging();
@@ -93,8 +89,16 @@ public class SettingsHeaderController extends AbstractHeaderController {
     public void open() {
         if (!isStageInitialized) {
             isStageInitialized = true;
+            setupScene();
             eventPublisher.publishEvent(new StageInitializeEvent("settingsStage"));
         }
         stage.show();
+    }
+
+    private void setupScene() {
+        Scene scene = new Scene(settingsScreenParent.getIfAvailable(), minWidth, minHeight);
+        scene.setFill(Color.TRANSPARENT);
+
+        stage.setScene(scene);
     }
 }

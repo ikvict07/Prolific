@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsScreenController"
             stylesheets="@/css/styles.css"
             fx:id="settingsScreen">
-    <fx:include fx:id="headerComponent" source="/components/settingsHeader.fxml" AnchorPane.leftAnchor="0"
-                AnchorPane.rightAnchor="0"/>
-    <fx:include fx:id="settingsList" source="settingsList.fxml" AnchorPane.leftAnchor="16" AnchorPane.rightAnchor="16"
-                AnchorPane.topAnchor="128"/>
-    <fx:include source="settingsFooter.fxml" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
-</AnchorPane>
+    <top>
+        <fx:include fx:id="settingsHeader" source="/components/settingsHeader.fxml" AnchorPane.topAnchor="0"
+                    AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0"/>
+    </top>
+
+    <center>
+        <StackPane>
+            <padding>
+                <Insets right="8" left="8"/>
+            </padding>
+            <fx:include fx:id="settingsList" source="settingsList.fxml" AnchorPane.topAnchor="64" AnchorPane.leftAnchor="8"
+                        AnchorPane.rightAnchor="8"/>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <fx:include fx:id="settingsFooter" source="settingsFooter.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                    AnchorPane.bottomAnchor="0"/>
+    </bottom>
+</BorderPane>
