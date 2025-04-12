@@ -2,18 +2,15 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
-import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.scaners.PeriodicalScanningService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
@@ -26,8 +23,6 @@ import java.util.Locale;
 @SuppressWarnings("unused")
 @Lazy
 public class SettingsDropdownController {
-    @Setter(onMethod_ = {@Qualifier("settingsStage") ,@Autowired})
-    private Stage settingsStage;
     @FXML
     private Label settingsLabel;
     @FXML
@@ -47,7 +42,7 @@ public class SettingsDropdownController {
     @Setter(onMethod_ = @Autowired)
     private ApplicationContext applicationContext;
     @Setter(onMethod_ = @Autowired)
-    private ApplicationEventPublisher eventPublisher;
+    private SettingsHeaderController settingsHeaderController;
 
     public void rescan() {
         periodicalScanningService.rescan();
@@ -61,14 +56,6 @@ public class SettingsDropdownController {
     }
 
     public void openSettings() {
-        if (settingsStage.getUserData() != null && ((String)settingsStage.getUserData()).contains("initialized:true")) {
-            settingsStage.show();
-            settingsStage.toFront();
-            settingsStage.requestFocus();
-        } else  {
-            settingsStage.show();
-            settingsStage.setUserData("initialized:true");
-            eventPublisher.publishEvent(new StageInitializeEvent("settingsStage"));
-        }
+        settingsHeaderController.open();
     }
 }
