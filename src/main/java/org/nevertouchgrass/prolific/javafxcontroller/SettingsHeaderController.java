@@ -97,15 +97,10 @@ public class SettingsHeaderController extends AbstractHeaderController {
     }
 
     public void open() {
-        if (isStageInitialized) {
-            stage.show();
-            stage.toFront();
-            stage.requestFocus();
-        } else  {
+        if (!isStageInitialized) {
             isStageInitialized = true;
-            stage.show();
-            stage.setUserData("initialized:true");
             eventPublisher.publishEvent(new StageInitializeEvent("settingsStage"));
         }
+        stage.show();
     }
 }
