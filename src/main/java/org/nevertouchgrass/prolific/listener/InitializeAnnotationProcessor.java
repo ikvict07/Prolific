@@ -31,7 +31,8 @@ public class InitializeAnnotationProcessor implements ApplicationListener<StageI
     @Override
     public void onApplicationEvent(StageInitializeEvent event) {
         applicationContext.getBeansWithAnnotation(StageComponent.class).forEach((_, bean) -> {
-            if (!bean.getClass().getAnnotation(StageComponent.class).stage().equals(event.getStage())) {
+            StageComponent annotation = bean.getClass().getAnnotation(StageComponent.class);
+            if (annotation != null && !annotation.stage().equals(event.getStage())) {
                 return;
             }
             var methods = bean.getClass().getDeclaredMethods();

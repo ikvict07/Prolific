@@ -20,7 +20,6 @@ import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 
@@ -30,9 +29,7 @@ import org.springframework.context.annotation.Lazy;
 @Lazy
 public class SettingsHeaderController extends AbstractHeaderController {
     @FXML
-    public AnchorPane settingsHeader;
-    @FXML
-    private AnchorPane header;
+    private AnchorPane settingsHeader;
     @FXML
     public Circle closeButton;
     @FXML
@@ -65,23 +62,19 @@ public class SettingsHeaderController extends AbstractHeaderController {
         stage.initOwner(primaryStage);
     }
 
+    double minWidth = visualBounds.getMaxX() / 2;
+    double minHeight = visualBounds.getMaxY() / 2;
+
     @Initialize
     public void init() {
-        double minWidth = visualBounds.getMaxX() / 2;
-        double minHeight = visualBounds.getMaxY() / 2;
         setMinWidth(minWidth);
         setMinHeight(minHeight);
 
-        Scene scene = new Scene(settingsScreenParent.getIfAvailable(), minWidth, minHeight);
-        scene.setFill(Color.TRANSPARENT);
-
-        stage.setScene(scene);
-
-        setHeader(header);
+        setHeader(settingsHeader);
         setupDragging();
         setupResizing();
 
-        draggablePanes.add(header);
+        draggablePanes.add(settingsHeader);
         draggablePanes.add(settingsGradientBox);
         draggablePanes.add(titleText);
     }
@@ -94,15 +87,18 @@ public class SettingsHeaderController extends AbstractHeaderController {
     }
 
     public void open() {
-        if (isStageInitialized) {
-            stage.show();
-            stage.toFront();
-            stage.requestFocus();
-        } else  {
+        if (!isStageInitialized) {
             isStageInitialized = true;
-            stage.show();
-            stage.setUserData("initialized:true");
+            setupScene();
             eventPublisher.publishEvent(new StageInitializeEvent("settingsStage"));
         }
+        stage.show();
+    }
+
+    private void setupScene() {
+        Scene scene = new Scene(settingsScreenParent.getIfAvailable(), minWidth, minHeight);
+        scene.setFill(Color.TRANSPARENT);
+
+        stage.setScene(scene);
     }
 }
