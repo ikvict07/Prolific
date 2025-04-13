@@ -77,6 +77,7 @@ public class HeaderController extends AbstractHeaderController {
         draggablePanes.add(header);
         draggablePanes.add(gradientBox);
         draggablePanes.add(titleText);
+        header.requestFocus();
     }
 
     @Override

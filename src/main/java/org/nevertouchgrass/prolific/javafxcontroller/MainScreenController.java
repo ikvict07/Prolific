@@ -3,7 +3,6 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.Setter;
@@ -19,8 +18,6 @@ import org.springframework.context.annotation.Lazy;
 @StageComponent
 @SuppressWarnings("unused")
 public class MainScreenController {
-    @FXML
-    public StackPane projectsPanel;
     @Setter(onMethod_ = {@Qualifier("primaryStage"), @Autowired})
     private Stage stage;
 
