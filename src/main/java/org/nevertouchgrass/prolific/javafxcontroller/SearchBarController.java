@@ -104,7 +104,6 @@ public class SearchBarController {
     @Initialize
     public void init() {
         textField.promptTextProperty().bind(localizationProvider.search());
-        root.requestFocus();
     }
 
     private void updateFiltering(Predicate<Project> filterFunction) {

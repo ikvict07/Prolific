@@ -223,7 +223,7 @@
 }
 
 .chart-plot-background {
-    -fx-background-color: #2B2D30;
+    -fx-background-color: #1E1F22;
 }
 
 .chart-series-line {
@@ -329,12 +329,15 @@
 }
 
 .logs-header {
-    -fx-background-color: #2B2D30;
+    -fx-background-color: #1E1F22;
+    -fx-border-color: #2B2D30;
+    -fx-border-width: 1;
 }
 
 .logs-center {
-    -fx-border-width: 0 4 0 4;
+    -fx-background-color: #1E1F22;
     -fx-border-color: #2B2D30;
+    -fx-border-width: 1;
 }
 
 .project-logs-dropdown {
@@ -349,7 +352,9 @@
 }
 
 .logs-footer {
-    -fx-background-color: #2B2D30;
+    -fx-background-color: #1E1F22;
+    -fx-border-color: #2B2D30;
+    -fx-border-width: 1;
 }
 
 .logs-button-container {
@@ -435,8 +440,8 @@
 }
 
 .scroll-bar-metrics {
-    -fx-fill: #2B2D30;
-    -fx-background-color: #2B2D30;
+    -fx-fill: #1E1F22;
+    -fx-background-color: #1E1F22;
 }
 
 .scroll-bar-metrics .thumb {
@@ -460,7 +465,7 @@
 }
 
 .scroll-bar-metrics .track {
-    -fx-background-color: #2B2D30;
+    -fx-background-color: #1E1F22;
 }
 
 

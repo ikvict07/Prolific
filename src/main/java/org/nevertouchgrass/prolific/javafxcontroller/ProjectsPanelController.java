@@ -4,6 +4,8 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
@@ -23,9 +25,7 @@ import org.nevertouchgrass.prolific.service.searching.comparators.ProjectCompara
 import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 
 @StageComponent
@@ -56,6 +56,8 @@ public class ProjectsPanelController {
     private Predicate<Project> filterFunction = ProjectFilterService.getDefaultFilter();
     private Comparator<Project> projectComparator = ProjectComparatorBuilder.getDefault();
 
+    private List<Node> contentChildren;
+
     @Initialize
     private void init() {
         registerListeners();
@@ -66,8 +68,18 @@ public class ProjectsPanelController {
         setupScrollBarFadeEffect();
 
         upperShadow.visibleProperty().bind(scrollPane.vvalueProperty().greaterThan(0));
-        lowerShadow.visibleProperty().bind(scrollPane.vvalueProperty().lessThan(1));
+        scrollPane.skinProperty().addListener((obs, oldSkin, newSkin) -> {
+            if (newSkin != null) {
+                ScrollBar vScrollBar = (ScrollBar) scrollPane.lookup(".scroll-bar:vertical");
+                if (vScrollBar != null) {
+                    lowerShadow.visibleProperty().bind(
+                            vScrollBar.visibleProperty().and(scrollPane.vvalueProperty().lessThan(1))
+                    );
+                }
+            }
+        });
         scrollPane.requestFocus();
+        contentChildren = new ArrayList<>(content.getChildren());
     }
 
     private void registerListeners() {
@@ -88,7 +100,13 @@ public class ProjectsPanelController {
 
     private void updateContent() {
         content.getChildren().clear();
-        projectsService.getProjects().forEach(this::addProjectToList);
+        contentChildren.forEach(child -> {
+            var project = (Project) child.getProperties().get(PROJECT_KEY);
+            if (project != null && filterFunction.test((Project) project)) {
+                var pos = findInsertionIndex(project);
+                content.getChildren().add(pos, child);
+            }
+        });
     }
 
 
@@ -114,11 +132,15 @@ public class ProjectsPanelController {
     }
 
 
+    private List<Node> getProjectPanels() {
+        return content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY) != null);
+    }
+
     private void addProjectToList(Project project) {
         if (!filterFunction.test(project)) return;
         Platform.runLater(() -> {
             int index = findInsertionIndex(project);
-            insertProjectPanelAt(index, project);
+            insertProjectPanelAt(index, generateProjectPanel(project));
         });
     }
 
@@ -126,6 +148,7 @@ public class ProjectsPanelController {
         Platform.runLater(() -> {
             var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
+            contentChildren.remove(toDelete.getFirst());
         });
     }
 
@@ -134,16 +157,12 @@ public class ProjectsPanelController {
             var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
             content.getChildren().removeAll(toDelete);
             var newIndex = findInsertionIndex(project);
-            insertProjectPanelAt(newIndex, project);
+            insertProjectPanelAt(newIndex, toDelete.getFirst());
         });
+
     }
 
-    private int findInsertionIndex(Project project) {
-        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get(PROJECT_KEY)).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
-        return index < 0 ? -index - 1 : index;
-    }
-
-    private void insertProjectPanelAt(int index, Project project) {
+    private Parent generateProjectPanel(Project project) {
         var resource = fxmlProvider.getFxmlResource("projectPanel");
         ProjectPanelController controller = (ProjectPanelController) resource.getController();
         controller.getProjectTitleText().setText(project.getTitle());
@@ -151,7 +170,17 @@ public class ProjectsPanelController {
         controller.setProject(project);
         var parent = resource.getParent();
         parent.getProperties().put(PROJECT_KEY, project);
-        content.getChildren().add(index, parent);
+        return parent;
+    }
+
+    private int findInsertionIndex(Project project) {
+        var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get(PROJECT_KEY)).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
+        return index < 0 ? -index - 1 : index;
+    }
+
+    private void insertProjectPanelAt(int index, Node projectPanel) {
+        content.getChildren().add(index, projectPanel);
+        contentChildren = new ArrayList<>(content.getChildren());
     }
 
     private String getIconTextFromTitle(String title) {

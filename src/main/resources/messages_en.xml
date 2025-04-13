@@ -41,4 +41,9 @@
     <entry key="search">Search</entry>
     <entry key="BY_IS_STARRED">Only stared</entry>
     <entry key="BY_IS_MANUALLY_ADDED">Only manually added</entry>
+    <entry key="sort_by_title">By title</entry>
+    <entry key="sort_by_type">By type</entry>
+    <entry key="sort_by_running">Running</entry>
+    <entry key="sort_by_starred">Starred</entry>
+    <entry key="using_locale">EN</entry>
 </properties>

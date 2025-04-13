@@ -8,7 +8,6 @@
             fx:id="mainScreen">
     <fx:include fx:id="headerComponent" source="/components/header.fxml" AnchorPane.leftAnchor="0"
                 AnchorPane.rightAnchor="0"/>
-    <fx:include source="searchBar.fxml" AnchorPane.topAnchor="90" AnchorPane.leftAnchor="32"/>
     <SplitPane AnchorPane.rightAnchor="16" AnchorPane.leftAnchor="16" AnchorPane.bottomAnchor="64"
                AnchorPane.topAnchor="128" dividerPositions="0.5">
         <fx:include source="projectsPanel.fxml" fx:id="projectsPanel" HBox.hgrow="ALWAYS"/>

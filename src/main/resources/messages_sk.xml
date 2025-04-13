@@ -41,4 +41,9 @@
     <entry key="search">Hľadať</entry>
     <entry key="BY_IS_STARRED">Iba obľúbené</entry>
     <entry key="BY_IS_MANUALLY_ADDED">Pridané ručne</entry>
+    <entry key="sort_by_title">Podľa názvy</entry>
+    <entry key="sort_by_type">Podľa typu</entry>
+    <entry key="sort_by_running">Bežiace</entry>
+    <entry key="sort_by_starred">Obľúbené</entry>
+    <entry key="using_locale">SK</entry>
 </properties>
