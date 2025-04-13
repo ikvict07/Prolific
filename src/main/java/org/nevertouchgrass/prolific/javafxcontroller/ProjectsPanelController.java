@@ -146,17 +146,23 @@ public class ProjectsPanelController {
 
     private void deleteProjectFromList(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
-            content.getChildren().removeAll(toDelete);
-            contentChildren.remove(toDelete.getFirst());
+            try {
+                var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
+                content.getChildren().removeAll(toDelete);
+                contentChildren.remove(toDelete.getFirst());
+
+            } catch (Exception e) {
+                // ignore
+            }
         });
     }
 
     public void updateProject(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
+            var toDelete = content.getChildren().stream().filter(node -> ((Project) node.getProperties().get(PROJECT_KEY)).getId().equals(project.getId())).toList();
             content.getChildren().removeAll(toDelete);
             var newIndex = findInsertionIndex(project);
+            ((ProjectPanelController) toDelete.getFirst().getProperties().get("controller")).updateStar();
             insertProjectPanelAt(newIndex, toDelete.getFirst());
         });
 
@@ -170,6 +176,7 @@ public class ProjectsPanelController {
         controller.setProject(project);
         var parent = resource.getParent();
         parent.getProperties().put(PROJECT_KEY, project);
+        parent.getProperties().put("controller", controller);
         return parent;
     }
 

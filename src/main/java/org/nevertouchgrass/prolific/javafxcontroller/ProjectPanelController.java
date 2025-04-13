@@ -159,6 +159,9 @@ public class ProjectPanelController {
         init();
     }
 
+    public void updateStar() {
+        star.setVisible(project.getIsStarred());
+    }
 
     public void showProjectSetting() {
         Bounds bounds = config.localToScreen(config.getBoundsInLocal());
