@@ -42,7 +42,9 @@ import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
@@ -112,6 +114,8 @@ public class ProjectPanelController {
     private Property<Boolean> isProjectRunning = new SimpleBooleanProperty(false);
     private ProjectsService projectsService;
 
+    private final List<Consumer<Project>> updateListeners = new ArrayList<>();
+
     public void init() {
         String iconColorStyle = colorService.generateRandomColorStyle(colorService.getSeedForProject(project));
         projectIcon.setStyle(iconColorStyle);
@@ -141,6 +145,10 @@ public class ProjectPanelController {
                 run.setOnMouseClicked((_ -> runProject()));
             }
         }));
+    }
+
+    public void addUpdateListener(Consumer<Project> listener) {
+        updateListeners.add(listener);
     }
 
     public void setProject(Project project) {
@@ -247,6 +255,7 @@ public class ProjectPanelController {
             log.info("Project {} stopped", project.getTitle());
         }
         isProjectRunning.setValue(false);
+        updateListeners.forEach(c -> c.accept(project));
     }
 
     private void runProjectLambda() {
@@ -260,5 +269,6 @@ public class ProjectPanelController {
             log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
             throw new IllegalStateException(e);
         }
+        updateListeners.forEach(c -> c.accept(project));
     }
 }

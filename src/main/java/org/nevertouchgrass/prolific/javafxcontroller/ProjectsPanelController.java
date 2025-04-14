@@ -102,7 +102,7 @@ public class ProjectsPanelController {
         content.getChildren().clear();
         contentChildren.forEach(child -> {
             var project = (Project) child.getProperties().get(PROJECT_KEY);
-            if (project != null && filterFunction.test((Project) project)) {
+            if (project != null && filterFunction.test(project)) {
                 var pos = findInsertionIndex(project);
                 content.getChildren().add(pos, child);
             }
@@ -177,6 +177,7 @@ public class ProjectsPanelController {
         var parent = resource.getParent();
         parent.getProperties().put(PROJECT_KEY, project);
         parent.getProperties().put("controller", controller);
+        controller.addUpdateListener(this::updateProject);
         return parent;
     }
 
