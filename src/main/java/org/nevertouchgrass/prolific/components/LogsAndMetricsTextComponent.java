@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 @RequiredArgsConstructor
 public class LogsAndMetricsTextComponent {
@@ -27,8 +26,7 @@ public class LogsAndMetricsTextComponent {
     private static final int BATCH_SIZE = 100;
     private static final int DELETION_THRESHOLD = 1000;
     private static final String INFO_CLASS = "-fx-fill: #DFE1E5; -fx-font-family: \"JetBrains Mono\"; -fx-background-color: transparent;";
-    private static final String ERROR_CLASS = """
-            -fx-fill: #DB5C5C; -fx-font-family: "JetBrains Mono"; -fx-background-color: transparent;""";
+    private static final String ERROR_CLASS = "-fx-fill: #DB5C5C; -fx-font-family: \"JetBrains Mono\"; -fx-background-color: transparent;";
 
     private final ProcessLogs processLogs;
     private final Flux<LogWrapper> logsFlux;
@@ -37,7 +35,6 @@ public class LogsAndMetricsTextComponent {
     private final InlineCssTextArea textArea = new InlineCssTextArea();
     private final VirtualizedScrollPane<InlineCssTextArea> scrollPane = new VirtualizedScrollPane<>(textArea);
 
-    private final ConcurrentLinkedQueue<LogWrapper> logBuffer = new ConcurrentLinkedQueue<>();
     private volatile boolean followCaret = true;
     private int currentLineCount = 0;
 
@@ -66,7 +63,6 @@ public class LogsAndMetricsTextComponent {
 
                         List<LogWrapper> sortedBatch = new ArrayList<>(batch);
                         Collections.sort(sortedBatch);
-                        logBuffer.addAll(sortedBatch);
 
                         Platform.runLater(() -> {
                             processLogBatch(sortedBatch);
@@ -86,13 +82,13 @@ public class LogsAndMetricsTextComponent {
     }
 
     private void setupScrollListener() {
-        textArea.estimatedScrollYProperty().addListener((obs, oldVal, newVal) -> {
+        textArea.estimatedScrollYProperty().addListener((_, oldVal, newVal) -> {
             double maxValue = textArea.getTotalHeightEstimate();
             double viewportHeight = textArea.getViewportHeight();
-            double currentPos = newVal.doubleValue() + viewportHeight;
+            double currentPos = newVal + viewportHeight;
 
             boolean isAtBottom = currentPos >= maxValue - viewportHeight * 0.1;
-            boolean isScrollingDown = newVal.doubleValue() > oldVal.doubleValue();
+            boolean isScrollingDown = newVal > oldVal;
             setFollowCaret(isAtBottom || (isScrollingDown && getFollowCaret()));
         });
 
