@@ -1,20 +1,14 @@
 package org.nevertouchgrass.prolific.components;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.InlineCssTextArea;
 import org.nevertouchgrass.prolific.model.LogWrapper;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.reactivestreams.Subscription;
@@ -31,28 +25,28 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class LogsAndMetricsTextComponent {
     private static final int MAX_LOG_ENTRIES = 5000;
     private static final int BATCH_SIZE = 100;
+    private static final int DELETION_THRESHOLD = 1000;
+    private static final String INFO_CLASS = "-fx-fill: #DFE1E5; -fx-font-family: \"JetBrains Mono\"; -fx-background-color: transparent;";
+    private static final String ERROR_CLASS = """
+            -fx-fill: #DB5C5C; -fx-font-family: "JetBrains Mono"; -fx-background-color: transparent;""";
 
     private final ProcessLogs processLogs;
     private final Flux<LogWrapper> logsFlux;
 
     @Getter
-    private final ListView<LogWrapper> logListView = new ListView<>();
-    private final ObservableList<LogWrapper> visibleLogs = FXCollections.observableArrayList();
+    private final InlineCssTextArea textArea = new InlineCssTextArea();
+    private final VirtualizedScrollPane<InlineCssTextArea> scrollPane = new VirtualizedScrollPane<>(textArea);
 
     private final ConcurrentLinkedQueue<LogWrapper> logBuffer = new ConcurrentLinkedQueue<>();
     private volatile boolean followCaret = true;
+    private int currentLineCount = 0;
 
     public void init() {
-        logListView.setItems(visibleLogs);
-        logListView.setCellFactory(createCellFactory());
-        logListView.setMaxWidth(Double.MAX_VALUE);
-        logListView.setMaxHeight(Double.MAX_VALUE);
-
-
-        Platform.runLater(this::setupScrollListener);
-
-        HBox.setHgrow(logListView, Priority.ALWAYS);
-        VBox.setVgrow(logListView, Priority.ALWAYS);
+        configureTextArea();
+        setupScrollListener();
+        scrollPane.getStyleClass().add("scroll-pane");
+        HBox.setHgrow(scrollPane, Priority.ALWAYS);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
         processBatchesWithDelay(new ArrayList<>(processLogs.getLogs()), 0);
 
@@ -82,23 +76,28 @@ public class LogsAndMetricsTextComponent {
                 });
     }
 
+    private void configureTextArea() {
+        textArea.setEditable(false);
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+
+        textArea.getStyleClass().add("text-flow");
+        textArea.setUseInitialStyleForInsertion(true);
+    }
+
     private void setupScrollListener() {
-        for (Node node : logListView.lookupAll(".scroll-bar")) {
-            if (node instanceof ScrollBar scrollBar && scrollBar.getOrientation().equals(Orientation.VERTICAL)) {
-                scrollBar.valueProperty().addListener((obs, oldVal, newVal) -> {
-                    double maxValue = scrollBar.getMax();
-                    boolean isAtBottom = newVal.doubleValue() >= maxValue - 0.02;
-                    boolean isScrollingDown = newVal.doubleValue() > oldVal.doubleValue();
-                    setFollowCaret(isAtBottom || (isScrollingDown && getFollowCaret()));
-                });
-                break;
-            }
+        textArea.estimatedScrollYProperty().addListener((obs, oldVal, newVal) -> {
+            double maxValue = textArea.getTotalHeightEstimate();
+            double viewportHeight = textArea.getViewportHeight();
+            double currentPos = newVal.doubleValue() + viewportHeight;
 
-        }
+            boolean isAtBottom = currentPos >= maxValue - viewportHeight * 0.1;
+            boolean isScrollingDown = newVal.doubleValue() > oldVal.doubleValue();
+            setFollowCaret(isAtBottom || (isScrollingDown && getFollowCaret()));
+        });
 
-        logListView.setOnScroll(event -> {
+        scrollPane.setOnScroll(event -> {
             if (event.getDeltaY() < 0) {
-                // Scrolling down
                 setFollowCaret(true);
             } else if (event.getDeltaY() > 0) {
                 setFollowCaret(false);
@@ -117,8 +116,8 @@ public class LogsAndMetricsTextComponent {
 
             if (endIndex < logs.size()) {
                 Platform.runLater(() -> processBatchesWithDelay(logs, endIndex));
-            } else if (getFollowCaret() && !visibleLogs.isEmpty()) {
-                logListView.scrollTo(visibleLogs.size() - 1);
+            } else if (getFollowCaret()) {
+                scrollToEnd();
             }
         });
     }
@@ -126,47 +125,55 @@ public class LogsAndMetricsTextComponent {
     private void processLogBatch(List<LogWrapper> logs) {
         if (logs.isEmpty()) return;
 
-        visibleLogs.addAll(logs);
+        StringBuilder batchText = new StringBuilder();
+        List<String> batchStyles = new ArrayList<>();
 
-        // Trim if needed
-        while (visibleLogs.size() > MAX_LOG_ENTRIES) {
-            visibleLogs.remove(0);
+        for (LogWrapper log : logs) {
+            String logText = log.getLog() + System.lineSeparator();
+            batchText.append(logText);
+
+            String style = log.getLogType().name().equals("INFO") ? INFO_CLASS : ERROR_CLASS;
+            int length = logText.length();
+            batchStyles.add(style);
+            batchStyles.add(Integer.toString(length));
+        }
+
+        int startPos = textArea.getLength();
+        textArea.appendText(batchText.toString());
+
+        int stylePos = startPos;
+        for (int i = 0; i < batchStyles.size(); i += 2) {
+            String style = batchStyles.get(i);
+            int length = Integer.parseInt(batchStyles.get(i + 1));
+            textArea.setStyle(stylePos, stylePos + length, style);
+            stylePos += length;
+        }
+
+        int addedLines = batchText.toString().split("\n|\r\n").length;
+        currentLineCount += addedLines;
+
+        if (currentLineCount > MAX_LOG_ENTRIES + DELETION_THRESHOLD) {
+            int linesToRemove = DELETION_THRESHOLD;
+            int endOfLinesToRemove = getPositionOfLine(linesToRemove);
+
+            textArea.deleteText(0, endOfLinesToRemove);
+            currentLineCount -= linesToRemove;
         }
 
         // Auto-scroll
-        if (getFollowCaret() && !visibleLogs.isEmpty()) {
-            logListView.scrollTo(visibleLogs.size() - 1);
+        if (getFollowCaret()) {
+            scrollToEnd();
         }
     }
 
-    private Callback<ListView<LogWrapper>, ListCell<LogWrapper>> createCellFactory() {
-        return listView -> new ListCell<>() {
-            private final Label label = new Label();
-
-            {
-                label.setWrapText(true);
-                label.setMouseTransparent(false);
-            }
-
-            @Override
-            protected void updateItem(LogWrapper log, boolean empty) {
-                super.updateItem(log, empty);
-                if (empty || log == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    label.setText(log.getLog());
-                    label.getStyleClass().removeAll("log-text", "log-error-text");
-
-                    boolean isInfo = log.getLogType().name().equals("INFO");
-                    label.getStyleClass().add(isInfo ? "log-text" : "log-error-text");
-
-                    setGraphic(label);
-                }
-            }
-        };
+    private int getPositionOfLine(int lineNumber) {
+        return textArea.position(lineNumber, 0).toOffset();
     }
 
+    private void scrollToEnd() {
+        textArea.moveTo(textArea.getLength());
+        textArea.requestFollowCaret();
+    }
 
     private synchronized void setFollowCaret(boolean followCaret) {
         this.followCaret = followCaret;
@@ -176,7 +183,7 @@ public class LogsAndMetricsTextComponent {
         return followCaret;
     }
 
-    public ListView<LogWrapper> getComponent() {
-        return logListView;
+    public Node getComponent() {
+        return scrollPane;
     }
 }

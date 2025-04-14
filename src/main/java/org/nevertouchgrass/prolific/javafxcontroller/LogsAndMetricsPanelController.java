@@ -191,7 +191,7 @@ public class LogsAndMetricsPanelController {
                         componentProvider.init();
                         return componentProvider;
                     });
-            placeForScrollPane.getChildren().add(component.getLogListView());
+            placeForScrollPane.getChildren().add(component.getComponent());
         } else {
             var component = metricsComponents.computeIfAbsent(processWrapper,
                     _ -> new MetricsChartComponent(metricsService, processWrapper));
