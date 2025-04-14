@@ -36,7 +36,6 @@ public class PythonConfigImporter implements ConfigImporter {
                 Document document = documentParser.parseXmlDocument(workspacePath);
                 NodeList configurations = document.getElementsByTagName(CONFIGURATION);
 
-                // Process Python configurations
                 for (int i = 0; i < configurations.getLength(); i++) {
                     Element config = (Element) configurations.item(i);
                     String type = config.getAttribute("type");
@@ -66,8 +65,19 @@ public class PythonConfigImporter implements ConfigImporter {
         return "Python";
     }
 
-    protected String getOptionsAttribute() {
-        return "SCRIPT_NAME";
+    private boolean isPython3Available() {
+        try {
+            Process process;
+            if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                process = Runtime.getRuntime().exec("where python3");
+            } else {
+                process = Runtime.getRuntime().exec("which python3");
+            }
+            return process.waitFor() == 0;
+        } catch (Exception e) {
+            log.warn("Failed to check if python3 is available", e);
+            return false;
+        }
     }
 
     private RunConfig extractPythonConfig(Element config) {
@@ -94,7 +104,8 @@ public class PythonConfigImporter implements ConfigImporter {
 
             if (scriptPath != null) {
                 scriptPath = scriptPath.replace("$PROJECT_DIR$/", "");
-                runConfig.getCommand().add("python3");
+                String pythonCommand = isPython3Available() ? "python3" : "python";
+                runConfig.getCommand().add(pythonCommand);
                 runConfig.getCommand().add(scriptPath);
 
                 if (!parameters.isEmpty()) {
@@ -116,7 +127,7 @@ public class PythonConfigImporter implements ConfigImporter {
         try {
             RunConfig runConfig = new RunConfig();
             runConfig.setConfigName(config.getAttribute("name"));
-            runConfig.setType("FastAPI");
+            runConfig.setType("Python");
             runConfig.setCommand(new ArrayList<>());
 
             NodeList options = config.getElementsByTagName("option");
@@ -133,7 +144,6 @@ public class PythonConfigImporter implements ConfigImporter {
 
             if (filePath != null) {
                 runConfig.getCommand().add("uvicorn");
-                // Extract the module name from file path
                 String moduleName = filePath.substring(filePath.lastIndexOf('/') + 1)
                         .replace(".py", "");
                 runConfig.getCommand().add(moduleName + ":app");
@@ -144,9 +154,5 @@ public class PythonConfigImporter implements ConfigImporter {
             log.error("Failed to extract FastAPI configuration", e);
         }
         return null;
-    }
-
-    public void normalize(RunConfig runConfig) {
-        runConfig.setType(getType());
     }
 }
