@@ -11,10 +11,7 @@ import java.util.function.Predicate;
 public class NameFilter implements ProjectFilter {
     @Override
     public Predicate<Project> getFilter(Object value) {
-        return project -> {
-            System.out.println("Got: " + project.getTitle().toLowerCase() + " check against: " + ((String) value).toLowerCase());
-            return project.getTitle().toLowerCase().contains(((String) value).toLowerCase());
-        };
+        return project -> project.getTitle().toLowerCase().contains(((String) value).toLowerCase());
     }
 
     @Override

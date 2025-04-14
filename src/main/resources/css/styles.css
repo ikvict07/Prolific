@@ -251,6 +251,12 @@
     -fx-padding: 0.0 0.15em;
 }
 
+.list-view .scroll-bar:vertical .increment-arrow,
+.list-view .scroll-bar:vertical .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0.0 0.15em;
+}
+
 .scroll-pane .scroll-bar {
     -fx-background-color: transparent;
     -fx-transition: opacity 0.3s;
@@ -260,6 +266,8 @@
     -fx-background-color: transparent;
     -fx-fill: transparent;
 }
+
+
 
 .split-pane {
     -fx-background-color: transparent;
@@ -470,19 +478,70 @@
 }
 
 .log-text {
-    -fx-fill: #DFE1E5;
+    -fx-text-fill: #DFE1E5;
     -fx-font-family: "JetBrains Mono";
     -fx-background-color: transparent;
 }
 
 .log-error-text {
-    -fx-fill: #DB5C5C;
+    -fx-text-fill: #DB5C5C;
     -fx-font-family: "JetBrains Mono";
     -fx-background-color: transparent;
 }
 
 .text-flow {
     -fx-padding: 4;
+    -fx-background-color: #1E1F22;
+}
+.list-view .scroll-bar .track {
+    -fx-background-color: #1E1F22;
+    -fx-fill: #1E1F22;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 12px;
+}
+
+.list-view .scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 0;
+    -fx-opacity: 1;
+    -fx-font: 12px;
+}
+
+.list-view .scroll-bar .thumb:pressed,
+.list-view .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+}
+
+.list-view .scroll-bar .increment-arrow,
+.list-view .scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0.25em 0;
+    -fx-fill: #1E1F22;
+}
+
+.list-view .scroll-bar:horizontal .increment-button,
+.list-view .scroll-bar:horizontal .decrement-button {
+    -fx-padding: 0.25em 0;
+    -fx-fill: #1E1F22;
+    -fx-background-color: #1E1F22;
+}
+.list-view .scroll-bar:vertical .increment-button,
+.list-view .scroll-bar:vertical .decrement-button {
+    -fx-padding: 0 0.25em 0 0;
+    -fx-fill: #1E1F22;
+    -fx-background-color: #1E1F22;
+}
+
+
+.list-view .corner {
     -fx-background-color: #1E1F22;
 }
 
@@ -515,6 +574,12 @@
 
 .scroll-pane .scroll-bar:vertical .increment-arrow,
 .scroll-pane .scroll-bar:vertical .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0 0.25em;
+}
+
+.list-view .scroll-bar:vertical .increment-arrow,
+.list-view .scroll-bar:vertical .decrement-arrow {
     -fx-shape: " ";
     -fx-padding: 0 0.25em;
 }
@@ -568,6 +633,7 @@
     -fx-border-color: transparent #6F737A transparent transparent;
     -fx-border-width: 0 1 0 0;
 }
+
 .selected {
     -fx-background-color: rgba(90, 155, 213, 0.3);
 }
