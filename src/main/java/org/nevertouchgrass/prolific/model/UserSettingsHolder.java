@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @Data
@@ -21,6 +22,8 @@ public class UserSettingsHolder {
     private List<Project> userProjects;
     private Integer maximumProjectDepth = 6;
     private List<String> excludedDirs;
+    private List<String> supportedTranslations;
+    private Locale locale;
 
     public void load(UserSettingsHolder userSettingsHolder) {
         if (userSettingsHolder.getBaseScanDirectory() != null && !userSettingsHolder.getBaseScanDirectory().isEmpty()) {
@@ -40,6 +43,12 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.excludedDirs != null && !userSettingsHolder.excludedDirs.isEmpty()) {
             this.excludedDirs = userSettingsHolder.excludedDirs;
+        }
+        if (userSettingsHolder.getSupportedTranslations() != null && !userSettingsHolder.getSupportedTranslations().isEmpty()) {
+            this.supportedTranslations = userSettingsHolder.supportedTranslations;
+        }
+        if (userSettingsHolder.getLocale() != null && !userSettingsHolder.getLocale().getLanguage().isEmpty()) {
+            this.locale = userSettingsHolder.getLocale();
         }
     }
 }

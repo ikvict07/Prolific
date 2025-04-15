@@ -54,4 +54,5 @@
     <entry key="setting_max_scan_depth">Maximálna hĺbka skenovania</entry>
     <entry key="setting_rescan_every_hours">Znovu skenovať každé hodiny</entry>
     <entry key="setting_language">Jazyk</entry>
+    <entry key="settings_option_general">Všeobecné</entry>
 </properties>

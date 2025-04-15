@@ -38,4 +38,16 @@ public class SettingsFooterController {
     public void submit() {
         settingsHeaderController.handleClose();
     }
+
+    public void changeApplyButtonStyle(boolean isDisabled) {
+        if (isDisabled != applyButton.isDisabled()) {
+            applyButton.getStyleClass().clear();
+            if (applyButton.isDisabled()) {
+                applyButton.getStyleClass().add("settings-submit-button");
+            } else {
+                applyButton.getStyleClass().add("settings-apply-button");
+            }
+            applyButton.setDisable(isDisabled);
+        }
+    }
 }

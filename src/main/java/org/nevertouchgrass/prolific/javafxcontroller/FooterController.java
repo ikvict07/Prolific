@@ -17,13 +17,13 @@ import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.model.notification.contract.Notification;
+import org.nevertouchgrass.prolific.service.localization.LocalizationManager;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.notification.contract.NotificationListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -56,6 +56,9 @@ public class FooterController implements NotificationListener<Notification> {
     private NotificationService notificationService;
     @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
+    @Setter(onMethod_ = @Autowired)
+    private LocalizationManager localizationManager;
+
     @Override
     public void onNotification(Notification notification) {
         if (notification instanceof InfoNotification in) {
@@ -122,10 +125,9 @@ public class FooterController implements NotificationListener<Notification> {
     }
 
     public void changeLanguage() {
-        Locale locale = LocaleContextHolder.getLocale().equals(Locale.forLanguageTag("sk")) ? Locale.forLanguageTag("en") : Locale.forLanguageTag("sk");
+        Locale locale = localizationManager.getLocale().equals(Locale.forLanguageTag("sk")) ? Locale.forLanguageTag("en") : Locale.forLanguageTag("sk");
         applicationEventPublisher.publishEvent(new LocalizationChangeEvent(this, locale));
         log.info("Language changed to {}", locale.getDisplayLanguage());
         notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_language_changed(), locale.getDisplayLanguage(locale)));
     }
-
 }
