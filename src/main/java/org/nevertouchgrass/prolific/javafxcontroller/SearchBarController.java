@@ -56,7 +56,7 @@ public class SearchBarController {
     @Setter(onMethod_ = {@Autowired})
     private LocalizationHolder localizationHolder;
     private Filters filterType = BY_NAME;
-    private ObservableList<Filters> appliedFilters = FXCollections.observableArrayList();
+    private final ObservableList<Filters> appliedFilters = FXCollections.observableArrayList();
 
     private ContextMenu contextMenu = new ContextMenu();
 
@@ -89,7 +89,7 @@ public class SearchBarController {
                         label.textProperty().bind(localizationHolder.getLocalization(added.name()));
                         label.setUserData("filter:" + added.name());
                         label.getStyleClass().add("icon-button");
-                        label.setOnMouseClicked(event -> {
+                        label.setOnMouseClicked(_ -> {
                             appliedFilters.remove(added);
                             filterSection.getChildren().remove(label);
                             handleAction(new ActionEvent());
@@ -115,7 +115,7 @@ public class SearchBarController {
             String searchText = textField.getText();
             var f = new ArrayList<ProjectFilterService.FilterOption>();
             f.add(new ProjectFilterService.FilterOption(filterType, searchText));
-            appliedFilters.forEach(filter -> f.add(new ProjectFilterService.FilterOption(filter, true)));
+            appliedFilters.forEach(it -> f.add(new ProjectFilterService.FilterOption(it, true)));
             updateFiltering(filterService.getFilter(f.toArray(ProjectFilterService.FilterOption[]::new)));
         }
     }
@@ -144,7 +144,6 @@ public class SearchBarController {
     private Filters extractUserData(Label label) {
         var userData = (String) label.getUserData();
         var data = Arrays.stream(userData.split(",")).filter(s -> s.contains("filter")).map(s -> s.split(":")[1]).findFirst().get();
-        var filter = Filters.valueOf(data);
-        return filter;
+        return Filters.valueOf(data);
     }
 }

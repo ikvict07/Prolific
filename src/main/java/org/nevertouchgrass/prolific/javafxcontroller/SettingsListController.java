@@ -54,7 +54,7 @@ public class SettingsListController {
     @FXML public Spinner<Integer> maxScanDepthSetting;
     @FXML public ComboBox<String> languageSetting;
 
-    private final String ERROR_STYLE_CLASS = "error";
+    private final static String ERROR = "error";
 
     @FXML
     public void initialize() {
@@ -123,12 +123,12 @@ public class SettingsListController {
         try {
             var result = Files.exists(Paths.get(path));
             if (result) {
-                rootPathSetting.getStyleClass().remove(ERROR_STYLE_CLASS);
+                rootPathSetting.getStyleClass().remove(ERROR);
                 rootPathErrorMessage.setVisible(false);
                 rootPathErrorMessage.setManaged(false);
             } else {
-                if (!rootPathSetting.getStyleClass().contains(ERROR_STYLE_CLASS)) {
-                    rootPathSetting.getStyleClass().add(ERROR_STYLE_CLASS);
+                if (!rootPathSetting.getStyleClass().contains(ERROR)) {
+                    rootPathSetting.getStyleClass().add(ERROR);
                 }
                 rootPathErrorMessage.setVisible(true);
                 rootPathErrorMessage.setManaged(true);
@@ -176,7 +176,7 @@ public class SettingsListController {
         rootPathSetting.textProperty().addListener(
                 (_, _, _) -> {
                     checkDefaultValues();
-                    rootPathSetting.getStyleClass().remove(ERROR_STYLE_CLASS);
+                    rootPathSetting.getStyleClass().remove(ERROR);
                     rootPathErrorMessage.setVisible(false);
                     rootPathErrorMessage.setManaged(false);
                 }
