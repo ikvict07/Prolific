@@ -54,11 +54,11 @@ public class SettingsListController {
     @FXML public Spinner<Integer> maxScanDepthSetting;
     @FXML public ComboBox<String> languageSetting;
 
-    private final static String ERROR = "error";
-    private final static int rescanMin = 1;
-    private final static int rescanMax = 72;
-    private final static int maxScanDepthMin = 1;
-    private final static int maxScanDepthMax = 30;
+    private static final String ERROR = "error";
+    private static final int RESCAN_MIN = 1;
+    private static final int RESCAN_MAX = 72;
+    private static final int MAX_SCAN_DEPTH_MIN = 1;
+    private static final int MAX_SCAN_DEPTH_MAX = 30;
 
     @FXML
     public void initialize() {
@@ -74,11 +74,11 @@ public class SettingsListController {
             languageSetting.getSelectionModel().select(locale);
 
             SpinnerValueFactory<Integer> rescanEveryHoursValueFactory =
-                    new SpinnerValueFactory.IntegerSpinnerValueFactory(rescanMin, rescanMax, userSettingsHolder.getRescanEveryHours());
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(RESCAN_MIN, RESCAN_MAX, userSettingsHolder.getRescanEveryHours());
             rescanEveryHoursSetting.setValueFactory(rescanEveryHoursValueFactory);
 
             SpinnerValueFactory<Integer> maxScanDepthValueFactory =
-                    new SpinnerValueFactory.IntegerSpinnerValueFactory(maxScanDepthMin, maxScanDepthMax, userSettingsHolder.getMaximumProjectDepth());
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX, userSettingsHolder.getMaximumProjectDepth());
             maxScanDepthSetting.setValueFactory(maxScanDepthValueFactory);
 
             validateInput();
@@ -168,16 +168,16 @@ public class SettingsListController {
 
     private void setupValidators() {
         TextFormatter<Integer> rescanEveryHoursFormatter = new TextFormatter<>(new IntegerStringConverter(),
-                userSettingsHolder.getRescanEveryHours(), it -> createIntegerChange(it, rescanMin, rescanMax));
+                userSettingsHolder.getRescanEveryHours(), it -> createIntegerChange(it, RESCAN_MIN, RESCAN_MAX));
         TextFormatter<Integer> maxScanDepthFormatter = new TextFormatter<>(new IntegerStringConverter(),
-                userSettingsHolder.getMaximumProjectDepth(), it -> createIntegerChange(it, maxScanDepthMin, maxScanDepthMax));
+                userSettingsHolder.getMaximumProjectDepth(), it -> createIntegerChange(it, MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX));
 
         SpinnerValueFactory<Integer> rescanEveryHoursValueFactory =
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(rescanMin, rescanMax, userSettingsHolder.getRescanEveryHours());
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(RESCAN_MIN, RESCAN_MAX, userSettingsHolder.getRescanEveryHours());
         setupSpinnerValidation(rescanEveryHoursSetting, rescanEveryHoursValueFactory, rescanEveryHoursFormatter);
 
         SpinnerValueFactory<Integer> maxScanDepthValueFactory =
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(maxScanDepthMin, maxScanDepthMax, userSettingsHolder.getMaximumProjectDepth());
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX, userSettingsHolder.getMaximumProjectDepth());
         setupSpinnerValidation(maxScanDepthSetting, maxScanDepthValueFactory, maxScanDepthFormatter);
 
         rootPathSetting.textProperty().addListener(
