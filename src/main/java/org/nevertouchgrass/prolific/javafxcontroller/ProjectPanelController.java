@@ -102,6 +102,8 @@ public class ProjectPanelController {
     private ProcessService processService;
     @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
+    @Setter(onMethod_ = @Autowired)
+    private RunConfigSettingHeaderController runConfigSettingHeaderController;
 
     private ContextMenu contextMenu;
     private ProjectRunConfigs projectRunConfigs;
@@ -145,6 +147,10 @@ public class ProjectPanelController {
         }));
     }
 
+    private void onAddConfig() {
+        runConfigSettingHeaderController.open();
+    }
+
     private void generateAddRunConfigContextMenuItem(StringProperty label) {
         ObservableList<MenuItem> menuItems = contextMenu.getItems();
         if (!(projectRunConfigs.getImportedConfigs().isEmpty() && projectRunConfigs.getManuallyAddedConfigs().isEmpty())) {
@@ -154,6 +160,7 @@ public class ProjectPanelController {
         MenuItem menuItem = new MenuItem();
         menuItem.textProperty().bind(label);
         menuItem.setGraphic(fxmlProvider.getIcon("addButton"));
+        menuItem.addEventFilter(ActionEvent.ANY, (_) -> onAddConfig());
         menuItems.add(menuItem);
 
     }

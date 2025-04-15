@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
-<!--suppress JavaFxEventHandler -->
-<AnchorPane fx:id="settingsHeader" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
+<AnchorPane fx:id="configsHeader" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsHeaderController"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.RunConfigSettingHeaderController"
             styleClass="settings-header">
 
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
                AnchorPane.leftAnchor="0.0">
 
-        <Label fx:id="titleText" textFill="#ebecf0" userData="localization:settings" textAlignment="CENTER"/>
+        <Label fx:id="titleText" textFill="#ebecf0" userData="localization:run_config" textAlignment="CENTER"/>
 
-        <HBox fx:id="settingsGradientBox" styleClass="settingsGradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
+        <HBox fx:id="configsGradientBox" styleClass="settingsGradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>
                 <Insets left="16"/>
             </padding>

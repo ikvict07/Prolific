@@ -55,4 +55,5 @@
     <entry key="setting_rescan_every_hours">Znovu skenovať každé hodiny</entry>
     <entry key="setting_language">Jazyk</entry>
     <entry key="create_config">Vytvoriť novu</entry>
+    <entry key="run_config">Konfigurácia spustenia</entry>
 </properties>
