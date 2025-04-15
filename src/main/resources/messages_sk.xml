@@ -55,4 +55,6 @@
     <entry key="setting_rescan_every_hours">Znovu skenovať každé hodiny</entry>
     <entry key="setting_language">Jazyk</entry>
     <entry key="settings_option_general">Všeobecné</entry>
+    <entry key="settings_saved">Nastavenia uložené</entry>
+    <entry key="setting_root_path_to_scan_error_message">Zadaná cesta neexistuje</entry>
 </properties>

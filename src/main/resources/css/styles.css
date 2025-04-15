@@ -96,6 +96,14 @@
     -fx-border-color: #4E5157;
 }
 
+.label.error {
+    -fx-text-fill: #FF3B30;
+}
+
+.text-field.error {
+    -fx-border-color: #FF3B30;
+}
+
 .settings-option {
     -fx-background-color: #393B40;
     -fx-background-radius: 4;

@@ -21,6 +21,7 @@ public class SettingsFooterController {
     public Label submitButton;
     @FXML public AnchorPane settingsFooter;
     @FXML public HBox content;
+    @Setter private Runnable saveRunnable;
 
     @Setter(onMethod_ = @Autowired)
     private SettingsHeaderController settingsHeaderController;
@@ -33,9 +34,12 @@ public class SettingsFooterController {
         settingsHeaderController.handleClose();
     }
 
-    public void apply() {}
+    public void apply() {
+        saveRunnable.run();
+    }
 
     public void submit() {
+        saveRunnable.run();
         settingsHeaderController.handleClose();
     }
 
