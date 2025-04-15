@@ -55,6 +55,10 @@ public class SettingsListController {
     @FXML public ComboBox<String> languageSetting;
 
     private final static String ERROR = "error";
+    private final static int rescanMin = 1;
+    private final static int rescanMax = 72;
+    private final static int maxScanDepthMin = 1;
+    private final static int maxScanDepthMax = 30;
 
     @FXML
     public void initialize() {
@@ -68,6 +72,14 @@ public class SettingsListController {
 
             var locale = userSettingsHolder.getLocale().getDisplayLanguage(userSettingsHolder.getLocale());
             languageSetting.getSelectionModel().select(locale);
+
+            SpinnerValueFactory<Integer> rescanEveryHoursValueFactory =
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(rescanMin, rescanMax, userSettingsHolder.getRescanEveryHours());
+            rescanEveryHoursSetting.setValueFactory(rescanEveryHoursValueFactory);
+
+            SpinnerValueFactory<Integer> maxScanDepthValueFactory =
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(maxScanDepthMin, maxScanDepthMax, userSettingsHolder.getMaximumProjectDepth());
+            maxScanDepthSetting.setValueFactory(maxScanDepthValueFactory);
 
             validateInput();
             checkDefaultValues();
@@ -155,11 +167,6 @@ public class SettingsListController {
     }
 
     private void setupValidators() {
-        int rescanMin = 1;
-        int rescanMax = 72;
-        int maxScanDepthMin = 1;
-        int maxScanDepthMax = 30;
-
         TextFormatter<Integer> rescanEveryHoursFormatter = new TextFormatter<>(new IntegerStringConverter(),
                 userSettingsHolder.getRescanEveryHours(), it -> createIntegerChange(it, rescanMin, rescanMax));
         TextFormatter<Integer> maxScanDepthFormatter = new TextFormatter<>(new IntegerStringConverter(),
