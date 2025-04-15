@@ -54,6 +54,8 @@ public class SettingsListController {
     @FXML public Spinner<Integer> maxScanDepthSetting;
     @FXML public ComboBox<String> languageSetting;
 
+    private final String ERROR_STYLE_CLASS = "error";
+
     @FXML
     public void initialize() {
         settingsFooterController.setSaveRunnable(this::saveSettings);
@@ -121,20 +123,20 @@ public class SettingsListController {
         try {
             var result = Files.exists(Paths.get(path));
             if (result) {
-                rootPathSetting.getStyleClass().remove("error");
+                rootPathSetting.getStyleClass().remove(ERROR_STYLE_CLASS);
                 rootPathErrorMessage.setVisible(false);
                 rootPathErrorMessage.setManaged(false);
             } else {
-                if (!rootPathSetting.getStyleClass().contains("error")) {
-                    rootPathSetting.getStyleClass().add("error");
+                if (!rootPathSetting.getStyleClass().contains(ERROR_STYLE_CLASS)) {
+                    rootPathSetting.getStyleClass().add(ERROR_STYLE_CLASS);
                 }
                 rootPathErrorMessage.setVisible(true);
                 rootPathErrorMessage.setManaged(true);
             }
             return result;
-        } catch (Exception ignore) {}
-
-        return false;
+        } catch (Exception ignore) {
+            return false;
+        }
     }
 
     private void saveSettings() {
@@ -153,8 +155,10 @@ public class SettingsListController {
     }
 
     private void setupValidators() {
-        int rescanMin = 1, rescanMax = 72;
-        int maxScanDepthMin = 1, maxScanDepthMax = 30;
+        int rescanMin = 1;
+        int rescanMax = 72;
+        int maxScanDepthMin = 1;
+        int maxScanDepthMax = 30;
 
         TextFormatter<Integer> rescanEveryHoursFormatter = new TextFormatter<>(new IntegerStringConverter(),
                 userSettingsHolder.getRescanEveryHours(), it -> createIntegerChange(it, rescanMin, rescanMax));
@@ -172,7 +176,7 @@ public class SettingsListController {
         rootPathSetting.textProperty().addListener(
                 (_, _, _) -> {
                     checkDefaultValues();
-                    rootPathSetting.getStyleClass().remove("error");
+                    rootPathSetting.getStyleClass().remove(ERROR_STYLE_CLASS);
                     rootPathErrorMessage.setVisible(false);
                     rootPathErrorMessage.setManaged(false);
                 }
