@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.nevertouchgrass.prolific.javafxcontroller.FiltersDropdownController"
+      stylesheets="@/css/styles.css">
+    <Label userData="localization:BY_IS_STARRED,filter:BY_IS_STARRED" fx:id="isStared"/>
+    <Label userData="localization:BY_IS_MANUALLY_ADDED,filter:BY_IS_MANUALLY_ADDED" fx:id="isManuallyAdded"/>
+</VBox>

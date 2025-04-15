@@ -16,6 +16,12 @@
             </padding>
             <Label fx:id="notification"/>
         </StackPane>
+        <StackPane fx:id="localePane" styleClass="icon-button">
+            <padding>
+                <Insets top="5" bottom="5" left="10" right="10"/>
+            </padding>
+            <Label fx:id="localeLabel" userData="localization:using_locale"/>
+        </StackPane>
         <StackPane fx:id="loaderPane" visible="false" styleClass="icon-button" onMouseClicked="#showCancelPopup">
             <padding>
                 <Insets top="5" bottom="5" left="10" right="10"/>

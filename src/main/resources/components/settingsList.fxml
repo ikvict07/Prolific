@@ -1,0 +1,48 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<SplitPane dividerPositions="0.15" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsListController"
+           xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/styles.css" styleClass="settings-split-pane"
+           onMouseEntered="#handleMouseEntered">
+    <VBox spacing="8">
+        <padding>
+            <Insets top="16" bottom="16" left="8" right="8"/>
+        </padding>
+        <Label fx:id="general" userData="localization:settings_option_general" styleClass="settings-option-selected"/>
+    </VBox>
+
+    <GridPane hgap="24" vgap="32">
+        <padding>
+            <Insets top="32" right="16" bottom="16" left="16"/>
+        </padding>
+
+        <columnConstraints>
+            <ColumnConstraints halignment="LEFT"/>
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+        <Label fx:id="rootPath" userData="localization:setting_root_path_to_scan"
+               GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+            <TextField fx:id="rootPathSetting"/>
+            <Label fx:id="rootPathErrorMessage" visible="false" managed="false"
+                   userData="localization:setting_root_path_to_scan_error_message" styleClass="error"/>
+        </VBox>
+
+        <Label fx:id="excludedDirs" userData="localization:setting_excluded_dirs"
+               GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="excludedDirsSetting" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label fx:id="maxScanDepth" userData="localization:setting_max_scan_depth"
+               GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Spinner fx:id="maxScanDepthSetting" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label fx:id="rescanEveryHours" userData="localization:setting_rescan_every_hours"
+               GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Spinner fx:id="rescanEveryHoursSetting" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label fx:id="language" userData="localization:setting_language" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="languageSetting" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+    </GridPane>
+
+</SplitPane>

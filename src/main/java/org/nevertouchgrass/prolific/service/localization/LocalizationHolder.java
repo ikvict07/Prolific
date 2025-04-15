@@ -5,10 +5,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,10 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocalizationHolder implements ApplicationListener<LocalizationChangeEvent> {
     private final LocalizationManager localizationManager;
     private final Map<String, StringProperty> localizationMap = new ConcurrentHashMap<>();
+    private final UserSettingsHolder userSettingsHolder;
 
     @PostConstruct
     public void init() {
-        Properties properties = localizationManager.getProperties(Locale.forLanguageTag("en"));
+        Properties properties = localizationManager.getProperties(userSettingsHolder.getLocale());
         properties.forEach((key, value) -> localizationMap.put(key.toString(), new SimpleStringProperty(value.toString())));
     }
 

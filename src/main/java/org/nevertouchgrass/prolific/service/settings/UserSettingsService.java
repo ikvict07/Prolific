@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Service for managing user's settings
@@ -48,6 +49,12 @@ public class UserSettingsService {
         }
         if (sett.getExcludedDirs() == null) {
             setDefaultExcludedDirs();
+        }
+        if (sett.getSupportedTranslations() == null) {
+            setDefaultSupportedTranslations();
+        }
+        if (sett.getLocale() == null || sett.getLocale().getLanguage().isEmpty()) {
+            setDefaultLocale();
         }
         userSettingsHolder.load(sett);
         log.info("Using settings: {}", userSettingsHolder);
@@ -93,6 +100,19 @@ public class UserSettingsService {
                 "cargo",
                 ".*"
         ));
+        saveSettings();
+    }
+
+    public void setDefaultSupportedTranslations() {
+        userSettingsHolder.setSupportedTranslations(List.of(
+                "en",
+                "sk"
+        ));
+        saveSettings();
+    }
+
+    public void setDefaultLocale() {
+        userSettingsHolder.setLocale(Locale.forLanguageTag("en"));
         saveSettings();
     }
 }

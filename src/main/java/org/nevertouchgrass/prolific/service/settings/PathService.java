@@ -1,12 +1,13 @@
 package org.nevertouchgrass.prolific.service.settings;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
-import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -25,8 +26,27 @@ import java.util.NoSuchElementException;
 @Log4j2
 @RequiredArgsConstructor
 public class PathService {
-    private final SpringFXConfigurationProperties properties;
     private final XmlMapper xmlMapper;
+    @Getter
+    private Path projectFilesPath;
+
+    private final static String OS = System.getProperty("os.name").toLowerCase();
+
+    @PostConstruct
+    public void init() {
+        if (OS.contains("win")) {
+            projectFilesPath = Paths.get(System.getProperty("user.home") + "/Program Files/Prolific");
+        } else {
+            projectFilesPath = Paths.get(System.getProperty("user.home"), ".prolific");
+        }
+        if (!Files.exists(projectFilesPath)) {
+            try {
+                Files.createDirectories(projectFilesPath);
+            } catch (Exception e) {
+                log.error("Failed to create project files path", e);
+            }
+        }
+    }
 
     public Path getProjectPath() {
         Class<?> clazz = PathService.class;
@@ -41,16 +61,14 @@ public class PathService {
 
     @SneakyThrows
     public Path getRunConfigsDirectory() {
-        var jarPath = getProjectPath();
-        var dir = jarPath.getParent().resolve(properties.getRunConfigsLocation());
+        var dir = projectFilesPath.resolve("runConfigs");
         Files.createDirectories(dir);
         return dir;
     }
 
     @SneakyThrows
     public Path getSettingsPath() {
-        Path jarPath = getProjectPath();
-        Path settingsPath = jarPath.getParent().resolve(properties.getSettingsLocation());
+        Path settingsPath = projectFilesPath;
         Path settingsFilePath = settingsPath.resolve("settings.xml");
         Files.createDirectories(settingsPath);
         if (!Files.exists(settingsFilePath)) {
@@ -88,7 +106,7 @@ public class PathService {
                     .replace("nested:", "");
             int index = fixed.indexOf(".jar");
             int endIndex = index == -1 ? fixed.length() : index + 4;
-            int startIndex = System.getProperty("os.name").toLowerCase().contains("win") ? 1 : 0;
+            int startIndex = OS.contains("win") ? 1 : 0;
             String path = fixed.substring(startIndex, endIndex);
             return Paths.get(path);
         }
@@ -98,10 +116,58 @@ public class PathService {
             if (index == -1) {
                 throw new NoSuchElementException("Invalid Jar File URL String");
             }
-            int startIndex = System.getProperty("os.name").toLowerCase().contains("win") ? 1 : 0;
+            int startIndex = OS.contains("win") ? 1 : 0;
             String path = fixed.substring(startIndex, index);
             return Paths.get(path);
         }
         return Paths.get(uri);
+    }
+
+    @SneakyThrows
+    public Path getPluginsPath() {
+        Path settingsFilePath = projectFilesPath.resolve("plugins");
+        Files.createDirectories(settingsFilePath);
+        Path defaultPlugin = settingsFilePath.resolve("defaultPlugin.xml");
+        if (!Files.exists(defaultPlugin)) {
+            Files.createFile(defaultPlugin);
+            Files.write(defaultPlugin, ("""
+                    <projects>
+                        <project>
+                            <name>Gradle</name>
+                            <identifiers>
+                                <file>build.gradle</file>
+                                <file>build.gradle.kts</file>
+                                <folder>.gradle</folder>
+                            </identifiers>
+                        </project>
+                    
+                        <project>
+                            <name>Maven</name>
+                            <identifiers>
+                                <file>pom.xml</file>
+                            </identifiers>
+                        </project>
+                    
+                        <project>
+                            <name>Eclipse</name>
+                            <identifiers>
+                                <file>.project</file>
+                                <file>.classpath</file>
+                            </identifiers>
+                        </project>
+                    
+                        <project>
+                            <name>Python</name>
+                            <identifiers>
+                                <file>requirements.txt</file>
+                                <file>pyproject.toml</file>
+                                <file>setup.py</file>
+                                <folder>.venv</folder>
+                            </identifiers>
+                        </project>
+                    </projects>
+                    """).getBytes());
+        }
+        return settingsFilePath;
     }
 }

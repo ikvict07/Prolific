@@ -38,4 +38,23 @@
     <entry key="log_info_cant_scan_while_running">You can't scan while processes are running</entry>
     <entry key="exclude_project">Exclude project</entry>
     <entry key="delete_project">Delete project</entry>
+    <entry key="settings_cancel_button">Cancel</entry>
+    <entry key="settings_apply_button">Apply</entry>
+    <entry key="settings_submit_button">OK</entry>
+    <entry key="search">Search</entry>
+    <entry key="BY_IS_STARRED">Only stared</entry>
+    <entry key="BY_IS_MANUALLY_ADDED">Only manually added</entry>
+    <entry key="sort_by_title">By title</entry>
+    <entry key="sort_by_type">By type</entry>
+    <entry key="sort_by_running">Running</entry>
+    <entry key="sort_by_starred">Starred</entry>
+    <entry key="using_locale">EN</entry>
+    <entry key="setting_root_path_to_scan">Root path to scan</entry>
+    <entry key="setting_excluded_dirs">Excluded dirs</entry>
+    <entry key="setting_max_scan_depth">Max scan depth</entry>
+    <entry key="setting_rescan_every_hours">Rescan every hours</entry>
+    <entry key="setting_language">Language</entry>
+    <entry key="settings_option_general">General</entry>
+    <entry key="settings_saved">Settings saved</entry>
+    <entry key="setting_root_path_to_scan_error_message">Provided path doesn't exist</entry>
 </properties>

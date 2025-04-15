@@ -131,6 +131,7 @@ public class MetricsChartComponent extends VBox {
 
         HBox scrollBarBox = new HBox(scrollBar);
         HBox.setHgrow(scrollBar, Priority.ALWAYS);
+        scrollBarBox.setStyle("-fx-fill: #1E1F22; -fx-background-color: #1E1F22;");
         scrollBarBox.setPadding(new javafx.geometry.Insets(5, 10, 5, 10));
 
         this.getChildren().add(scrollBarBox);

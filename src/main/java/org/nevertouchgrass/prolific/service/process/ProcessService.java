@@ -45,6 +45,14 @@ public class ProcessService {
         return process;
     }
 
+    public boolean isProcessRunning(Project project) {
+        var processes = observableProcessesMap.get(project);
+        if (processes == null) {
+            return false;
+        }
+        return !processes.isEmpty();
+    }
+
     private final ObservableMap<Project, Set<ProcessWrapper>> observableProcessesMap = FXCollections.observableHashMap();
 
     public ObservableMap<Project, Set<ProcessWrapper>> getObservableLiveProcesses() {
