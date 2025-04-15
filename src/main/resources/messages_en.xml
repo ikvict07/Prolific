@@ -54,4 +54,5 @@
     <entry key="setting_max_scan_depth">Max scan depth</entry>
     <entry key="setting_rescan_every_hours">Rescan every hours</entry>
     <entry key="setting_language">Language</entry>
+    <entry key="create_config">Create new</entry>
 </properties>

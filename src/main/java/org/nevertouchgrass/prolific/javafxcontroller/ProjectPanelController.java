@@ -9,10 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -132,6 +129,7 @@ public class ProjectPanelController {
 
         generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
         generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
+        generateAddRunConfigContextMenuItem(localizationProvider.create_config());
         isProjectRunning.addListener((_, _, newValue) -> Platform.runLater(() -> {
             if (newValue) {
                 runContent.getChildren().clear();
@@ -145,6 +143,19 @@ public class ProjectPanelController {
                 run.setOnMouseClicked((_ -> runProject()));
             }
         }));
+    }
+
+    private void generateAddRunConfigContextMenuItem(StringProperty label) {
+        ObservableList<MenuItem> menuItems = contextMenu.getItems();
+        if (!(projectRunConfigs.getImportedConfigs().isEmpty() && projectRunConfigs.getManuallyAddedConfigs().isEmpty())) {
+            SeparatorMenuItem separator = new SeparatorMenuItem();
+            menuItems.add(separator);
+        }
+        MenuItem menuItem = new MenuItem();
+        menuItem.textProperty().bind(label);
+        menuItem.setGraphic(fxmlProvider.getIcon("addButton"));
+        menuItems.add(menuItem);
+
     }
 
     public void addUpdateListener(Consumer<Project> listener) {
