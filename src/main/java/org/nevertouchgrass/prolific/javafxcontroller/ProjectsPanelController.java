@@ -163,7 +163,7 @@ public class ProjectsPanelController {
             content.getChildren().removeAll(toDelete);
             var newIndex = findInsertionIndex(project);
             ((ProjectPanelController) toDelete.getFirst().getProperties().get("controller")).updateStar();
-            insertProjectPanelAt(newIndex, toDelete.getFirst());
+            content.getChildren().add(newIndex, toDelete.getFirst());
         });
 
     }

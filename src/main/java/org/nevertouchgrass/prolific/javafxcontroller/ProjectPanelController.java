@@ -50,7 +50,7 @@ import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 @Scope("prototype")
 @Data
 public class ProjectPanelController {
-    public final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
+    public static final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
     @FXML
     public StackPane star;
     @FXML
@@ -160,7 +160,7 @@ public class ProjectPanelController {
         MenuItem menuItem = new MenuItem();
         menuItem.textProperty().bind(label);
         menuItem.setGraphic(fxmlProvider.getIcon("addButton"));
-        menuItem.addEventFilter(ActionEvent.ANY, (_) -> onAddConfig());
+        menuItem.addEventFilter(ActionEvent.ANY, _ -> onAddConfig());
         menuItems.add(menuItem);
 
     }
@@ -267,13 +267,14 @@ public class ProjectPanelController {
 
     public void stopProject() {
         if (currentProcess != null) {
+            currentProcess.getProcess().onExit().thenAccept(_ -> new Thread(() -> updateListeners.forEach(c -> c.accept(project))).start());
             currentProcess.getProcess().destroy();
             currentProcess = null;
             notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_project_stopped(), project.getTitle()));
             log.info("Project {} stopped", project.getTitle());
         }
         isProjectRunning.setValue(false);
-        updateListeners.forEach(c -> c.accept(project));
+
     }
 
     private void runProjectLambda() {
