@@ -272,7 +272,6 @@
 }
 
 
-
 .split-pane {
     -fx-background-color: transparent;
 }
@@ -494,9 +493,22 @@
 }
 
 .text-flow {
+    -fx-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+    -fx-background-color: transparent;
     -fx-padding: 4;
-    -fx-background-color: #1E1F22;
+    -fx-text-fill: #DFE1E5;
 }
+
+.text-area {
+    -fx-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+    -fx-background-color: transparent;
+    -fx-padding: 4;
+    -fx-text-fill: #DFE1E5;
+}
+
+
 .list-view .scroll-bar .track {
     -fx-background-color: #1E1F22;
     -fx-fill: #1E1F22;
@@ -537,6 +549,7 @@
     -fx-fill: #1E1F22;
     -fx-background-color: #1E1F22;
 }
+
 .list-view .scroll-bar:vertical .increment-button,
 .list-view .scroll-bar:vertical .decrement-button {
     -fx-padding: 0 0.25em 0 0;

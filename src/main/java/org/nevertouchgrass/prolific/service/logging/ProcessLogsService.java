@@ -59,11 +59,20 @@ public class ProcessLogsService implements ProcessAware {
         Mono.fromRunnable(() -> {
             try (reader) {
                 String line;
+                LocalDateTime batchTimestamp = LocalDateTime.now();
+                long lastTimestampUpdateTime = System.currentTimeMillis();
+
                 while ((line = reader.readLine()) != null) {
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime - lastTimestampUpdateTime > 100) {
+                        batchTimestamp = LocalDateTime.now();
+                        lastTimestampUpdateTime = currentTime;
+                    }
+
                     var logEntry = new LogWrapper();
                     logEntry.setLog(line);
                     logEntry.setLogType(logType);
-                    logEntry.setTimeStamp(LocalDateTime.now());
+                    logEntry.setTimeStamp(batchTimestamp);
 
                     queue.put(logEntry);
                 }

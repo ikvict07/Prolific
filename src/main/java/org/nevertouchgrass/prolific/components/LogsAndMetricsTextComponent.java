@@ -76,9 +76,9 @@ public class LogsAndMetricsTextComponent {
         textArea.setEditable(false);
         textArea.setMaxWidth(Double.MAX_VALUE);
         textArea.setMaxHeight(Double.MAX_VALUE);
-
         textArea.getStyleClass().add("text-flow");
         textArea.setUseInitialStyleForInsertion(true);
+        textArea.setStyle(INFO_CLASS);
     }
 
     private void setupScrollListener() {
