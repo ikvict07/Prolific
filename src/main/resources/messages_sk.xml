@@ -56,5 +56,10 @@
     <entry key="setting_language">Jazyk</entry>
     <entry key="settings_option_general">Všeobecné</entry>
     <entry key="settings_saved">Nastavenia uložené</entry>
-    <entry key="setting_root_path_to_scan_error_message">Zadaná cesta neexistuje</entry>
+    <entry key="setting_path_doesnt_exist">Zadaná cesta neexistuje</entry>
+    <entry key="settings_option_environment">Prostredie</entry>
+    <entry key="setting_python_path">Cesta k Pythonu</entry>
+    <entry key="setting_gradle_path">Cesta ku Gradle</entry>
+    <entry key="setting_maven_path">Cesta k Mavenu</entry>
+    <entry key="setting_jdk_path">Cesta k JDK</entry>
 </properties>

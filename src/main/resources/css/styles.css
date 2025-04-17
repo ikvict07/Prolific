@@ -114,14 +114,14 @@
     -fx-background-color: #4E5157;
 }
 
-.settings-option-selected {
+.settings-option.selected {
     -fx-background-color: #4E5157;
     -fx-background-radius: 4;
     -fx-padding: 4 8 4 8;
     -fx-fill: #DFE1E5;
 }
 
-.settings-option-selected:hover {
+.settings-option.selected:hover {
     -fx-background-color: #5A5E65;
 }
 
