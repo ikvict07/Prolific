@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @Data
@@ -21,6 +22,12 @@ public class UserSettingsHolder {
     private List<Project> userProjects;
     private Integer maximumProjectDepth = 6;
     private List<String> excludedDirs;
+    private List<String> supportedTranslations;
+    private Locale locale;
+    private String pythonPath;
+    private String gradlePath;
+    private String mavenPath;
+    private String jdkPath;
 
     public void load(UserSettingsHolder userSettingsHolder) {
         if (userSettingsHolder.getBaseScanDirectory() != null && !userSettingsHolder.getBaseScanDirectory().isEmpty()) {
@@ -40,6 +47,24 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.excludedDirs != null && !userSettingsHolder.excludedDirs.isEmpty()) {
             this.excludedDirs = userSettingsHolder.excludedDirs;
+        }
+        if (userSettingsHolder.getSupportedTranslations() != null && !userSettingsHolder.getSupportedTranslations().isEmpty()) {
+            this.supportedTranslations = userSettingsHolder.supportedTranslations;
+        }
+        if (userSettingsHolder.getLocale() != null && !userSettingsHolder.getLocale().getLanguage().isEmpty()) {
+            this.locale = userSettingsHolder.getLocale();
+        }
+        if (userSettingsHolder.getPythonPath() != null && !userSettingsHolder.getPythonPath().isEmpty()) {
+            this.pythonPath = userSettingsHolder.getPythonPath();
+        }
+        if (userSettingsHolder.getGradlePath() != null && !userSettingsHolder.getGradlePath().isEmpty()) {
+            this.gradlePath = userSettingsHolder.getGradlePath();
+        }
+        if (userSettingsHolder.getMavenPath() != null && !userSettingsHolder.getMavenPath().isEmpty()) {
+            this.mavenPath = userSettingsHolder.getMavenPath();
+        }
+        if (userSettingsHolder.getJdkPath() != null && !userSettingsHolder.getJdkPath().isEmpty()) {
+            this.jdkPath = userSettingsHolder.getJdkPath();
         }
     }
 }

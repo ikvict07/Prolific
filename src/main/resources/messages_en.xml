@@ -56,4 +56,12 @@
     <entry key="setting_language">Language</entry>
     <entry key="create_config">Create new</entry>
     <entry key="run_config">Run configuration</entry>
+    <entry key="settings_option_general">General</entry>
+    <entry key="settings_saved">Settings saved</entry>
+    <entry key="setting_path_doesnt_exist">Provided path doesn't exist</entry>
+    <entry key="settings_option_environment">Environment</entry>
+    <entry key="setting_python_path">Python path</entry>
+    <entry key="setting_gradle_path">Gradle path</entry>
+    <entry key="setting_maven_path">Maven path</entry>
+    <entry key="setting_jdk_path">JDK path</entry>
 </properties>

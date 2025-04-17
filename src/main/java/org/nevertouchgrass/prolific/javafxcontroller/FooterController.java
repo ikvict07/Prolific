@@ -12,20 +12,14 @@ import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
-import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.model.notification.contract.Notification;
-import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
-import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.notification.contract.NotificationListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.i18n.LocaleContextHolder;
 
-import java.util.Locale;
 import java.util.Objects;
 
 @Lazy
@@ -50,12 +44,7 @@ public class FooterController implements NotificationListener<Notification> {
     private Loader loader;
     @Setter(onMethod_ = @Autowired)
     private ContextMenu cancellingPopup;
-    @Setter(onMethod_ = @Autowired)
-    private ApplicationEventPublisher applicationEventPublisher;
-    @Setter(onMethod_ = @Autowired)
-    private NotificationService notificationService;
-    @Setter(onMethod_ = @Autowired)
-    private LocalizationProvider localizationProvider;
+
     @Override
     public void onNotification(Notification notification) {
         if (notification instanceof InfoNotification in) {
@@ -120,12 +109,4 @@ public class FooterController implements NotificationListener<Notification> {
             cancellingPopup.setY(topAlignedY);
         });
     }
-
-    public void changeLanguage() {
-        Locale locale = LocaleContextHolder.getLocale().equals(Locale.forLanguageTag("sk")) ? Locale.forLanguageTag("en") : Locale.forLanguageTag("sk");
-        applicationEventPublisher.publishEvent(new LocalizationChangeEvent(this, locale));
-        log.info("Language changed to {}", locale.getDisplayLanguage());
-        notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_language_changed(), locale.getDisplayLanguage(locale)));
-    }
-
 }
