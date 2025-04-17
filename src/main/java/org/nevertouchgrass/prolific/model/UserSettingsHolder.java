@@ -24,6 +24,10 @@ public class UserSettingsHolder {
     private List<String> excludedDirs;
     private List<String> supportedTranslations;
     private Locale locale;
+    private String pythonPath;
+    private String gradlePath;
+    private String mavenPath;
+    private String jdkPath;
 
     public void load(UserSettingsHolder userSettingsHolder) {
         if (userSettingsHolder.getBaseScanDirectory() != null && !userSettingsHolder.getBaseScanDirectory().isEmpty()) {
@@ -49,6 +53,18 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.getLocale() != null && !userSettingsHolder.getLocale().getLanguage().isEmpty()) {
             this.locale = userSettingsHolder.getLocale();
+        }
+        if (userSettingsHolder.getPythonPath() != null && !userSettingsHolder.getPythonPath().isEmpty()) {
+            this.pythonPath = userSettingsHolder.getPythonPath();
+        }
+        if (userSettingsHolder.getGradlePath() != null && !userSettingsHolder.getGradlePath().isEmpty()) {
+            this.gradlePath = userSettingsHolder.getGradlePath();
+        }
+        if (userSettingsHolder.getMavenPath() != null && !userSettingsHolder.getMavenPath().isEmpty()) {
+            this.mavenPath = userSettingsHolder.getMavenPath();
+        }
+        if (userSettingsHolder.getJdkPath() != null && !userSettingsHolder.getJdkPath().isEmpty()) {
+            this.jdkPath = userSettingsHolder.getJdkPath();
         }
     }
 }

@@ -56,6 +56,19 @@ public class UserSettingsService {
         if (sett.getLocale() == null || sett.getLocale().getLanguage().isEmpty()) {
             setDefaultLocale();
         }
+        if (sett.getPythonPath() == null || sett.getPythonPath().isEmpty()) {
+            setDefaultPythonPath();
+        }
+        if (sett.getGradlePath() == null || sett.getGradlePath().isEmpty()) {
+            setDefaultGradlePath();
+        }
+        if (sett.getMavenPath() == null || sett.getMavenPath().isEmpty()) {
+            setDefaultMavenPath();
+        }
+        if (sett.getJdkPath() == null || sett.getJdkPath().isEmpty()) {
+            setDefaultJdkPath();
+        }
+
         userSettingsHolder.load(sett);
         log.info("Using settings: {}", userSettingsHolder);
     }
@@ -113,6 +126,26 @@ public class UserSettingsService {
 
     public void setDefaultLocale() {
         userSettingsHolder.setLocale(Locale.forLanguageTag("en"));
+        saveSettings();
+    }
+
+    public void setDefaultPythonPath() {
+        userSettingsHolder.setPythonPath("");
+        saveSettings();
+    }
+
+    public void setDefaultGradlePath() {
+        userSettingsHolder.setGradlePath("");
+        saveSettings();
+    }
+
+    public void setDefaultMavenPath() {
+        userSettingsHolder.setMavenPath("");
+        saveSettings();
+    }
+
+    public void setDefaultJdkPath() {
+        userSettingsHolder.setJdkPath("");
         saveSettings();
     }
 }
