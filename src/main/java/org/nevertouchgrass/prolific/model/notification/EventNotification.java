@@ -1,5 +1,7 @@
 package org.nevertouchgrass.prolific.model.notification;
 
+import org.nevertouchgrass.prolific.model.notification.contract.Notification;
+
 public class EventNotification implements Notification {
     private final EventType event;
 

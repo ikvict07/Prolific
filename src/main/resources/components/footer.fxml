@@ -16,7 +16,7 @@
             </padding>
             <Label fx:id="notification"/>
         </StackPane>
-        <StackPane fx:id="loaderPane">
+        <StackPane fx:id="loaderPane" visible="false" styleClass="icon-button" onMouseClicked="#showCancelPopup">
             <padding>
                 <Insets top="5" bottom="5" left="10" right="10"/>
             </padding>

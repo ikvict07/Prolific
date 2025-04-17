@@ -2,8 +2,8 @@ package org.nevertouchgrass.prolific.service.configurations.importers;
 
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.RunConfig;
-import org.nevertouchgrass.prolific.service.DocumentParser;
-import org.nevertouchgrass.prolific.service.PathService;
+import org.nevertouchgrass.prolific.service.parser.DocumentParser;
+import org.nevertouchgrass.prolific.service.settings.PathService;
 import org.springframework.stereotype.Service;
 
 @Service

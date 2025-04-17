@@ -1,45 +1,61 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
+import javafx.application.Platform;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
+import javafx.util.Duration;
 import lombok.Data;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
 import org.nevertouchgrass.prolific.model.RunConfig;
+import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
+import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.repository.ProjectsRepository;
-import org.nevertouchgrass.prolific.service.AnchorPaneConstraintsService;
 import org.nevertouchgrass.prolific.service.ColorService;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
-import org.nevertouchgrass.prolific.service.RunConfigService;
+import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.nevertouchgrass.prolific.service.configurations.RunConfigService;
 import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
+import org.nevertouchgrass.prolific.service.notification.NotificationService;
+import org.nevertouchgrass.prolific.service.process.ProcessService;
+import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
+import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
+
+import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
 @Slf4j
 @Component
 @Scope("prototype")
 @Data
 public class ProjectPanelController {
+    public final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
     @FXML
     public StackPane star;
+    @FXML
+    public HBox runContent;
     @FXML
     private HBox projectIcon;
     @FXML
@@ -62,78 +78,69 @@ public class ProjectPanelController {
     private HBox controlPanel;
     @FXML
     private StackPane configTypeIcon;
-
     private Project project;
-
+    @Setter(onMethod_ = @Autowired)
     private Stage primaryStage;
+    @Setter(onMethod_ = @Autowired)
     private ColorService colorService;
-
-    private AnchorPaneConstraintsService anchorPaneConstraintsService;
+    @Setter(onMethod_ = @Autowired)
     private ProjectsRepository projectsRepository;
+    @Setter(onMethod_ = @Autowired)
     private ProjectTypeIconRegistry projectTypeIconRegistry;
-
+    @Setter(onMethod_ = @Autowired)
     private ContextMenu projectSettingsPopup;
+    @Setter(onMethod_ = @Autowired)
     private ProjectSettingDropdownController projectSettingsDropdownController;
-
+    @Setter(onMethod_ = @Autowired)
     private RunConfigService runConfigService;
+    @Setter(onMethod_ = @Autowired)
+    private NotificationService notificationService;
+    @Setter(onMethod_ = @Autowired)
+    private DefaultProjectRunner projectRunner;
+    @Setter(onMethod_ = @Autowired)
+    private FxmlProvider fxmlProvider;
+    @Setter(onMethod_ = @Autowired)
+    private ProcessService processService;
+    @Setter(onMethod_ = @Autowired)
+    private LocalizationProvider localizationProvider;
 
     private ContextMenu contextMenu;
     private ProjectRunConfigs projectRunConfigs;
-    private FxmlProvider fxmlProvider;
 
     private RunConfig chosenConfig = null;
+    private ProcessWrapper currentProcess = null;
+    private Property<Boolean> isProjectRunning = new SimpleBooleanProperty(false);
+    private ProjectsService projectsService;
 
     public void init() {
-        String iconColorStyle = generateRandomColorStyle();
+        String iconColorStyle = colorService.generateRandomColorStyle(colorService.getSeedForProject(project));
         projectIcon.setStyle(iconColorStyle);
 
-        String baseColor = extractPrimaryColor(iconColorStyle);
-        projectInfo.setStyle(generateGradientBoxStyle(baseColor));
+        String baseColor = colorService.extractPrimaryColor(iconColorStyle);
+        projectInfo.setStyle(colorService.generateGradientBoxStyle(baseColor, colorService.getSeedForProject(project)));
         projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.8));
         configurationName.maxWidthProperty().bind(projectInfo.widthProperty().multiply(0.3));
 
         projectRunConfigs = runConfigService.getAllRunConfigs(project);
 
-
         contextMenu = new ContextMenu();
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
 
-        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), "Your configurations");
-        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), "Imported configurations");
-    }
-
-
-    private String generateGradientBoxStyle(String baseColor) {
-        String highlightColor = colorService.generateSimilarBrightPastelColor(baseColor);
-
-        return String.format(
-                "-fx-background-color: linear-gradient(from 0%% 0%% to 100%% 0%%, transparent 0%%, %4s99 30%%, transparent 100%%);",
-                highlightColor);
-    }
-
-    private String extractPrimaryColor(String style) {
-        int startIndex = style.indexOf("#");
-        int endIndex = style.indexOf(" ", startIndex);
-        return style.substring(startIndex, endIndex);
-    }
-
-    private String generateRandomColorStyle() {
-        String color1 = colorService.generateBrightPastelColor();
-        String color2 = colorService.generateSimilarBrightPastelColor(color1);
-
-        return String.format("-fx-background-color: linear-gradient(to bottom, %s 0%%, %s 100%%);", color1, color2);
-    }
-
-    @Autowired
-    private void set(Stage primaryStage, ColorService colorService, AnchorPaneConstraintsService anchorPaneConstraintsService, ProjectsRepository projectsRepository, Pair<ProjectSettingDropdownController, ContextMenu> projectSettingsPopup, RunConfigService runConfigService, ProjectTypeIconRegistry projectTypeIconRegistry) {
-        this.primaryStage = primaryStage;
-        this.colorService = colorService;
-        this.anchorPaneConstraintsService = anchorPaneConstraintsService;
-        this.projectsRepository = projectsRepository;
-        this.projectSettingsPopup = projectSettingsPopup.getValue();
-        this.projectSettingsDropdownController = projectSettingsPopup.getKey();
-        this.runConfigService = runConfigService;
-        this.projectTypeIconRegistry = projectTypeIconRegistry;
+        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
+        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
+        isProjectRunning.addListener((_, _, newValue) -> Platform.runLater(() -> {
+            if (newValue) {
+                runContent.getChildren().clear();
+                var stopButton = fxmlProvider.getIcon("bigStopButton");
+                runContent.getChildren().add(stopButton);
+                run.setOnMouseClicked((_ -> stopProject()));
+            } else {
+                runContent.getChildren().clear();
+                var runButton = fxmlProvider.getIcon("runButton");
+                runContent.getChildren().add(runButton);
+                run.setOnMouseClicked((_ -> runProject()));
+            }
+        }));
     }
 
     public void setProject(Project project) {
@@ -145,6 +152,11 @@ public class ProjectPanelController {
             star.setVisible(false);
             projectsRepository.update(project);
         });
+        Tooltip tooltip = new Tooltip(project.getPath());
+        tooltip.setShowDelay(Duration.millis(300));
+        tooltip.setHideDelay(Duration.millis(0));
+        projectTitleText.setTooltip(tooltip);
+        init();
     }
 
 
@@ -167,22 +179,16 @@ public class ProjectPanelController {
     }
 
     private void switchConfigurationButtonIcon() {
-        try {
-            HBox substituteIcon = "unfoldButton".equals(configurationButton.getChildren().getFirst().getId()) ?
-                    new FXMLLoader(getClass().getResource("/icons/fxml/fold_button.fxml")).load() :
-                    new FXMLLoader(getClass().getResource("/icons/fxml/unfold_button.fxml")).load();
-            configurationButton.getChildren().clear();
-            configurationButton.getChildren().add(substituteIcon.getChildren().getFirst());
-        } catch (IOException e) {
-            log.error("Error retrieving fxml resource: {}", e.getMessage());
-        }
+        String resource = "unfoldButton".equalsIgnoreCase(configurationButton.getChildren().getFirst().getId()) ? "/icons/fxml/fold_button.fxml" : "/icons/fxml/unfold_button.fxml";
+        switchPaneChildren(configurationButton, resource);
     }
 
 
-    private void generateContextMenuItems(@NonNull List<RunConfig> runConfigs, String label) {
+    private void generateContextMenuItems(@NonNull List<RunConfig> runConfigs, StringProperty label) {
         ObservableList<MenuItem> menuItems = contextMenu.getItems();
         if (label != null && !runConfigs.isEmpty()) {
-            MenuItem menuItem = new MenuItem(label);
+            MenuItem menuItem = new MenuItem();
+            menuItem.textProperty().bind(label);
             menuItem.addEventFilter(ActionEvent.ANY, Event::consume);
             menuItem.getStyleClass().add("menu-item-disabled");
             menuItems.add(menuItem);
@@ -196,13 +202,60 @@ public class ProjectPanelController {
                 chosenConfig = runConfig;
             }
             MenuItem menuItem = new MenuItem(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
-            menuItem.setOnAction( _ -> {
+            menuItem.setOnAction(_ -> {
                 configurationName.setText(runConfig.getConfigName());
                 configTypeIcon.getChildren().clear();
                 configTypeIcon.getChildren().addAll(projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
                 chosenConfig = runConfig;
             });
             menuItems.add(menuItem);
+        }
+    }
+
+    public void runProject() {
+        if (chosenConfig == null) {
+            notificationService.notifyInfo(new InfoNotification(localizationProvider.log_no_configuration_selected()));
+            return;
+        }
+        try {
+            notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_running_project(), project.getTitle()));
+            new Thread(this::runProjectLambda).start();
+        } catch (Exception e) {
+            notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_running_project(), project.getTitle()));
+            log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
+        }
+    }
+
+    public void onProcessDeath(ProcessWrapper process) {
+        if (currentProcess != null) {
+            var myPid = currentProcess.getPid();
+            var pid = process.getPid();
+            if (myPid == pid) {
+                stopProject();
+            }
+        }
+    }
+
+    public void stopProject() {
+        if (currentProcess != null) {
+            currentProcess.getProcess().destroy();
+            currentProcess = null;
+            notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_project_stopped(), project.getTitle()));
+            log.info("Project {} stopped", project.getTitle());
+        }
+        isProjectRunning.setValue(false);
+    }
+
+    private void runProjectLambda() {
+        try {
+            currentProcess = processService.runProject(project, chosenConfig);
+            processService.addProcess(project, currentProcess);
+            processService.registerOnKillListener(this::onProcessDeath);
+            isProjectRunning.setValue(true);
+        } catch (Exception e) {
+            notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_running_project(), project.getTitle()));
+            log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
+            throw new IllegalStateException(e);
         }
     }
 }

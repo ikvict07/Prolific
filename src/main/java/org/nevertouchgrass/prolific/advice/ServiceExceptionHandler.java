@@ -6,7 +6,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -14,18 +16,20 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Log4j2
 public class ServiceExceptionHandler {
+    @Lazy
     private final NotificationService notificationService;
 
-    @Around("execution(* org.nevertouchgrass.prolific.service.*.*(..))")
+    private final LocalizationProvider localizationProvider;
+
+    @Around("execution(* org.nevertouchgrass.prolific.service.*.*(..)) && !execution(* org.nevertouchgrass.prolific.service.settings.UserSettingsService(..))")
     public Object handleException(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
         } catch (Exception e) {
-            // Логируем ошибку
             String methodName = joinPoint.getSignature().toShortString();
             log.error("Error in method {}: {}", methodName, e.getMessage(), e);
 
-            notificationService.notifyError(ErrorNotification.of(e, "Error occurred while calling method: {}", methodName));
+            notificationService.notifyError(ErrorNotification.of(e, localizationProvider.log_error_calling_method(), methodName));
             throw e;
         }
     }
