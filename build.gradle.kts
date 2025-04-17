@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.jacksonTypes)
     implementation(libs.sqlite)
     implementation(libs.hikari)
+    implementation(libs.spring.web)
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
