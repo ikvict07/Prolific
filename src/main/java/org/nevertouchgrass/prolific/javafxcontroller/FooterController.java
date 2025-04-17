@@ -11,17 +11,19 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.notification.ErrorNotification;
 import org.nevertouchgrass.prolific.model.notification.EventNotification;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.model.notification.contract.Notification;
 import org.nevertouchgrass.prolific.service.notification.contract.NotificationListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Objects;
 
-@Component
+@Lazy
+@StageComponent
 @Log4j2
 public class FooterController implements NotificationListener<Notification> {
     @FXML
@@ -34,10 +36,15 @@ public class FooterController implements NotificationListener<Notification> {
     public StackPane logPane;
     @FXML
     public Label notification;
+    @FXML
+    public StackPane localePane;
+    @FXML
+    public Label localeLabel;
     @Setter(onMethod_ = @Autowired)
     private Loader loader;
     @Setter(onMethod_ = @Autowired)
     private ContextMenu cancellingPopup;
+
     @Override
     public void onNotification(Notification notification) {
         if (notification instanceof InfoNotification in) {

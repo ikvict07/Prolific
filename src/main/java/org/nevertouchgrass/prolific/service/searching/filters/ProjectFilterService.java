@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Service
@@ -25,9 +24,9 @@ public class ProjectFilterService {
         private Object value;
     }
 
-    public Function<Project, Boolean> getFilter(FilterOption... filterOptions) {
+    public Predicate<Project> getFilter(FilterOption... filterOptions) {
         var options = List.of(filterOptions);
-        var result = new ArrayList<Function<Project, Boolean>>();
+        var result = new ArrayList<Predicate<Project>>();
         for (var option : options) {
             var matchingFilter = filters.stream().filter(f -> f.getFilterType().equals(option.filterType)).findFirst();
             if (matchingFilter.isEmpty()) {
@@ -35,7 +34,7 @@ public class ProjectFilterService {
             }
             result.add(matchingFilter.get().getFilter(option.value));
         }
-        return (project -> result.stream().allMatch(f -> f.apply(project)));
+        return (project -> result.stream().allMatch(f -> f.test(project)));
     }
 
     public static Predicate<Project> getDefaultFilter() {

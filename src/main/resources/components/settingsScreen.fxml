@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsScreenController"
+            stylesheets="@/css/styles.css"
+            fx:id="settingsScreen">
+    <top>
+        <fx:include fx:id="settingsHeader" source="/components/settingsHeader.fxml"/>
+    </top>
+
+    <center>
+        <StackPane>
+            <padding>
+                <Insets right="8" left="8"/>
+            </padding>
+            <fx:include fx:id="settingsList" source="settingsList.fxml"/>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <fx:include fx:id="settingsFooter" source="settingsFooter.fxml"/>
+    </bottom>
+</BorderPane>

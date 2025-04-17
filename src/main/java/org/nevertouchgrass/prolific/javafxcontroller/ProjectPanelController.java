@@ -22,6 +22,7 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
 import org.nevertouchgrass.prolific.model.RunConfig;
@@ -40,14 +41,13 @@ import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
 @Slf4j
-@Component
+@StageComponent
 @Scope("prototype")
 @Data
 public class ProjectPanelController {
@@ -159,6 +159,9 @@ public class ProjectPanelController {
         init();
     }
 
+    public void updateStar() {
+        star.setVisible(project.getIsStarred());
+    }
 
     public void showProjectSetting() {
         Bounds bounds = config.localToScreen(config.getBoundsInLocal());

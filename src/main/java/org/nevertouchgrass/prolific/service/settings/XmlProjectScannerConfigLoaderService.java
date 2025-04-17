@@ -1,9 +1,8 @@
 package org.nevertouchgrass.prolific.service.settings;
 
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.nevertouchgrass.prolific.configuration.PluginConfigProvider;
 import org.nevertouchgrass.prolific.model.ProjectTypeModel;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -17,54 +16,49 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.FILE;
-import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.FOLDER;
-import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.NAME;
-import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.PROJECT;
+import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.*;
 
 /**
  * Service for loading user's plugins, that will be used in a project finding process
  */
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class XmlProjectScannerConfigLoaderService {
+    private final PathService pathService;
 
-    private static final Logger LOGGER = LogManager.getLogger();
-
-    private final PluginConfigProvider pluginConfigProvider;
-
-    public XmlProjectScannerConfigLoaderService(PluginConfigProvider pluginConfigProvider) {
-        this.pluginConfigProvider = pluginConfigProvider;
-    }
-
+    @SneakyThrows
     public List<ProjectTypeModel> loadProjectTypes() {
-        Path path = pluginConfigProvider.getPluginConfigPath();
-        if (path == null) {
+        Path dirPath = pathService.getPluginsPath();
+        if (dirPath == null) {
             log.warn("Plugin configuration file does not exist");
             return new ArrayList<>();
         }
         List<ProjectTypeModel> projectTypeModels = new ArrayList<>();
 
-        try (var file = Files.newInputStream(path)) {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(file);
+        try (var paths = Files.list(dirPath)) {
+            paths.forEach(path -> {
+                try (var file = Files.newInputStream(path)) {
+                    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                    Document document = documentBuilder.parse(file);
 
-            document.getDocumentElement().normalize();
+                    document.getDocumentElement().normalize();
 
-            NodeList projectTypeNodes = document.getElementsByTagName(PROJECT);
+                    NodeList projectTypeNodes = document.getElementsByTagName(PROJECT);
 
-            for (int i = 0; i < projectTypeNodes.getLength(); i++) {
-                Element projectTypeElement = (Element) projectTypeNodes.item(i);
-                String projectName = projectTypeElement.getElementsByTagName(NAME).item(0).getTextContent();
-                List<String> identifiers = getIdentifiers(projectTypeElement);
+                    for (int i = 0; i < projectTypeNodes.getLength(); i++) {
+                        Element projectTypeElement = (Element) projectTypeNodes.item(i);
+                        String projectName = projectTypeElement.getElementsByTagName(NAME).item(0).getTextContent();
+                        List<String> identifiers = getIdentifiers(projectTypeElement);
 
-                projectTypeModels.add(new ProjectTypeModel(projectName, identifiers));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error loading plugins from XML file", e);
+                        projectTypeModels.add(new ProjectTypeModel(projectName, identifiers));
+                    }
+                } catch (Exception e) {
+                    log.error("Error while parsing XML file: {} {}", path, e.getMessage());
+                }
+            });
         }
-
         return projectTypeModels;
     }
 

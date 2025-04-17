@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.SVGPath?>
+<StackPane xmlns="http://javafx.com/javafx/17.0.12">
+    <Group>
+        <!-- Circle -->
+        <SVGPath
+                content="M7,2.5 A4.5,4.5 0 1,1 6.999,2.5 Z"
+                fill="TRANSPARENT" stroke="#6F737A" strokeWidth="1">
+        </SVGPath>
+        <!-- Line -->
+        <SVGPath
+                content="M10.1992 10.2002 L13.4992 13.4961"
+                fill="TRANSPARENT" stroke="#6F737A" strokeWidth="1" strokeLineCap="round">
+        </SVGPath>
+    </Group>
+</StackPane>

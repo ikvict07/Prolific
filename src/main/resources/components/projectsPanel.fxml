@@ -2,17 +2,21 @@
 
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
-<StackPane xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectsPanelController"
-           stylesheets="@/css/styles.css">
-    <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" style="-fx-hbar-policy: never;" hmax="0.0"
-                nodeOrientation="RIGHT_TO_LEFT" styleClass="mainBG">
-        <VBox fx:id="content" alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0"
-              styleClass="mainBG">
-        </VBox>
-    </ScrollPane>
-    <Region fx:id="upperShadow" styleClass="upper-shadow" mouseTransparent="true"
-            StackPane.alignment="TOP_CENTER"/>
-    <Region fx:id="lowerShadow" styleClass="lower-shadow" mouseTransparent="true"
-            StackPane.alignment="BOTTOM_CENTER"/>
-</StackPane>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.nevertouchgrass.prolific.javafxcontroller.ProjectsPanelController"
+      stylesheets="@/css/styles.css" spacing="16">
+    <fx:include source="searchBar.fxml"/>
+    <fx:include source="sortingBar.fxml" prefWidth="Infinity"/>
+    <StackPane>
+        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" style="-fx-hbar-policy: never;" hmax="0.0"
+                    nodeOrientation="RIGHT_TO_LEFT" styleClass="mainBG">
+            <VBox fx:id="content" alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0"
+                  styleClass="mainBG">
+            </VBox>
+        </ScrollPane>
+        <Region fx:id="upperShadow" styleClass="upper-shadow" mouseTransparent="true"
+                StackPane.alignment="TOP_CENTER"/>
+        <Region fx:id="lowerShadow" styleClass="lower-shadow" mouseTransparent="true"
+                StackPane.alignment="BOTTOM_CENTER"/>
+    </StackPane>
+</VBox>

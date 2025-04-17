@@ -1,20 +1,15 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -23,25 +18,19 @@ import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.service.ProjectsService;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.util.HashSet;
 
-@Component
-@StageComponent("primaryStage")
+@Lazy
+@StageComponent
 @Log4j2
 @SuppressWarnings("unused")
-public class HeaderController {
-    @Setter(onMethod_ = @Autowired)
-    private ApplicationContext applicationContext;
-    @Setter(onMethod_ = @Autowired)
-    private ProjectsService projectsService;
-    @Setter(onMethod_ = @Autowired)
-    private ObjectFactory<Alert> alertFactory;
+public class HeaderController extends AbstractHeaderController {
     @FXML
     public StackPane settingsButton;
     @FXML
@@ -58,191 +47,44 @@ public class HeaderController {
     private Circle closeButton;
 
     @Autowired
-    public void setSettingsPopup(ContextMenu settingsPopup) {
-        this.settingsPopup = settingsPopup;
+    public void setStage(@Qualifier("primaryStage") Stage stage) {
+        this.stage = stage;
     }
 
+    @Setter(onMethod_ = @Autowired)
     private ContextMenu settingsPopup;
 
-    private double xOffset = 0;
-    private double yOffset = 0;
-    private Stage stage;
+    @Setter(onMethod_ = @Autowired)
+    private ApplicationContext applicationContext;
 
-    private double heightBeforeMaximizing;
-    private double widthBeforeMaximizing;
+    @Setter(onMethod_ = @Autowired)
+    private ProjectsService projectsService;
 
-    private double xBeforeMaximizing;
-    private double yBeforeMaximizing;
-
-    private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
-
-    private final double minWidth = visualBounds.getMaxX() / 1.5;
-    private final double minHeight = visualBounds.getMaxY() / 1.5;
-
-    private double endX = 0;
-
-    private final HashSet<Object> draggablePanes = new HashSet<>();
+    @Setter(onMethod_ = @Autowired)
+    private ObjectFactory<Alert> alertFactory;
 
     @Initialize
     public void init() {
-        closeButton.setOnMouseClicked(this::handleClose);
-        minimizeButton.setOnMouseClicked(this::handleMinimize);
-        maximizeButton.setOnMouseClicked(this::handleMaximize);
+        setHeader(header);
+        setupDragging();
+        setupResizing();
 
-        header.setOnMousePressed(event -> {
-            if (draggablePanes.contains(event.getTarget())) {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-            }
-        });
-
-        header.setOnMouseDragged(event -> {
-            if (draggablePanes.contains(event.getTarget())) {
-                stage.setX(event.getScreenX() - xOffset);
-                stage.setY(event.getScreenY() - yOffset);
-                endX = stage.getX() + stage.getWidth();
-            }
-        });
-
-        stage.getScene().setOnMouseMoved(this::resizeCursor);
-        stage.getScene().setOnMouseDragged(this::resizeWindow);
-
-        stage.setOnShown(_ -> {
-            endX = stage.getX() + stage.getWidth();
-            widthBeforeMaximizing = stage.getWidth();
-            heightBeforeMaximizing = stage.getHeight();
-        });
-
-        stage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                stage.getScene().getRoot().setStyle("-fx-background-radius: 0;");
-                header.setStyle("-fx-background-radius: 0;");
-            } else {
-                stage.getScene().getRoot().setStyle("-fx-background-radius: 16;");
-                header.setStyle("-fx-background-radius: 16 16 0 0;");
-            }
-        });
+        double minWidth = visualBounds.getMaxX() / 1.5;
+        double minHeight = visualBounds.getMaxY() / 1.5;
+        setMinWidth(minWidth);
+        setMinHeight(minHeight);
 
         draggablePanes.add(header);
         draggablePanes.add(gradientBox);
         draggablePanes.add(titleText);
     }
 
-    private void resizeCursor(MouseEvent event) {
-        double border = 8;
-        double x = event.getSceneX();
-        double y = event.getSceneY();
-        double width = stage.getWidth();
-        double height = stage.getHeight();
-
-        if (stage.isMaximized()) {
-            return;
-        }
-
-        if (x < border && y > height - border) {
-            stage.getScene().setCursor(Cursor.SW_RESIZE);
-        } else if (x > width - border && y > height - border) {
-            stage.getScene().setCursor(Cursor.SE_RESIZE);
-        } else if (x < border && y > header.getHeight()) {
-            stage.getScene().setCursor(Cursor.W_RESIZE);
-        } else if (x > width - border && y > header.getHeight()) {
-            stage.getScene().setCursor(Cursor.E_RESIZE);
-        } else if (y > height - border) {
-            stage.getScene().setCursor(Cursor.S_RESIZE);
-        } else {
-            stage.getScene().setCursor(Cursor.DEFAULT);
-        }
-    }
-
-    private void resizeWindow(MouseEvent event) {
-        double deltaX = event.getScreenX();
-        double deltaY = event.getScreenY();
-        switch (org.nevertouchgrass.prolific.constants.Cursor.getCursor(stage.getScene().getCursor())) {
-            case SW_RESIZE -> {
-                resizeWidth(endX - deltaX, deltaX, true);
-                double newHeight = deltaY - stage.getY();
-                resizeHeight(newHeight);
-            }
-            case SE_RESIZE -> {
-                resizeWidth(deltaX - stage.getX(), deltaX, false);
-                double newHeight = deltaY - stage.getY();
-                resizeHeight(newHeight);
-            }
-            case W_RESIZE -> resizeWidth(endX - deltaX, deltaX, true);
-            case E_RESIZE -> resizeWidth(deltaX - stage.getX(), deltaX, false);
-            case S_RESIZE -> {
-                double newHeight = deltaY - stage.getY();
-                resizeHeight(newHeight);
-            }
-
-            case null -> throw new IllegalStateException("Unexpected value: " + null);
-            case N_RESIZE, NE_RESIZE, NW_RESIZE, DEFAULT -> {
-                // No action
-            }
-        }
-    }
-
-
-    private void resizeWidth(double newWidth, double deltaX, boolean adjustX) {
-        widthBeforeMaximizing = newWidth;
-
-        if (newWidth >= minWidth && deltaX >= visualBounds.getMinX() && deltaX <= visualBounds.getMaxX()) {
-            if (adjustX) {
-                stage.setX(deltaX);
-            }
-            stage.setWidth(newWidth);
-            stage.setHeight(stage.getHeight()); // GTK bug workaround
-        }
-    }
-
-    private void resizeHeight(double newHeight) {
-        heightBeforeMaximizing = newHeight;
-
-        if (newHeight >= minHeight && stage.getY() + newHeight <= visualBounds.getMaxY()) {
-            stage.setHeight(newHeight);
-            stage.setWidth(stage.getWidth()); // GTK bug workaround
-        }
-    }
-
-
-    public void handleClose(MouseEvent mouseEvent) {
+    @Override
+    public void handleClose() {
         log.info("Closing application");
-        if (Platform.isFxApplicationThread()) {
-            stage.close();
-        } else {
-            Platform.runLater(() -> stage.close());
-        }
+        super.handleClose();
         SpringApplication.exit(applicationContext);
         log.info("Application closed");
-    }
-
-    public void handleMinimize(MouseEvent mouseEvent) {
-        if (stage != null) {
-            stage.setIconified(true);
-        }
-    }
-
-    public void handleMaximize(MouseEvent mouseEvent) {
-        if (stage.isMaximized()) {
-            stage.setMaximized(false);
-            stage.setWidth(widthBeforeMaximizing);
-            stage.setHeight(heightBeforeMaximizing);
-            stage.setX(xBeforeMaximizing);
-            stage.setY(yBeforeMaximizing);
-            endX = stage.getX() + stage.getWidth();
-        } else {
-            xBeforeMaximizing = stage.getX();
-            yBeforeMaximizing = stage.getY();
-            widthBeforeMaximizing = stage.getWidth();
-            heightBeforeMaximizing = stage.getHeight();
-            stage.setMaximized(true);
-        }
-    }
-
-    public void handleHeaderMaximize(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && draggablePanes.contains(mouseEvent.getTarget())) {
-            handleMaximize(mouseEvent);
-        }
     }
 
     public void dropdownForSettings() {
@@ -264,6 +106,7 @@ public class HeaderController {
             showAlert();
         }
     }
+
     private void showAlert() {
         var alert = alertFactory.getObject();
         alert.setTitle("Error");

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:id="root"
+      fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SortingBarController" spacing="8">
+    <HBox spacing="8" styleClass="search-bar-hbox" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+        <padding>
+            <Insets right="8" left="8"/>
+        </padding>
+        <fx:include source="/icons/fxml/alphaSort.fxml"/>
+        <Label fx:id="sortByTitleLabel" userData="localization:sort_by_title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox fx:id="sortByTitleArrowContainer" alignment="CENTER_RIGHT">
+            <fx:include source="/icons/fxml/defaultSorting.fxml"/>
+        </HBox>
+    </HBox>
+    <HBox spacing="8" styleClass="search-bar-hbox" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+        <padding>
+            <Insets right="8" left="8"/>
+        </padding>
+        <fx:include source="/icons/fxml/typeSort.fxml"/>
+        <Label fx:id="sortByTypeLabel" userData="localization:sort_by_type"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox fx:id="sortByTypeArrowContainer" alignment="CENTER_RIGHT">
+            <fx:include source="/icons/fxml/defaultSorting.fxml"/>
+        </HBox>
+    </HBox>
+    <HBox spacing="8" styleClass="search-bar-hbox" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+        <padding>
+            <Insets right="8" left="8"/>
+        </padding>
+        <fx:include source="/icons/fxml/runningSort.fxml"/>
+        <Label fx:id="sortByRunningLabel" userData="localization:sort_by_running"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox fx:id="sortByRunningArrowContainer" alignment="CENTER_RIGHT">
+            <fx:include source="/icons/fxml/defaultSorting.fxml"/>
+        </HBox>
+    </HBox>
+    <HBox spacing="8" styleClass="search-bar-hbox" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+        <padding>
+            <Insets right="8" left="8"/>
+        </padding>
+        <fx:include source="/icons/fxml/starredSort.fxml"/>
+        <Label fx:id="sortByStarredLabel" userData="localization:sort_by_starred"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox fx:id="sortByStarredArrowContainer" alignment="CENTER_RIGHT">
+            <fx:include source="/icons/fxml/defaultSorting.fxml"/>
+        </HBox>
+    </HBox>
+</HBox>

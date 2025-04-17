@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import static org.nevertouchgrass.prolific.util.ContextMenuCreator.getContextMenu;
 
@@ -16,6 +17,7 @@ public class SettingsPopupConfiguration {
     private final ApplicationContext applicationContext;
 
     @Bean
+    @Lazy
     public ContextMenu settingsPopup() {
         ContextMenu contextMenu = new ContextMenu();
         var options = (Parent)applicationContext.getBean("settingsDropdownParent");
@@ -23,6 +25,7 @@ public class SettingsPopupConfiguration {
     }
 
     @Bean
+    @Lazy
     public ContextMenu projectSettingsPopup() {
         ContextMenu contextMenu = new ContextMenu();
         var options = (Parent) applicationContext.getBean("projectSettingDropdownParent");

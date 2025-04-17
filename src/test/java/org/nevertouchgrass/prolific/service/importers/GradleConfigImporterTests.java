@@ -2,6 +2,7 @@ package org.nevertouchgrass.prolific.service.importers;
 
 import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.BackendTestBase;
+import org.nevertouchgrass.prolific.annotation.ProlificTestApplication;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.configurations.importers.GradleConfigImporter;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
@@ -12,7 +13,7 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+@ProlificTestApplication
 class GradleConfigImporterTests extends BackendTestBase {
     private final GradleConfigImporter importer;
 

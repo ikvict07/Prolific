@@ -2,7 +2,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
@@ -17,6 +17,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
+import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
@@ -27,7 +28,7 @@ import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +36,9 @@ import java.util.Set;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
+@Lazy
 @Slf4j
-@Component
+@StageComponent
 @SuppressWarnings("java:S1450")
 public class LogsAndMetricsPanelController {
     @FXML
@@ -53,6 +55,8 @@ public class LogsAndMetricsPanelController {
     private Label metricsButton;
     @FXML
     private Label runningProjects;
+    @FXML
+    public Label chooseProjectFirst;
 
     private boolean isLogsOpened = true;
 
@@ -63,26 +67,14 @@ public class LogsAndMetricsPanelController {
     private ProcessLogsService processLogsService;
     @Setter(onMethod_ = @Autowired)
     private MetricsService metricsService;
+    @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
     private ObservableMap<Project, Set<ProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
 
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
     private ProcessWrapper currentProcess;
-    private final SimpleStringProperty projectChoice = new SimpleStringProperty();
-
-
-    @Autowired
-    public void setLocalizationProvider(LocalizationProvider localizationProvider) {
-        this.localizationProvider = localizationProvider;
-        this.projectChoice.bind(localizationProvider.empty_chosen_project());
-    }
-
-    @FXML
-    public void initialize() {
-        contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
-        chosenProject.textProperty().bind(projectChoice);
-    }
+    private StringProperty projectChoice;
 
     /**
      * Will be called by InitializeAnnotationProcessor
@@ -91,6 +83,9 @@ public class LogsAndMetricsPanelController {
     @Initialize
     @SuppressWarnings("unused")
     public void init() {
+        projectChoice = localizationProvider.choose_project_first();
+        chosenProject.textProperty().bind(projectChoice);
+        contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         runningProjects.textProperty().set(localizationProvider.running_projects_count().get());
         processes = processService.getObservableLiveProcesses();
         runningProjectsCount = new SimpleIntegerProperty(processes.size());

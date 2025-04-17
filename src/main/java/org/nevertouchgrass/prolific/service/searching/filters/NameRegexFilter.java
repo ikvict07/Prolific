@@ -5,12 +5,12 @@ import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.searching.filters.contract.ProjectFilter;
 import org.springframework.stereotype.Service;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Service
 public class NameRegexFilter implements ProjectFilter {
     @Override
-    public Function<Project, Boolean> getFilter(Object value) {
+    public Predicate<Project> getFilter(Object value) {
         return project -> project.getTitle().matches((String) value);
     }
 
