@@ -64,4 +64,6 @@
     <entry key="setting_gradle_path">Cesta ku Gradle</entry>
     <entry key="setting_maven_path">Cesta k Mavenu</entry>
     <entry key="setting_jdk_path">Cesta k JDK</entry>
+    <entry key="power_user">Pokročilý používateľ</entry>
+    <entry key="common_user">Štandardný používateľ</entry>
 </properties>

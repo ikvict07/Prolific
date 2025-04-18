@@ -16,6 +16,7 @@
     -fx-border-width: 0.5;
     -fx-border-color: #393B40;
     -fx-border-radius: 16;
+
 }
 
 .settings-header {
@@ -754,6 +755,55 @@
     -fx-border-color: #4E5157;
     -fx-border-width: 1.5;
 }
+
+.profiles-combo-box {
+    -fx-border-radius: 0;
+    -fx-border-width: 1.5;
+}
+
+.profiles-combo-box .list-view {
+    -fx-border-radius: 4;
+    -fx-translate-y: 2;
+    -fx-border-color: #4E5157;
+}
+
+#profilesPanel:hover .profiles-combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DFE1E5;
+    -fx-border-color: transparent;
+}
+#profilesPanel:hover .profiles-combo-box .combo-box-popup .list-cell {
+    -fx-background-color: #2B2D30;
+    -fx-text-fill: #DFE1E5;
+    -fx-border-color: transparent;
+}
+#profilesPanel:hover .profiles-combo-box .combo-box-popup .list-cell:hover {
+    -fx-background-color: #494B4E;
+}
+
+#profilesPanel .combo-box-base {
+    -fx-background-color: transparent;
+}
+
+#profilesPanel .combo-box-base .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+#profilesPanel .combo-box-base .arrow {
+    -fx-background-color: #CCCCCC;
+}
+
+.profiles-combo-box .list-cell {
+    -fx-background-color: #2B2D30;
+    -fx-text-fill: #DFE1E5;
+    -fx-border-color: transparent;
+}
+
+.profiles-combo-box .list-cell:hover {
+    -fx-background-color: #494B4E;
+}
+
 
 .combo-box:focused,
 .combo-box:hover {

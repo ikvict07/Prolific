@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,9 +42,6 @@ public class UserSettingsService {
         if (sett.getRescanEveryHours() == null) {
             setDefaultRescanEvery();
         }
-        if (sett.getUserProjects() == null) {
-            setDefaultProjects();
-        }
         if (sett.getMaximumProjectDepth() == null) {
             setDefaultProjectDepth();
         }
@@ -68,16 +66,24 @@ public class UserSettingsService {
         if (sett.getJdkPath() == null || sett.getJdkPath().isEmpty()) {
             setDefaultJdkPath();
         }
-
+        if (sett.getUser() == null) {
+            setDefaultUser();
+        }
         userSettingsHolder.load(sett);
         log.info("Using settings: {}", userSettingsHolder);
     }
+
 
     @SneakyThrows
     public synchronized void saveSettings() {
         log.info("Saving settings: {}", userSettingsHolder);
         Path settingsFilePath = pathService.getSettingsPath();
         xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), userSettingsHolder);
+    }
+
+    private void setDefaultUser() {
+        userSettingsHolder.setUserRole("common_user");
+        saveSettings();
     }
 
     public void setDefaultBaseScanDirectory() {
@@ -87,11 +93,6 @@ public class UserSettingsService {
 
     public void setDefaultRescanEvery() {
         userSettingsHolder.setRescanEveryHours(24);
-        saveSettings();
-    }
-
-    public void setDefaultProjects() {
-        userSettingsHolder.setUserProjects(List.of());
         saveSettings();
     }
 
@@ -106,20 +107,21 @@ public class UserSettingsService {
     }
 
     public void setDefaultExcludedDirs() {
-        userSettingsHolder.setExcludedDirs(List.of(
+        userSettingsHolder.setExcludedDirs(new ArrayList<>(List.of(
                 "OneDrive",
                 "AppData",
                 "miniconda3",
                 "cargo",
                 ".*"
-        ));
+        )));
         saveSettings();
     }
 
     public void setDefaultSupportedTranslations() {
         userSettingsHolder.setSupportedTranslations(List.of(
                 "en",
-                "sk"
+                "sk",
+                "ru"
         ));
         saveSettings();
     }
