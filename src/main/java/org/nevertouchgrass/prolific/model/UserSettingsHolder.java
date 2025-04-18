@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
+import org.nevertouchgrass.prolific.constants.profile.CommonUser;
+import org.nevertouchgrass.prolific.constants.profile.PowerUser;
+import org.nevertouchgrass.prolific.constants.profile.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +31,17 @@ public class UserSettingsHolder {
     private String gradlePath;
     private String mavenPath;
     private String jdkPath;
+    private String userRole;
+
+    public User getUser() {
+        if (userRole == null || userRole.isEmpty()) {
+            return new CommonUser();
+        }
+        if (userRole.equals(PowerUser.PROFILE)) {
+            return new PowerUser();
+        }
+        return new CommonUser();
+    }
 
     public void load(UserSettingsHolder userSettingsHolder) {
         if (userSettingsHolder.getBaseScanDirectory() != null && !userSettingsHolder.getBaseScanDirectory().isEmpty()) {
@@ -65,6 +79,9 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.getJdkPath() != null && !userSettingsHolder.getJdkPath().isEmpty()) {
             this.jdkPath = userSettingsHolder.getJdkPath();
+        }
+        if (userSettingsHolder.getUser() != null) {
+            this.userRole = userSettingsHolder.getUser().getProfile();
         }
     }
 }

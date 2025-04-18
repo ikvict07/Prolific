@@ -64,4 +64,6 @@
     <entry key="setting_gradle_path">Gradle path</entry>
     <entry key="setting_maven_path">Maven path</entry>
     <entry key="setting_jdk_path">JDK path</entry>
+    <entry key="power_user">Power user</entry>
+    <entry key="common_user">Default user</entry>
 </properties>

@@ -68,16 +68,24 @@ public class UserSettingsService {
         if (sett.getJdkPath() == null || sett.getJdkPath().isEmpty()) {
             setDefaultJdkPath();
         }
-
+        if (sett.getUser() == null) {
+            setDefaultUser();
+        }
         userSettingsHolder.load(sett);
         log.info("Using settings: {}", userSettingsHolder);
     }
+
 
     @SneakyThrows
     public synchronized void saveSettings() {
         log.info("Saving settings: {}", userSettingsHolder);
         Path settingsFilePath = pathService.getSettingsPath();
         xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), userSettingsHolder);
+    }
+
+    private void setDefaultUser() {
+        userSettingsHolder.setUserRole("common_user");
+        saveSettings();
     }
 
     public void setDefaultBaseScanDirectory() {
