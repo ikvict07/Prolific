@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,9 +41,6 @@ public class UserSettingsService {
         }
         if (sett.getRescanEveryHours() == null) {
             setDefaultRescanEvery();
-        }
-        if (sett.getUserProjects() == null) {
-            setDefaultProjects();
         }
         if (sett.getMaximumProjectDepth() == null) {
             setDefaultProjectDepth();
@@ -98,11 +96,6 @@ public class UserSettingsService {
         saveSettings();
     }
 
-    public void setDefaultProjects() {
-        userSettingsHolder.setUserProjects(List.of());
-        saveSettings();
-    }
-
     public void setDefaultLastScanDate() {
         userSettingsHolder.setLastScanDate(LocalDateTime.now().minusYears(100));
         saveSettings();
@@ -114,20 +107,21 @@ public class UserSettingsService {
     }
 
     public void setDefaultExcludedDirs() {
-        userSettingsHolder.setExcludedDirs(List.of(
+        userSettingsHolder.setExcludedDirs(new ArrayList<>(List.of(
                 "OneDrive",
                 "AppData",
                 "miniconda3",
                 "cargo",
                 ".*"
-        ));
+        )));
         saveSettings();
     }
 
     public void setDefaultSupportedTranslations() {
         userSettingsHolder.setSupportedTranslations(List.of(
                 "en",
-                "sk"
+                "sk",
+                "ru"
         ));
         saveSettings();
     }
