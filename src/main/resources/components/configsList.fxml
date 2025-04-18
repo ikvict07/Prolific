@@ -1,0 +1,69 @@
+<!--suppress JavaFxEventHandler -->
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
+<SplitPane dividerPositions="0.15" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigListController"
+           xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/styles.css" styleClass="settings-split-pane"
+           onMouseEntered="#handleMouseEntered">
+    <VBox spacing="24">
+        <padding>
+            <Insets top="16" bottom="16" left="8" right="8"/>
+        </padding>
+        <Label fx:id="command" id="command" userData="localization:config_option_command" styleClass="configs-option"
+               onMouseClicked="#setSettingsList">
+            <graphic>
+                <fx:include source="/icons/fxml/console.fxml"/>
+            </graphic>
+        </Label>
+        <Label fx:id="gradle" id="gradle" userData="localization:config_option_gradle"
+               styleClass="configs-option" onMouseClicked="#setSettingsList">
+            <graphic>
+                <fx:include source="/icons/fxml/gradle.fxml"/>
+            </graphic>
+        </Label>
+        <Label fx:id="python" id="python" userData="localization:config_option_python"
+               styleClass="configs-option" onMouseClicked="#setSettingsList">
+            <graphic>
+                <fx:include source="/icons/fxml/python.fxml"/>
+            </graphic>
+        </Label>
+        <Label fx:id="anaconda" id="anaconda" userData="localization:config_option_anaconda"
+               styleClass="configs-option" onMouseClicked="#setSettingsList">
+            <graphic>
+                <fx:include source="/icons/fxml/anaconda.fxml"/>
+            </graphic>
+        </Label>
+        <Label fx:id="maven" id="maven" userData="localization:config_option_maven"
+               styleClass="configs-option" onMouseClicked="#setSettingsList">
+            <graphic>
+                <fx:include source="/icons/fxml/maven.fxml"/>
+            </graphic>
+        </Label>
+
+        <fx:define>
+            <ArrayListHolder fx:id="settingsLabels">
+                <fx:reference source="command"/>
+                <fx:reference source="gradle"/>
+                <fx:reference source="python"/>
+                <fx:reference source="anaconda"/>
+                <fx:reference source="maven"/>
+            </ArrayListHolder>
+        </fx:define>
+    </VBox>
+
+    <GridPane fx:id="settingsList" hgap="24" vgap="32">
+        <padding>
+            <Insets top="32" right="16" bottom="16" left="16"/>
+        </padding>
+
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT"/>
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+    </GridPane>
+
+</SplitPane>

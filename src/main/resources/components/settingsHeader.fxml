@@ -6,7 +6,7 @@
 <!--suppress JavaFxEventHandler -->
 <AnchorPane fx:id="settingsHeader" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsHeaderController"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsHeaderController"
             styleClass="settings-header">
 
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"

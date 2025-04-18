@@ -1,22 +1,16 @@
-package org.nevertouchgrass.prolific.javafxcontroller.settings;
+package org.nevertouchgrass.prolific.javafxcontroller.settings.options;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
-import org.nevertouchgrass.prolific.components.ArrayListHolder;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.context.annotation.Lazy;
 
 @StageComponent(stage = "settingsStage")
+@Lazy
 public class SettingsOptionEnvironment extends AbstractSettingsOption {
-
-    @FXML public ArrayListHolder<Node> options;
-
     @FXML public Label pythonPath;
     @FXML public Label gradlePath;
     @FXML public Label mvnPath;
@@ -41,15 +35,15 @@ public class SettingsOptionEnvironment extends AbstractSettingsOption {
     public void init() {
         fxmlProvider.getFxmlResource("settingsOptionEnvironment");
 
-        directoryChooserLocalizationMap.put(pythonPathChooser, localizationProvider.setting_python_path());
-        directoryChooserLocalizationMap.put(gradlePathChooser, localizationProvider.setting_gradle_path());
-        directoryChooserLocalizationMap.put(mvnPathChooser, localizationProvider.setting_maven_path());
-        directoryChooserLocalizationMap.put(jdkPathChooser, localizationProvider.setting_jdk_path());
+        pathChooserLocalizationMap.put(pythonPathChooser, localizationProvider.setting_python_path());
+        pathChooserLocalizationMap.put(gradlePathChooser, localizationProvider.setting_gradle_path());
+        pathChooserLocalizationMap.put(mvnPathChooser, localizationProvider.setting_maven_path());
+        pathChooserLocalizationMap.put(jdkPathChooser, localizationProvider.setting_jdk_path());
 
-        directoryChooserPathSettingMap.put(pythonPathChooser, pythonPathSetting);
-        directoryChooserPathSettingMap.put(gradlePathChooser, gradlePathSetting);
-        directoryChooserPathSettingMap.put(mvnPathChooser, mvnPathSetting);
-        directoryChooserPathSettingMap.put(jdkPathChooser, jdkPathSetting);
+        pathChooserPathSettingMap.put(pythonPathChooser, pythonPathSetting);
+        pathChooserPathSettingMap.put(gradlePathChooser, gradlePathSetting);
+        pathChooserPathSettingMap.put(mvnPathChooser, mvnPathSetting);
+        pathChooserPathSettingMap.put(jdkPathChooser, jdkPathSetting);
 
         setupValidators();
     }
@@ -100,11 +94,6 @@ public class SettingsOptionEnvironment extends AbstractSettingsOption {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public List<Node> getOptions() {
-        return new ArrayList<>(options.getItems());
     }
 
     private void pathChangedListener(TextField path, Label errorMessage) {

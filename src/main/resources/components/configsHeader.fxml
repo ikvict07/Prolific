@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.Circle?>
 <AnchorPane fx:id="configsHeader" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.RunConfigSettingHeaderController"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigSettingHeaderController"
             styleClass="settings-header">
 
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"

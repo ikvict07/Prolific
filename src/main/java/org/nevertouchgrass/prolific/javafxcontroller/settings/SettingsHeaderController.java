@@ -1,5 +1,4 @@
-package org.nevertouchgrass.prolific.javafxcontroller;
-
+package org.nevertouchgrass.prolific.javafxcontroller.settings;
 
 import jakarta.annotation.PostConstruct;
 import javafx.fxml.FXML;
@@ -18,39 +17,44 @@ import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
+import org.nevertouchgrass.prolific.javafxcontroller.AbstractHeaderController;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 
-@StageComponent(stage = "configsStage")
+@StageComponent(stage = "settingsStage")
 @Slf4j
+@SuppressWarnings("unused")
 @Lazy
-public class RunConfigSettingHeaderController extends AbstractHeaderController {
+public class SettingsHeaderController extends AbstractHeaderController {
     @FXML
-    public AnchorPane configsHeader;
-    @FXML
-    public Label titleText;
-    @FXML
-    public HBox configsGradientBox;
+    private AnchorPane settingsHeader;
     @FXML
     public Circle closeButton;
     @FXML
+    public Circle minimizeButton;
+    @FXML
     public Circle maximizeButton;
     @FXML
-    public Circle minimizeButton;
+    public Label titleText;
+    @FXML
+    public HBox settingsGradientBox;
     private boolean isStageInitialized = false;
-    @Setter(onMethod_ = @Autowired)
-    private ApplicationEventPublisher eventPublisher;
+
     @Autowired
-    public void setStage(@Qualifier("configsStage") Stage stage) {
+    public void setStage(@Qualifier("settingsStage") Stage stage) {
         this.stage = stage;
     }
-    @Setter(onMethod_ = {@Lazy, @Autowired})
-    private ObjectProvider<Parent> configsScreenParent;
+    @Setter(onMethod_ = @Autowired)
+    private ApplicationEventPublisher eventPublisher;
     @Setter(onMethod_ = {@Qualifier("primaryStage"), @Autowired})
     private Stage primaryStage;
+
+    @Setter(onMethod_ = {@Lazy, @Autowired})
+    private ObjectProvider<Parent> settingsScreenParent;
+
 
     @PostConstruct
     public void setupStage() {
@@ -58,33 +62,42 @@ public class RunConfigSettingHeaderController extends AbstractHeaderController {
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(primaryStage);
     }
+
+    double minWidth = visualBounds.getMaxX() / 2;
+    double minHeight = visualBounds.getMaxY() / 2;
+
     @Initialize
     public void init() {
         setMinWidth(minWidth);
         setMinHeight(minHeight);
 
-        setHeader(configsHeader);
+        setHeader(settingsHeader);
         setupDragging();
         setupResizing();
 
-        draggablePanes.add(configsHeader);
-        draggablePanes.add(configsGradientBox);
+        draggablePanes.add(settingsHeader);
+        draggablePanes.add(settingsGradientBox);
         draggablePanes.add(titleText);
+    }
+
+    @Override
+    public void handleClose() {
+        log.info("Closing settings");
+        super.handleClose();
+        log.info("Settings closed");
     }
 
     public void open() {
         if (!isStageInitialized) {
             isStageInitialized = true;
             setupScene();
-            eventPublisher.publishEvent(new StageInitializeEvent("configsStage"));
+            eventPublisher.publishEvent(new StageInitializeEvent("settingsStage"));
         }
         stage.show();
     }
-    double minWidth = visualBounds.getMaxX() / 2;
-    double minHeight = visualBounds.getMaxY() / 2;
 
     private void setupScene() {
-        Scene scene = new Scene(configsScreenParent.getIfAvailable(), minWidth, minHeight);
+        Scene scene = new Scene(settingsScreenParent.getIfAvailable(), minWidth, minHeight);
         scene.setFill(Color.TRANSPARENT);
 
         stage.setScene(scene);

@@ -20,6 +20,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigSettingHeaderController;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
 import org.nevertouchgrass.prolific.model.RunConfig;
@@ -124,14 +125,10 @@ public class ProjectPanelController {
         projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.8));
         configurationName.maxWidthProperty().bind(projectInfo.widthProperty().multiply(0.3));
 
-        projectRunConfigs = runConfigService.getAllRunConfigs(project);
-
         contextMenu = new ContextMenu();
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
 
-        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
-        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
-        generateAddRunConfigContextMenuItem(localizationProvider.create_config());
+        initializeProjectConfiguration();
         isProjectRunning.addListener((_, _, newValue) -> Platform.runLater(() -> {
             if (newValue) {
                 runContent.getChildren().clear();
@@ -148,6 +145,7 @@ public class ProjectPanelController {
     }
 
     private void onAddConfig() {
+        runConfigSettingHeaderController.setProjectPanelController(this);
         runConfigSettingHeaderController.open();
     }
 
@@ -205,6 +203,14 @@ public class ProjectPanelController {
             Bounds bounds = controlPanel.localToScreen(controlPanel.getBoundsInLocal());
             contextMenu.show(controlPanel, bounds.getMinX(), bounds.getMaxY());
         }
+    }
+
+    public void initializeProjectConfiguration() {
+        contextMenu.getItems().clear();
+        projectRunConfigs = runConfigService.getAllRunConfigs(project);
+        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
+        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
+        generateAddRunConfigContextMenuItem(localizationProvider.create_config());
     }
 
     private void switchConfigurationButtonIcon() {

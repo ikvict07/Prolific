@@ -108,6 +108,29 @@
     -fx-border-color: #FF3B30;
 }
 
+.configs-option {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4;
+    -fx-padding: 1 4;
+    -fx-fill: #DFE1E5;
+    -fx-border-color: #6F737A;
+    -fx-border-radius: 4;
+}
+
+.configs-option:hover {
+    -fx-background-color: #3C3F44;
+    -fx-border-color: #4C8DFF;
+}
+
+.configs-option.selected {
+    -fx-background-color: transparent;
+    -fx-border-color: #3574F0;
+}
+
+.configs-option.selected:hover {
+    -fx-background-color: #3C3F44;
+}
+
 .settings-option {
     -fx-background-color: #393B40;
     -fx-background-radius: 4;

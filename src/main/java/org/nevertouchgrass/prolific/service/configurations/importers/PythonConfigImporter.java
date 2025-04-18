@@ -68,11 +68,13 @@ public class PythonConfigImporter implements ConfigImporter {
     private boolean isPython3Available() {
         try {
             Process process;
+            ProcessBuilder builder;
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                process = Runtime.getRuntime().exec("where python3");
+                builder = new ProcessBuilder("where", "python3");
             } else {
-                process = Runtime.getRuntime().exec("which python3");
+                builder = new ProcessBuilder("which", "python3");
             }
+            process = builder.start();
             return process.waitFor() == 0;
         } catch (Exception e) {
             log.warn("Failed to check if python3 is available", e);

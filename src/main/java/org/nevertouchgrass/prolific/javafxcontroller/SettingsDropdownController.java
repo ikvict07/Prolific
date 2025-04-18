@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsHeaderController;
 import org.nevertouchgrass.prolific.service.scaners.PeriodicalScanningService;
 import org.nevertouchgrass.prolific.service.settings.PathService;
 import org.springframework.beans.factory.annotation.Autowired;

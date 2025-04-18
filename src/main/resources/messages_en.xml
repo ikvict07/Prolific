@@ -64,6 +64,20 @@
     <entry key="setting_gradle_path">Gradle path</entry>
     <entry key="setting_maven_path">Maven path</entry>
     <entry key="setting_jdk_path">JDK path</entry>
+    <entry key="config_config_name">Config name</entry>
+    <entry key="config_command">Command</entry>
+    <entry key="config_option_command">Command</entry>
+    <entry key="config_option_gradle">Gradle</entry>
+    <entry key="config_option_python">Python</entry>
+    <entry key="config_option_anaconda">Anaconda</entry>
+    <entry key="config_option_maven">Maven</entry>
+    <entry key="config_error_empty_config_name">Config name must not be empty</entry>
+    <entry key="config_error_empty_command">Command must not be empty</entry>
+    <entry key="config_save_button">Save</entry>
+    <entry key="config_saved">Config saved</entry>
+    <entry key="config_arguments">Arguments</entry>
+    <entry key="config_task">Task</entry>
+    <entry key="config_error_empty_task">Task must not be empty</entry>
     <entry key="power_user">Power user</entry>
     <entry key="common_user">Default user</entry>
 </properties>

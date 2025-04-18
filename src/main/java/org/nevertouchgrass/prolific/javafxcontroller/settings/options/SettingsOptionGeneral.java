@@ -1,7 +1,6 @@
-package org.nevertouchgrass.prolific.javafxcontroller.settings;
+package org.nevertouchgrass.prolific.javafxcontroller.settings.options;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -10,21 +9,17 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
-import org.nevertouchgrass.prolific.components.ArrayListHolder;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 @StageComponent(stage = "settingsStage")
+@Lazy
 public class SettingsOptionGeneral extends AbstractSettingsOption {
-
-    @FXML public ArrayListHolder<Node> options;
-
     @FXML public StackPane rootPathChooser;
 
     @FXML public Label rootPath;
@@ -54,8 +49,8 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
     public void init() {
         fxmlProvider.getFxmlResource("settingsOptionGeneral");
 
-        directoryChooserLocalizationMap.put(rootPathChooser, localizationProvider.setting_root_path_to_scan());
-        directoryChooserPathSettingMap.put(rootPathChooser, rootPathSetting);
+        pathChooserLocalizationMap.put(rootPathChooser, localizationProvider.setting_root_path_to_scan());
+        pathChooserPathSettingMap.put(rootPathChooser, rootPathSetting);
 
         setupValidators();
     }
@@ -142,11 +137,6 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
         }
 
         return false;
-    }
-
-    @Override
-    public List<Node> getOptions() {
-        return new ArrayList<>(options.getItems());
     }
 
     private void setupSpinnerValidation(Spinner<Integer> spinner, SpinnerValueFactory<Integer> valueFactory, TextFormatter<Integer> formatter) {
