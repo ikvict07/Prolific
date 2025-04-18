@@ -12,7 +12,7 @@ public class GradleTasksManager {
     public List<String> getGradleTasks(Path projectPath) {
         var processBuilder = new ProcessBuilder();
         final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-        processBuilder.command(isWindows ? "gradlew.bat" : "./gradlew", "tasks");
+        processBuilder.command(isWindows ? "gradlew.bat" : "./gradlew", "tasks", "--all");
         processBuilder.directory(projectPath.toFile());
         try {
             var process = processBuilder.start();
@@ -25,16 +25,18 @@ public class GradleTasksManager {
         }
     }
 
+
     private boolean filterGradleTasks(String line) {
-        if (line.matches("-*")) {
-            return false;
-        }
-        if (line.startsWith("Tasks runnable")) {
-            return false;
-        }
-        if (line.isBlank()) {
-            return false;
-        }
-        return line.contains(" - ");
+        if (line.isBlank() || line.matches("^-+$")) return false;
+
+        if (line.startsWith("> Task") || line.startsWith("Tasks runnable")
+            || line.startsWith("Build tasks")
+            || line.startsWith("Build Setup tasks")
+            || line.startsWith("Verification tasks")
+            || line.startsWith("Documentation tasks")
+            || line.startsWith("Help tasks")
+            || line.startsWith("Rules") || line.startsWith("Pattern:")) return false;
+
+        return line.matches("^[a-zA-Z0-9_-]+(\\s+-\\s+.*)?$");
     }
 }
