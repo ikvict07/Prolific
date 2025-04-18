@@ -1,33 +1,32 @@
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
-<SplitPane dividerPositions="0.25" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsListController"
-           xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/styles.css" styleClass="settings-split-pane" onMouseEntered="#handleMouseEntered">
-
-    <padding>
-        <Insets left="8" right="8"/>
-    </padding>
-
-    <VBox spacing="32">
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<SplitPane dividerPositions="0.15" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsListController"
+           xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/styles.css" styleClass="settings-split-pane"
+           onMouseEntered="#handleMouseEntered">
+    <VBox spacing="8">
         <padding>
-            <Insets right="16" top="32" bottom="32"/>
+            <Insets top="16" bottom="16" left="8" right="8"/>
         </padding>
-        <Label fx:id="rootPath" userData="localization:setting_root_path_to_scan"/>
-        <Label fx:id="excludedDirs" userData="localization:setting_excluded_dirs"/>
-        <Label fx:id="maxScanDepth" userData="localization:setting_max_scan_depth"/>
-        <Label fx:id="rescanEveryHours" userData="localization:setting_rescan_every_hours"/>
-        <Label fx:id="language" userData="localization:setting_language"/>
+        <Label fx:id="general" id="general" userData="localization:settings_option_general" styleClass="settings-option"
+               onMouseClicked="#setSettingsList"/>
+        <Label fx:id="environment" id="environment" userData="localization:settings_option_environment"
+               styleClass="settings-option" onMouseClicked="#setSettingsList"/>
     </VBox>
 
-    <VBox spacing="28">
+    <GridPane fx:id="settingsList" hgap="24" vgap="32">
         <padding>
-            <Insets left="32" top="32" bottom="32"/>
+            <Insets top="32" right="16" bottom="16" left="16"/>
         </padding>
-        <TextField promptText="Enter path" />
-        <TextField promptText="Enter patterns" />
-        <Spinner />
-        <Spinner />
-        <Label/>
-    </VBox>
+
+        <columnConstraints>
+            <ColumnConstraints halignment="LEFT"/>
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+    </GridPane>
 
 </SplitPane>

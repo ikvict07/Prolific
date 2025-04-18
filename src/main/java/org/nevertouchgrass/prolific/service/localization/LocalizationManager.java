@@ -1,8 +1,10 @@
 package org.nevertouchgrass.prolific.service.localization;
+
 import lombok.RequiredArgsConstructor;
 import org.nevertouchgrass.prolific.configuration.XMLMessageSource;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
+import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
@@ -13,9 +15,12 @@ import java.util.Properties;
 public class LocalizationManager {
 
     private final MessageSource messageSource;
+    private final UserSettingsHolder userSettingsHolder;
+    private final UserSettingsService userSettingsService;
+
 
     public String get(String key) {
-        Locale locale = LocaleContextHolder.getLocale();
+        Locale locale = userSettingsHolder.getLocale();
         return messageSource.getMessage(key, null, locale);
     }
 
@@ -23,7 +28,12 @@ public class LocalizationManager {
         return ((XMLMessageSource) messageSource).getProperties(locale);
     }
 
+    public Locale getLocale() {
+        return Locale.forLanguageTag(userSettingsHolder.getLocale().getLanguage());
+    }
+
     public void setLocale(Locale locale) {
-        LocaleContextHolder.setLocale(locale);
+        userSettingsHolder.setLocale(locale);
+        userSettingsService.saveSettings();
     }
 }

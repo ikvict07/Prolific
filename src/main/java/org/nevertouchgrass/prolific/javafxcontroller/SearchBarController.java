@@ -115,7 +115,7 @@ public class SearchBarController {
             String searchText = textField.getText();
             var f = new ArrayList<ProjectFilterService.FilterOption>();
             f.add(new ProjectFilterService.FilterOption(filterType, searchText));
-            appliedFilters.forEach(filter -> f.add(new ProjectFilterService.FilterOption(filter, true)));
+            appliedFilters.forEach(it -> f.add(new ProjectFilterService.FilterOption(it, true)));
             updateFiltering(filterService.getFilter(f.toArray(ProjectFilterService.FilterOption[]::new)));
         }
     }

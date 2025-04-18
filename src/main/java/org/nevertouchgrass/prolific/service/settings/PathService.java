@@ -30,10 +30,11 @@ public class PathService {
     @Getter
     private Path projectFilesPath;
 
+    private final static String OS = System.getProperty("os.name").toLowerCase();
 
     @PostConstruct
     public void init() {
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        if (OS.contains("win")) {
             projectFilesPath = Paths.get(System.getProperty("user.home") + "/Program Files/Prolific");
         } else {
             projectFilesPath = Paths.get(System.getProperty("user.home"), ".prolific");
@@ -105,7 +106,7 @@ public class PathService {
                     .replace("nested:", "");
             int index = fixed.indexOf(".jar");
             int endIndex = index == -1 ? fixed.length() : index + 4;
-            int startIndex = System.getProperty("os.name").toLowerCase().contains("win") ? 1 : 0;
+            int startIndex = OS.contains("win") ? 1 : 0;
             String path = fixed.substring(startIndex, endIndex);
             return Paths.get(path);
         }
@@ -115,7 +116,7 @@ public class PathService {
             if (index == -1) {
                 throw new NoSuchElementException("Invalid Jar File URL String");
             }
-            int startIndex = System.getProperty("os.name").toLowerCase().contains("win") ? 1 : 0;
+            int startIndex = OS.contains("win") ? 1 : 0;
             String path = fixed.substring(startIndex, index);
             return Paths.get(path);
         }
