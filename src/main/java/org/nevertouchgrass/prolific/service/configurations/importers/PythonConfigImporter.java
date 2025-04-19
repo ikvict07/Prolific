@@ -76,6 +76,10 @@ public class PythonConfigImporter implements ConfigImporter {
             }
             process = builder.start();
             return process.waitFor() == 0;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Python3 check interrupted", e);
+            return false;
         } catch (Exception e) {
             log.warn("Failed to check if python3 is available", e);
             return false;

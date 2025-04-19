@@ -105,9 +105,18 @@ public class ProcessLogsService implements ProcessAware {
             throws InterruptedException {
         long startTime = System.currentTimeMillis();
 
-        int targetBatchSize = queue.size() > 1000 ? 200 :
-                queue.size() > 500 ? 150 :
-                        queue.size() > 100 ? 100 : 50;
+        int size = queue.size();
+        int targetBatchSize;
+        if (size > 1000) {
+            targetBatchSize = 200;
+        } else if (size > 500) {
+            targetBatchSize = 150;
+        } else if (size > 100) {
+            targetBatchSize = 100;
+        } else {
+            targetBatchSize = 50;
+        }
+
 
         long maxWaitTime = queue.size() > 500 ? 200 : MAX_BATCH_WAIT_MS;
 
