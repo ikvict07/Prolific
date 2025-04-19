@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
+import org.nevertouchgrass.prolific.service.configurations.importers.contract.ConfigImporter;
 import org.nevertouchgrass.prolific.service.parser.DocumentParser;
 import org.nevertouchgrass.prolific.service.settings.PathService;
-import org.nevertouchgrass.prolific.service.configurations.importers.contract.ConfigImporter;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,6 +21,7 @@ import static org.nevertouchgrass.prolific.constants.XmlConfigConstants.CONFIGUR
 @Log4j2
 @Service
 public class PythonConfigImporter implements ConfigImporter {
+    public static final String CONFIG_NAME = "Python";
     private final PathService pathService;
     private final DocumentParser documentParser;
 
@@ -35,7 +36,6 @@ public class PythonConfigImporter implements ConfigImporter {
             try {
                 Document document = documentParser.parseXmlDocument(workspacePath);
                 NodeList configurations = document.getElementsByTagName(CONFIGURATION);
-
                 for (int i = 0; i < configurations.getLength(); i++) {
                     Element config = (Element) configurations.item(i);
                     String type = config.getAttribute("type");
@@ -62,7 +62,7 @@ public class PythonConfigImporter implements ConfigImporter {
 
     @Override
     public String getType() {
-        return "Python";
+        return CONFIG_NAME;
     }
 
     private boolean isPython3Available() {
@@ -86,7 +86,7 @@ public class PythonConfigImporter implements ConfigImporter {
         try {
             RunConfig runConfig = new RunConfig();
             runConfig.setConfigName(config.getAttribute("name"));
-            runConfig.setType("Python");
+            runConfig.setType(CONFIG_NAME);
             runConfig.setCommand(new ArrayList<>());
 
             NodeList options = config.getElementsByTagName("option");
@@ -129,7 +129,7 @@ public class PythonConfigImporter implements ConfigImporter {
         try {
             RunConfig runConfig = new RunConfig();
             runConfig.setConfigName(config.getAttribute("name"));
-            runConfig.setType("Python");
+            runConfig.setType(CONFIG_NAME);
             runConfig.setCommand(new ArrayList<>());
 
             NodeList options = config.getElementsByTagName("option");

@@ -70,6 +70,7 @@ public class SettingsListController extends AbstractSettingsListController {
         switch (id) {
             case "general" -> switchOptions(settingsOptionGeneral, source);
             case "environment" -> switchOptions(settingsOptionEnvironment, source);
+            default -> throw new IllegalStateException("Unexpected value: " + id);
         }
     }
 
