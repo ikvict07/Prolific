@@ -25,7 +25,6 @@ public class LogsAndMetricsTextComponent {
     private static final int MAX_LOG_ENTRIES = 5000;
     private static final int BATCH_SIZE = 100;
     private static final int DELETION_THRESHOLD = 1000;
-    private static final String INFO_CLASS = "-fx-fill: #DFE1E5; -fx-font-family: \"JetBrains Mono\"; -fx-background-color: transparent;";
     private static final String ERROR_CLASS = "-fx-fill: #DB5C5C; -fx-font-family: \"JetBrains Mono\"; -fx-background-color: transparent;";
 
     private final ProcessLogs processLogs;
@@ -78,7 +77,6 @@ public class LogsAndMetricsTextComponent {
         textArea.setMaxHeight(Double.MAX_VALUE);
         textArea.getStyleClass().add("text-flow");
         textArea.setUseInitialStyleForInsertion(true);
-        textArea.setStyle(INFO_CLASS);
     }
 
     private void setupScrollListener() {
@@ -122,26 +120,28 @@ public class LogsAndMetricsTextComponent {
         if (logs.isEmpty()) return;
 
         StringBuilder batchText = new StringBuilder();
-        List<String> batchStyles = new ArrayList<>();
+        List<Object> batchStyleInfo = new ArrayList<>();
 
         for (LogWrapper log : logs) {
             String logText = log.getLog() + System.lineSeparator();
             batchText.append(logText);
 
-            String style = log.getLogType().name().equals("INFO") ? INFO_CLASS : ERROR_CLASS;
-            int length = logText.length();
-            batchStyles.add(style);
-            batchStyles.add(Integer.toString(length));
+            batchStyleInfo.add(log.getLogType());
+            batchStyleInfo.add(logText.length());
         }
 
         int startPos = textArea.getLength();
         textArea.appendText(batchText.toString());
 
         int stylePos = startPos;
-        for (int i = 0; i < batchStyles.size(); i += 2) {
-            String style = batchStyles.get(i);
-            int length = Integer.parseInt(batchStyles.get(i + 1));
-            textArea.setStyle(stylePos, stylePos + length, style);
+        for (int i = 0; i < batchStyleInfo.size(); i += 2) {
+            Object logType = batchStyleInfo.get(i);
+            int length = (Integer) batchStyleInfo.get(i + 1);
+
+            if (logType.toString().equals("ERROR")) {
+                textArea.setStyle(stylePos, stylePos + length, ERROR_CLASS);
+            }
+
             stylePos += length;
         }
 
@@ -161,6 +161,7 @@ public class LogsAndMetricsTextComponent {
             scrollToEnd();
         }
     }
+
 
     private int getPositionOfLine(int lineNumber) {
         return textArea.position(lineNumber, 0).toOffset();
