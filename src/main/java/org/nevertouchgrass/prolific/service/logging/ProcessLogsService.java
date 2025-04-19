@@ -15,6 +15,7 @@ import reactor.core.scheduler.Schedulers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +37,7 @@ public class ProcessLogsService implements ProcessAware {
 
     private void startLogStreaming(ProcessWrapper process) {
         ProcessLogs processLogs = logs.computeIfAbsent(process, _ -> new ProcessLogs());
-        Sinks.Many<LogWrapper> sink = Sinks.many().multicast().onBackpressureBuffer();
+        Sinks.Many<LogWrapper> sink = Sinks.many().replay().all();
         processLogSinks.put(process, sink);
 
         BlockingQueue<LogWrapper> logQueue = new LinkedBlockingQueue<>();
@@ -48,7 +49,6 @@ public class ProcessLogsService implements ProcessAware {
         BufferedReader errorStream = new BufferedReader(new InputStreamReader(process.getProcess().getErrorStream()));
 
         startReader(inputStream, LogWrapper.LogType.INFO, logQueue);
-
         startReader(errorStream, LogWrapper.LogType.ERROR, logQueue);
 
         startQueueProcessor(logQueue, sink, processLogs, isProcessing);
@@ -81,7 +81,6 @@ public class ProcessLogsService implements ProcessAware {
                 })
                 .subscribe();
     }
-
     private void startQueueProcessor(
             BlockingQueue<LogWrapper> queue,
             Sinks.Many<LogWrapper> sink,
@@ -91,18 +90,32 @@ public class ProcessLogsService implements ProcessAware {
         Mono.fromRunnable(() -> {
             try {
                 while (isProcessing.get() || !queue.isEmpty()) {
-                    LogWrapper logEntry = queue.poll();
+                    LogWrapper logEntry = isProcessing.get() ? queue.take() : queue.poll();
+
                     if (logEntry != null) {
                         processLogs.addLog(logEntry);
 
-                        sink.tryEmitNext(logEntry);
-                    } else {
-                        if (isProcessing.get()) {
-                            Thread.sleep(10);
+                        Sinks.EmitResult result = sink.tryEmitNext(logEntry);
+                        if (result.isFailure()) {
+                            log.warn("Failed to emit log with result: {}, retrying...", result);
+                            Thread.sleep(50);
+                            int attempts = 0;
+                            while (result.isFailure() && attempts < 5) {
+                                attempts++;
+                                result = sink.tryEmitNext(logEntry);
+                                if (result.isFailure()) {
+                                    Thread.sleep(100 * attempts);
+                                }
+                            }
+                            if (result.isFailure()) {
+                                log.error("Failed to emit log after multiple attempts. Log message: {}", logEntry.getLog());
+                            }
                         }
                     }
                 }
+
                 sink.tryEmitComplete();
+                log.info("Log processing completed for a process, all logs saved");
             } catch (InterruptedException e) {
                 log.error("Queue processing interrupted", e);
                 Thread.currentThread().interrupt();
@@ -110,21 +123,25 @@ public class ProcessLogsService implements ProcessAware {
         }).subscribeOn(Schedulers.boundedElastic()).subscribe();
     }
 
+    @Override
+    public void onProcessKill(ProcessWrapper process) {
+        AtomicBoolean isProcessing = queueProcessingFlags.get(process);
+        if (isProcessing != null) {
+            isProcessing.set(false);
+
+            Mono.delay(Duration.ofSeconds(5))
+                    .doOnNext(_ -> queueProcessingFlags.remove(process))
+                    .subscribe();
+        }
+    }
+
     public Flux<LogWrapper> subscribeToLogs(ProcessWrapper process) {
-        return processLogSinks.get(process) != null ? processLogSinks.get(process).asFlux() : Flux.empty();
+        Sinks.Many<LogWrapper> sink = processLogSinks.get(process);
+        return sink != null ? sink.asFlux() : Flux.empty();
     }
 
     public Map<ProcessWrapper, ProcessLogs> getLogs() {
         return Map.copyOf(logs);
     }
 
-    @Override
-    public void onProcessKill(ProcessWrapper process) {
-        AtomicBoolean isProcessing = queueProcessingFlags.get(process);
-        if (isProcessing != null) {
-            isProcessing.set(false);
-        }
-
-        queueProcessingFlags.remove(process);
-    }
 }
