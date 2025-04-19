@@ -15,7 +15,6 @@ import reactor.core.scheduler.Schedulers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,31 +55,31 @@ public class ProcessLogsService implements ProcessAware {
     }
 
     private void startReader(BufferedReader reader, LogWrapper.LogType logType, BlockingQueue<LogWrapper> queue) {
-        Mono.fromRunnable(() -> {
-            try (reader) {
-                String line;
-                LocalDateTime batchTimestamp = LocalDateTime.now();
-                long lastTimestampUpdateTime = System.currentTimeMillis();
-
-                while ((line = reader.readLine()) != null) {
-                    long currentTime = System.currentTimeMillis();
-                    if (currentTime - lastTimestampUpdateTime > 100) {
-                        batchTimestamp = LocalDateTime.now();
-                        lastTimestampUpdateTime = currentTime;
-                    }
-
+        Flux.fromStream(reader.lines())
+                .map(line -> {
                     var logEntry = new LogWrapper();
                     logEntry.setLog(line);
                     logEntry.setLogType(logType);
-                    logEntry.setTimeStamp(batchTimestamp);
-
-                    queue.put(logEntry);
-                }
-            } catch (IOException | InterruptedException e) {
-                log.error("Error reading process output", e);
-                Thread.currentThread().interrupt();
-            }
-        }).subscribeOn(Schedulers.boundedElastic()).subscribe();
+                    logEntry.setTimeStamp(System.currentTimeMillis());
+                    return logEntry;
+                })
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnNext(logEntry -> {
+                    try {
+                        queue.put(logEntry);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        log.error("Interrupted while putting log entry into the queue", e);
+                    }
+                })
+                .doFinally(_ -> {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        log.error("Failed to close reader", e);
+                    }
+                })
+                .subscribe();
     }
 
     private void startQueueProcessor(
