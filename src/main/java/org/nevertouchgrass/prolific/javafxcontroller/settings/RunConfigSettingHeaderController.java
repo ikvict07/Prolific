@@ -31,18 +31,15 @@ import org.springframework.context.annotation.Lazy;
 @Slf4j
 @Lazy
 public class RunConfigSettingHeaderController extends AbstractHeaderController {
-    @FXML
-    public AnchorPane configsHeader;
-    @FXML
-    public Label titleText;
-    @FXML
-    public HBox configsGradientBox;
-    @FXML
-    public Circle closeButton;
-    @FXML
-    public Circle maximizeButton;
-    @FXML
-    public Circle minimizeButton;
+    @FXML public AnchorPane configsHeader;
+    @FXML public Label titleText;
+    @FXML public HBox configsGradientBox;
+    @FXML public Circle closeButton;
+    @FXML public Circle maximizeButton;
+    @FXML public Circle minimizeButton;
+    @FXML public Label projectTitle;
+    @FXML public Label spacer;
+
     private boolean isStageInitialized = false;
 
     @Setter(onMethod_ = @Autowired)
@@ -79,6 +76,8 @@ public class RunConfigSettingHeaderController extends AbstractHeaderController {
         draggablePanes.add(configsHeader);
         draggablePanes.add(configsGradientBox);
         draggablePanes.add(titleText);
+        draggablePanes.add(projectTitle);
+        draggablePanes.add(spacer);
     }
 
     public void open() {
@@ -87,6 +86,7 @@ public class RunConfigSettingHeaderController extends AbstractHeaderController {
             setupScene();
             eventPublisher.publishEvent(new StageInitializeEvent("configsStage"));
         }
+        projectTitle.setText(projectPanelController.getProject().getTitle());
         stage.show();
     }
     double minWidth = visualBounds.getMaxX() / 2;

@@ -11,6 +11,7 @@ import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 
@@ -139,6 +140,15 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
         return false;
     }
 
+    @Override
+    public void resetToDefaults() {
+        rootPathSetting.setText(userSettingsHolder.getBaseScanDirectory());
+        excludedDirsSetting.setText(String.join(";", userSettingsHolder.getExcludedDirs()));
+        rescanEveryHoursSetting.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(RESCAN_MIN, RESCAN_MAX, userSettingsHolder.getRescanEveryHours()));
+        maxScanDepthSetting.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX, userSettingsHolder.getMaximumProjectDepth()));
+        languageSetting.getSelectionModel().select(userSettingsHolder.getLocale().getDisplayLanguage(userSettingsHolder.getLocale()));
+    }
+
     private void setupSpinnerValidation(Spinner<Integer> spinner, SpinnerValueFactory<Integer> valueFactory, TextFormatter<Integer> formatter) {
         spinner.setValueFactory(valueFactory);
         spinner.getEditor().setTextFormatter(formatter);
@@ -147,7 +157,7 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
     }
 
     @Autowired
-    public void setSettingsStage(Stage settingsStage) {
-        this.settingsStage = settingsStage;
+    public void setSettingsStage(@Qualifier("settingsStage") Stage settingsStage) {
+        this.stage = settingsStage;
     }
 }

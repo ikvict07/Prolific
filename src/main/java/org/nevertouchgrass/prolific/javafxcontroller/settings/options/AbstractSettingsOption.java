@@ -24,7 +24,6 @@ import org.nevertouchgrass.prolific.service.configurations.RunConfigService;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -49,14 +48,13 @@ public abstract class AbstractSettingsOption implements SettingsOption {
     protected SettingsFooterController settingsFooterController;
     @Setter(onMethod_ = @Autowired)
     protected LocalizationProvider localizationProvider;
-    @Setter(onMethod_ = {@Qualifier("settingsStage"), @Autowired})
-    protected Stage settingsStage;
     @Setter(onMethod_ = @Autowired)
     protected RunConfigFooterController runConfigFooterController;
     @Setter(onMethod_ = @Autowired)
     protected RunConfigSettingHeaderController runConfigSettingHeaderController;
     @Setter(onMethod_ = @Autowired)
     protected RunConfigService runConfigService;
+    protected Stage stage;
 
     protected Map<Node, StringProperty> pathChooserLocalizationMap = new HashMap<>();
     protected Map<Node, TextField> pathChooserPathSettingMap = new HashMap<>();
@@ -146,7 +144,7 @@ public abstract class AbstractSettingsOption implements SettingsOption {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle(pathChooserLocalizationMap.getOrDefault(source, new SimpleStringProperty("")).getValue());
 
-        File selectedDirectory = directoryChooser.showDialog(settingsStage);
+        File selectedDirectory = directoryChooser.showDialog(stage);
 
         if (selectedDirectory != null) {
             pathChooserPathSettingMap.get(source).setText(selectedDirectory.getAbsolutePath());
@@ -160,7 +158,7 @@ public abstract class AbstractSettingsOption implements SettingsOption {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(pathChooserLocalizationMap.getOrDefault(source, new SimpleStringProperty("")).getValue());
 
-        File selectedFile = fileChooser.showOpenDialog(settingsStage);
+        File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
             pathChooserPathSettingMap.get(source).setText(selectedFile.getAbsolutePath());

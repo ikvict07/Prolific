@@ -59,6 +59,7 @@ public class RunConfigListController extends AbstractSettingsListController {
         runConfigFooterController.setSaveRunnable(this::saveSettings);
 
         configsStage.setOnShowing(_ -> {
+            resetToDefaults();
             settingsOptions.forEach(SettingsOption::setupValidators);
             if (currentSettingsOption == null) {
                 switchOptions(settingsOptionCommand, command);
@@ -92,5 +93,9 @@ public class RunConfigListController extends AbstractSettingsListController {
             notificationService.notifyInfo(InfoNotification.of(localizationProvider.config_saved()));
             runConfigSettingHeaderController.getProjectPanelController().initializeProjectConfiguration();
         }
+    }
+
+    private void resetToDefaults() {
+        settingsOptions.forEach(SettingsOption::resetToDefaults);
     }
 }

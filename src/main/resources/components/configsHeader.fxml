@@ -12,7 +12,11 @@
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
                AnchorPane.leftAnchor="0.0">
 
-        <Label fx:id="titleText" textFill="#ebecf0" userData="localization:run_config" textAlignment="CENTER"/>
+        <HBox alignment="CENTER" spacing="4">
+            <Label fx:id="titleText" userData="localization:run_config" textAlignment="CENTER"/>
+            <Label fx:id="spacer" text="-" textAlignment="CENTER"/>
+            <Label fx:id="projectTitle" textAlignment="CENTER"/>
+        </HBox>
 
         <HBox fx:id="configsGradientBox" styleClass="settingsGradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>

@@ -96,6 +96,14 @@ public class SettingsOptionEnvironment extends AbstractSettingsOption {
         return false;
     }
 
+    @Override
+    public void resetToDefaults() {
+        pythonPathSetting.setText(userSettingsHolder.getPythonPath());
+        gradlePathSetting.setText(userSettingsHolder.getGradlePath());
+        mvnPathSetting.setText(userSettingsHolder.getMavenPath());
+        jdkPathSetting.setText(userSettingsHolder.getJdkPath());
+    }
+
     private void pathChangedListener(TextField path, Label errorMessage) {
         checkDefaultValues();
         path.getStyleClass().remove(ERROR);

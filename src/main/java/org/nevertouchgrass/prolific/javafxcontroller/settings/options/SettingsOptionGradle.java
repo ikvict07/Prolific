@@ -1,10 +1,12 @@
 package org.nevertouchgrass.prolific.javafxcontroller.settings.options;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.StackPane;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
@@ -18,6 +20,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @StageComponent(stage = "configsStage")
 @Lazy
@@ -34,11 +37,14 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
     @FXML private TextField argumentsSetting;
     @FXML private ComboBox<String> taskSetting;
 
+    @FXML private StackPane loadingIndicator;
+
     @Setter(onMethod_ = @Autowired)
     private GradleTasksManager gradleTasksManager;
 
     @Initialize
     public void init() {
+        var startTime = System.currentTimeMillis();
         fxmlProvider.getFxmlResource("configsOptionGradle");
 
         setupValidators();
@@ -46,13 +52,28 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
 
     @Override
     public void setupValidators() {
+
         configNameSetting.setText("");
         configNameSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
         configNameSetting.textProperty().addListener((_, _, _) -> textChangeListener(configNameSetting, configNameErrorMessage));
 
-        Project project = runConfigSettingHeaderController.getProjectPanelController().getProject();
-        taskSetting.getItems().clear();
-        taskSetting.getItems().addAll(gradleTasksManager.getGradleTasks(Path.of(project.getPath())));
+        if (taskSetting.getItems().isEmpty()) {
+            taskSetting.setDisable(true);
+            taskSetting.getItems().clear();
+            Project project = runConfigSettingHeaderController.getProjectPanelController().getProject();
+
+            loadingIndicator.setVisible(true);
+            loadingIndicator.setManaged(true);
+            CompletableFuture<List<String>> gradleTasks = CompletableFuture.supplyAsync(() -> gradleTasksManager.getGradleTasks(Path.of(project.getPath())));
+            gradleTasks.thenAccept(tasks -> {
+                Platform.runLater(() -> taskSetting.getItems().addAll(tasks));
+                taskSetting.setDisable(false);
+
+                loadingIndicator.setVisible(false);
+                loadingIndicator.setManaged(false);
+            });
+        }
+
 
         argumentsSetting.setText("");
         argumentsSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
@@ -116,5 +137,13 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
         taskErrorMessage.setManaged(false);
 
         return true;
+    }
+
+    @Override
+    public void resetToDefaults() {
+        configNameSetting.setText("");
+        argumentsSetting.setText("");
+        taskSetting.getItems().clear();
+        taskSetting.setValue(null);
     }
 }

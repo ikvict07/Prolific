@@ -78,6 +78,12 @@ public class SettingsOptionCommand extends AbstractSettingsOption {
         return false;
     }
 
+    @Override
+    public void resetToDefaults() {
+        configNameSetting.setText("");
+        commandSetting.setText("");
+    }
+
     private void textChangeListener(TextField textField, Label errorMessage) {
         checkDefaultValues();
         textField.getStyleClass().remove(ERROR);

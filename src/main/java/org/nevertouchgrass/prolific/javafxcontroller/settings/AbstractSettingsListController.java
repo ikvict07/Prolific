@@ -21,7 +21,7 @@ public abstract class AbstractSettingsListController implements SettingsListCont
         }
 
         if (currentSettingsOption != null) {
-            currentSettingsOption.setupValidators();
+            currentSettingsOption.resetToDefaults();
         }
 
         settingsLabels.getItems().forEach(l -> l.getStyleClass().remove(SELECTED));

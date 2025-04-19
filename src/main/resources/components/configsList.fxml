@@ -60,7 +60,7 @@
         </padding>
 
         <columnConstraints>
-            <ColumnConstraints halignment="RIGHT"/>
+            <ColumnConstraints halignment="LEFT"/>
             <ColumnConstraints hgrow="ALWAYS" />
         </columnConstraints>
 
