@@ -223,6 +223,7 @@ public class MetricsService implements ProcessAware {
         var d = new HashSet<ProcessHandle>();
         var children = process.children().toList();
         var descendants = process.descendants().toList();
+        d.add(process);
         d.addAll(children);
         d.addAll(descendants);
         descendantsToReceive.addAll(d);

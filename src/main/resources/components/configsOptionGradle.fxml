@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
+<?import org.nevertouchgrass.prolific.components.SpinnerArc?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionGradle">
+    <fx:define>
+        <ArrayListHolder fx:id="options">
+            <Label fx:id="configName" userData="localization:config_config_name"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+                <TextField fx:id="configNameSetting"/>
+                <Label fx:id="configNameErrorMessage" managed="false" visible="false" styleClass="error"
+                       userData="localization:config_error_empty_config_name"/>
+            </VBox>
+
+            <Label fx:id="arguments" userData="localization:config_arguments"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="argumentsSetting" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label fx:id="task" userData="localization:config_task" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
+                <HBox spacing="4">
+                    <ComboBox fx:id="taskSetting"/>
+                    <StackPane fx:id="loadingIndicator">
+                        <SpinnerArc radius="8"/>
+                    </StackPane>
+                </HBox>
+                <Label fx:id="taskErrorMessage" managed="false" visible="false" styleClass="error"
+                       userData="localization:config_error_empty_task"/>
+            </VBox>
+        </ArrayListHolder>
+    </fx:define>
+
+</AnchorPane>

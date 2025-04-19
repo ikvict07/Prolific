@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.javafxcontroller.settings;
+package org.nevertouchgrass.prolific.javafxcontroller.settings.options;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -9,23 +9,31 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import lombok.NonNull;
 import lombok.Setter;
-import org.nevertouchgrass.prolific.javafxcontroller.SettingsFooterController;
+import org.nevertouchgrass.prolific.components.ArrayListHolder;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigFooterController;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigSettingHeaderController;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsFooterController;
 import org.nevertouchgrass.prolific.javafxcontroller.settings.contract.SettingsOption;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
+import org.nevertouchgrass.prolific.service.configurations.RunConfigService;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public abstract class AbstractSettingsOption implements SettingsOption {
 
     protected static final String ERROR = "error";
@@ -40,11 +48,23 @@ public abstract class AbstractSettingsOption implements SettingsOption {
     protected SettingsFooterController settingsFooterController;
     @Setter(onMethod_ = @Autowired)
     protected LocalizationProvider localizationProvider;
-    @Setter(onMethod_ = {@Qualifier("settingsStage"), @Autowired})
-    protected Stage settingsStage;
+    @Setter(onMethod_ = @Autowired)
+    protected RunConfigFooterController runConfigFooterController;
+    @Setter(onMethod_ = @Autowired)
+    protected RunConfigSettingHeaderController runConfigSettingHeaderController;
+    @Setter(onMethod_ = @Autowired)
+    protected RunConfigService runConfigService;
+    protected Stage stage;
 
-    protected Map<Node, StringProperty> directoryChooserLocalizationMap = new HashMap<>();
-    protected Map<Node, TextField> directoryChooserPathSettingMap = new HashMap<>();
+    protected Map<Node, StringProperty> pathChooserLocalizationMap = new HashMap<>();
+    protected Map<Node, TextField> pathChooserPathSettingMap = new HashMap<>();
+
+    @FXML protected ArrayListHolder<Node> options;
+
+    @Override
+    public List<Node> getOptions() {
+        return new ArrayList<>(options.getItems());
+    }
 
     protected boolean checkProvidedPath(String path, TextField pathSetting, Label errorMessage) {
         try {
@@ -64,6 +84,23 @@ public abstract class AbstractSettingsOption implements SettingsOption {
         } catch (Exception ignore) {
             return false;
         }
+    }
+
+    protected boolean checkProvidedNonEmptyString(@NonNull String text, TextField textField, Label errorMessage) {
+        if (text.isBlank()) {
+            if (!textField.getStyleClass().contains(ERROR)) {
+                textField.getStyleClass().add(ERROR);
+            }
+            errorMessage.setVisible(true);
+            errorMessage.setManaged(true);
+            return false;
+        }
+
+        errorMessage.setVisible(false);
+        errorMessage.setManaged(false);
+        textField.getStyleClass().remove(ERROR);
+
+        return true;
     }
 
     protected TextFormatter.Change createIntegerChange(TextFormatter.Change change, int min, int max) {
@@ -91,17 +128,40 @@ public abstract class AbstractSettingsOption implements SettingsOption {
         return null;
     }
 
+    protected TextFormatter.Change createNonEmptyStringChange(TextFormatter.Change change) {
+        String newText = change.getControlNewText();
+        if (!newText.isEmpty() && newText.isBlank()) {
+            return null;
+        }
+
+        return change;
+    }
+
     @FXML
-    protected void choosePath(Event event) {
+    protected void chooseDirectoryPath(Event event) {
         Node source = (Node) event.getSource();
 
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle(directoryChooserLocalizationMap.getOrDefault(source, new SimpleStringProperty("")).getValue());
+        directoryChooser.setTitle(pathChooserLocalizationMap.getOrDefault(source, new SimpleStringProperty("")).getValue());
 
-        File selectedDirectory = directoryChooser.showDialog(settingsStage);
+        File selectedDirectory = directoryChooser.showDialog(stage);
 
         if (selectedDirectory != null) {
-            directoryChooserPathSettingMap.get(source).setText(selectedDirectory.getAbsolutePath());
+            pathChooserPathSettingMap.get(source).setText(selectedDirectory.getAbsolutePath());
+        }
+    }
+
+    @FXML
+    protected void chooseFilePath(Event event) {
+        Node source = (Node) event.getSource();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(pathChooserLocalizationMap.getOrDefault(source, new SimpleStringProperty("")).getValue());
+
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            pathChooserPathSettingMap.get(source).setText(selectedFile.getAbsolutePath());
         }
     }
 }

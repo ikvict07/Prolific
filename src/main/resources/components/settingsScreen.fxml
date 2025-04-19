@@ -3,9 +3,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsScreenController"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsScreenController"
             stylesheets="@/css/styles.css"
-            fx:id="settingsScreen">
+            fx:id="settingsScreen" styleClass="settingsScreen">
     <top>
         <fx:include fx:id="settingsHeader" source="/components/settingsHeader.fxml"/>
     </top>

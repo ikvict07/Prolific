@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
+<!--suppress JavaFxEventHandler -->
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
-<!--suppress JavaFxEventHandler -->
 <AnchorPane fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController">
@@ -38,6 +39,23 @@
                     </padding>
                     <fx:include source="/icons/fxml/settings.fxml"/>
                 </StackPane>
+            </HBox>
+        </HBox>
+    </StackPane>
+
+    <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox alignment="CENTER_LEFT" spacing="12" fillHeight="false">
+            <padding>
+                <Insets right="16"/>
+            </padding>
+            <HBox fx:id="profilesPanel" alignment="CENTER" spacing="10" styleClass="icon-button">
+                <padding>
+                    <Insets top="4" bottom="4" left="6" right="6"/>
+                </padding>
+                <StackPane>
+                    <fx:include source="/icons/fxml/userIcon.fxml"/>
+                </StackPane>
+                <ComboBox fx:id="userList" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
             </HBox>
         </HBox>
     </StackPane>

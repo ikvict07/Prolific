@@ -9,10 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -23,6 +20,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigSettingHeaderController;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
 import org.nevertouchgrass.prolific.model.RunConfig;
@@ -42,7 +40,9 @@ import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
@@ -51,7 +51,7 @@ import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 @Scope("prototype")
 @Data
 public class ProjectPanelController {
-    public final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
+    public static final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
     @FXML
     public StackPane star;
     @FXML
@@ -103,6 +103,8 @@ public class ProjectPanelController {
     private ProcessService processService;
     @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
+    @Setter(onMethod_ = @Autowired)
+    private RunConfigSettingHeaderController runConfigSettingHeaderController;
 
     private ContextMenu contextMenu;
     private ProjectRunConfigs projectRunConfigs;
@@ -111,6 +113,8 @@ public class ProjectPanelController {
     private ProcessWrapper currentProcess = null;
     private Property<Boolean> isProjectRunning = new SimpleBooleanProperty(false);
     private ProjectsService projectsService;
+
+    private final List<Consumer<Project>> updateListeners = new ArrayList<>();
 
     public void init() {
         String iconColorStyle = colorService.generateRandomColorStyle(colorService.getSeedForProject(project));
@@ -121,13 +125,10 @@ public class ProjectPanelController {
         projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.8));
         configurationName.maxWidthProperty().bind(projectInfo.widthProperty().multiply(0.3));
 
-        projectRunConfigs = runConfigService.getAllRunConfigs(project);
-
         contextMenu = new ContextMenu();
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
 
-        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
-        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
+        initializeProjectConfiguration();
         isProjectRunning.addListener((_, _, newValue) -> Platform.runLater(() -> {
             if (newValue) {
                 runContent.getChildren().clear();
@@ -141,6 +142,29 @@ public class ProjectPanelController {
                 run.setOnMouseClicked((_ -> runProject()));
             }
         }));
+    }
+
+    private void onAddConfig() {
+        runConfigSettingHeaderController.setProjectPanelController(this);
+        runConfigSettingHeaderController.open();
+    }
+
+    private void generateAddRunConfigContextMenuItem(StringProperty label) {
+        ObservableList<MenuItem> menuItems = contextMenu.getItems();
+        if (!(projectRunConfigs.getImportedConfigs().isEmpty() && projectRunConfigs.getManuallyAddedConfigs().isEmpty())) {
+            SeparatorMenuItem separator = new SeparatorMenuItem();
+            menuItems.add(separator);
+        }
+        MenuItem menuItem = new MenuItem();
+        menuItem.textProperty().bind(label);
+        menuItem.setGraphic(fxmlProvider.getIcon("addButton"));
+        menuItem.addEventFilter(ActionEvent.ANY, _ -> onAddConfig());
+        menuItems.add(menuItem);
+
+    }
+
+    public void addUpdateListener(Consumer<Project> listener) {
+        updateListeners.add(listener);
     }
 
     public void setProject(Project project) {
@@ -179,6 +203,14 @@ public class ProjectPanelController {
             Bounds bounds = controlPanel.localToScreen(controlPanel.getBoundsInLocal());
             contextMenu.show(controlPanel, bounds.getMinX(), bounds.getMaxY());
         }
+    }
+
+    public void initializeProjectConfiguration() {
+        contextMenu.getItems().clear();
+        projectRunConfigs = runConfigService.getAllRunConfigs(project);
+        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
+        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
+        generateAddRunConfigContextMenuItem(localizationProvider.create_config());
     }
 
     private void switchConfigurationButtonIcon() {
@@ -241,12 +273,14 @@ public class ProjectPanelController {
 
     public void stopProject() {
         if (currentProcess != null) {
+            currentProcess.getProcess().onExit().thenAccept(_ -> new Thread(() -> updateListeners.forEach(c -> c.accept(project))).start());
             currentProcess.getProcess().destroy();
             currentProcess = null;
             notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_project_stopped(), project.getTitle()));
             log.info("Project {} stopped", project.getTitle());
         }
         isProjectRunning.setValue(false);
+
     }
 
     private void runProjectLambda() {
@@ -260,5 +294,6 @@ public class ProjectPanelController {
             log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
             throw new IllegalStateException(e);
         }
+        updateListeners.forEach(c -> c.accept(project));
     }
 }

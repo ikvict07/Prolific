@@ -10,4 +10,5 @@ public interface SettingsOption {
     boolean checkDefaultValues();
     boolean saveSettings();
     List<Node> getOptions();
+    void resetToDefaults();
 }

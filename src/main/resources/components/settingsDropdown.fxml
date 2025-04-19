@@ -6,5 +6,5 @@
       fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SettingsDropdownController" stylesheets="@/css/styles.css">
     <Label maxWidth="Infinity" userData="localization:settings" fx:id="settingsLabel" onMouseClicked="#openSettings" textAlignment="JUSTIFY"/>
     <Label maxWidth="Infinity" userData="localization:scanner" fx:id="scanLabel" onMouseClicked="#rescan" textAlignment="JUSTIFY"/>
-    <Label maxWidth="Infinity" userData="localization:plugins" fx:id="pluginsLabel" textAlignment="JUSTIFY"/>
+    <Label maxWidth="Infinity" userData="localization:plugins" fx:id="pluginsLabel" onMouseClicked="#openPluginsDir" textAlignment="JUSTIFY"/>
 </VBox>

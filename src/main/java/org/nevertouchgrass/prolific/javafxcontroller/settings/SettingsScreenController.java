@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.javafxcontroller;
+package org.nevertouchgrass.prolific.javafxcontroller.settings;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.SplitPane;

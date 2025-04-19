@@ -2,6 +2,7 @@ package org.nevertouchgrass.prolific.service.runner;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.exception.ProcessStartFailedException;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class DefaultProjectRunner implements ProjectRunner {
 
     private final ProcessLogsService processLogsService;
@@ -29,6 +31,7 @@ public class DefaultProjectRunner implements ProjectRunner {
         processBuilder.directory(Path.of(project.getPath()).toFile());
         try {
             Process process = processBuilder.start();
+            log.info("Started process {}", process.pid());
             ProcessWrapper procWrapper;
             procWrapper = ProcessWrapper.of(process);
             procWrapper.setName(runConfig.getConfigName());

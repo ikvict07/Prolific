@@ -1,7 +1,6 @@
-package org.nevertouchgrass.prolific.javafxcontroller.settings;
+package org.nevertouchgrass.prolific.javafxcontroller.settings.options;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -10,21 +9,18 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
-import org.nevertouchgrass.prolific.components.ArrayListHolder;
 import org.nevertouchgrass.prolific.events.LocalizationChangeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 @StageComponent(stage = "settingsStage")
+@Lazy
 public class SettingsOptionGeneral extends AbstractSettingsOption {
-
-    @FXML public ArrayListHolder<Node> options;
-
     @FXML public StackPane rootPathChooser;
 
     @FXML public Label rootPath;
@@ -54,8 +50,8 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
     public void init() {
         fxmlProvider.getFxmlResource("settingsOptionGeneral");
 
-        directoryChooserLocalizationMap.put(rootPathChooser, localizationProvider.setting_root_path_to_scan());
-        directoryChooserPathSettingMap.put(rootPathChooser, rootPathSetting);
+        pathChooserLocalizationMap.put(rootPathChooser, localizationProvider.setting_root_path_to_scan());
+        pathChooserPathSettingMap.put(rootPathChooser, rootPathSetting);
 
         setupValidators();
     }
@@ -145,8 +141,12 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
     }
 
     @Override
-    public List<Node> getOptions() {
-        return new ArrayList<>(options.getItems());
+    public void resetToDefaults() {
+        rootPathSetting.setText(userSettingsHolder.getBaseScanDirectory());
+        excludedDirsSetting.setText(String.join(";", userSettingsHolder.getExcludedDirs()));
+        rescanEveryHoursSetting.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(RESCAN_MIN, RESCAN_MAX, userSettingsHolder.getRescanEveryHours()));
+        maxScanDepthSetting.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX, userSettingsHolder.getMaximumProjectDepth()));
+        languageSetting.getSelectionModel().select(userSettingsHolder.getLocale().getDisplayLanguage(userSettingsHolder.getLocale()));
     }
 
     private void setupSpinnerValidation(Spinner<Integer> spinner, SpinnerValueFactory<Integer> valueFactory, TextFormatter<Integer> formatter) {
@@ -157,7 +157,7 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
     }
 
     @Autowired
-    public void setSettingsStage(Stage settingsStage) {
-        this.settingsStage = settingsStage;
+    public void setSettingsStage(@Qualifier("settingsStage") Stage settingsStage) {
+        this.stage = settingsStage;
     }
 }

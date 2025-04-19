@@ -6,13 +6,13 @@
 <?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsOptionEnvironment">
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionEnvironment">
     <fx:define>
         <ArrayListHolder fx:id="options">
             <Label fx:id="pythonPath" userData="localization:setting_python_path"
                    GridPane.rowIndex="0" GridPane.columnIndex="0"/>
             <HBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
-                <StackPane fx:id="pythonPathChooser" onMouseClicked="#choosePath" styleClass="icon-button">
+                <StackPane fx:id="pythonPathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
                     <padding>
                         <Insets topRightBottomLeft="4"/>
                     </padding>
@@ -28,7 +28,7 @@
             <Label fx:id="gradlePath" userData="localization:setting_gradle_path"
                    GridPane.rowIndex="1" GridPane.columnIndex="0"/>
             <HBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
-                <StackPane fx:id="gradlePathChooser" onMouseClicked="#choosePath" styleClass="icon-button">
+                <StackPane fx:id="gradlePathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
                     <padding>
                         <Insets topRightBottomLeft="4"/>
                     </padding>
@@ -44,7 +44,7 @@
             <Label fx:id="mvnPath" userData="localization:setting_maven_path"
                    GridPane.rowIndex="2" GridPane.columnIndex="0"/>
             <HBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
-                <StackPane fx:id="mvnPathChooser" onMouseClicked="#choosePath" styleClass="icon-button">
+                <StackPane fx:id="mvnPathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
                     <padding>
                         <Insets topRightBottomLeft="4"/>
                     </padding>
@@ -60,7 +60,7 @@
             <Label fx:id="jdkPath" userData="localization:setting_jdk_path"
                    GridPane.rowIndex="3" GridPane.columnIndex="0"/>
             <HBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="1">
-                <StackPane fx:id="jdkPathChooser" onMouseClicked="#choosePath" styleClass="icon-button">
+                <StackPane fx:id="jdkPathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
                     <padding>
                         <Insets topRightBottomLeft="4"/>
                     </padding>
