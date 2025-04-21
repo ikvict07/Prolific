@@ -69,6 +69,9 @@ public class UserSettingsService {
         if (sett.getUser() == null) {
             setDefaultUser();
         }
+        if (sett.getAnacondaPath() == null || sett.getAnacondaPath().isEmpty()) {
+            setDefaultAnacondaPath();
+        }
         userSettingsHolder.load(sett);
         log.info("Using settings: {}", userSettingsHolder);
     }
@@ -148,6 +151,10 @@ public class UserSettingsService {
 
     public void setDefaultJdkPath() {
         userSettingsHolder.setJdkPath("");
+        saveSettings();
+    }
+    public void setDefaultAnacondaPath() {
+        userSettingsHolder.setAnacondaPath("");
         saveSettings();
     }
 }

@@ -13,6 +13,7 @@ import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.service.configurations.GradleTasksManager;
+import org.nevertouchgrass.prolific.service.configurations.creators.GradleTaskRunConfigurationCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
@@ -41,6 +42,9 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
 
     @Setter(onMethod_ = @Autowired)
     private GradleTasksManager gradleTasksManager;
+
+    @Setter(onMethod_ = @Autowired)
+    private GradleTaskRunConfigurationCreator gradleTaskRunConfigurationCreator;
 
     @Initialize
     public void init() {
@@ -96,23 +100,17 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
     @Override
     public boolean saveSettings() {
         if (validInput() && !checkDefaultValues()) {
-            List<String> command = new ArrayList<>();
-            command.add("./gradlew");
-            command.add(taskSetting.getValue());
-            command.addAll(Arrays.stream(argumentsSetting.getText().trim().split("\\s+")).toList());
-            RunConfig runConfig = new RunConfig();
-            runConfig.setCommand(command);
-            runConfig.setConfigName(configNameSetting.getText().trim());
-            runConfig.setType("Gradle");
-
+            var ccd = new GradleTaskRunConfigurationCreator.GradleTaskDescription();
+            ccd.setTitle(configNameSetting.getText().trim());
+            ccd.setTaskName(taskSetting.getValue());
+            ccd.setOptions(Arrays.stream(argumentsSetting.getText().trim().split("\\s+")).toList());
+            RunConfig runConfig = gradleTaskRunConfigurationCreator.createRunConfig(ccd);
             Project project = runConfigSettingHeaderController.getProjectPanelController().getProject();
             List<RunConfig> runConfigs = new ArrayList<>(runConfigService.getAllRunConfigs(project).getManuallyAddedConfigs());
             runConfigs.add(runConfig);
             runConfigService.saveRunConfigs(project, runConfigs);
-
             return true;
         }
-
         return false;
     }
 

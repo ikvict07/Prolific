@@ -80,4 +80,6 @@
     <entry key="config_error_empty_task">Úloha nesmie byť prázdna</entry>
     <entry key="power_user">Pokročilý používateľ</entry>
     <entry key="common_user">Štandardný používateľ</entry>
+    <entry key="setting_anaconda_path">Cesta k Anaconda</entry>
+    <entry key="no_anaconda_configured">Nakonfigurujte cestu k Anaconda</entry>
 </properties>

@@ -72,6 +72,21 @@
                            userData="localization:setting_path_doesnt_exist" styleClass="error"/>
                 </VBox>
             </HBox>
+            <Label fx:id="anacondaPath" userData="localization:setting_anaconda_path"
+                   GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <HBox spacing="8" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                <StackPane fx:id="anacondaPathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
+                    <padding>
+                        <Insets topRightBottomLeft="4"/>
+                    </padding>
+                    <fx:include source="/icons/fxml/folder.fxml"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <TextField fx:id="anacondaPathSetting"/>
+                    <Label fx:id="anacondaPathErrorMessage" visible="false" managed="false"
+                           userData="localization:setting_path_doesnt_exist" styleClass="error"/>
+                </VBox>
+            </HBox>
         </ArrayListHolder>
     </fx:define>
 </AnchorPane>

@@ -35,7 +35,7 @@ import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
-import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
+import org.nevertouchgrass.prolific.service.runner.ProjectRunnerRegistry;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -96,7 +96,7 @@ public class ProjectPanelController {
     @Setter(onMethod_ = @Autowired)
     private NotificationService notificationService;
     @Setter(onMethod_ = @Autowired)
-    private DefaultProjectRunner projectRunner;
+    private ProjectRunnerRegistry projectRunner;
     @Setter(onMethod_ = @Autowired)
     private FxmlProvider fxmlProvider;
     @Setter(onMethod_ = @Autowired)

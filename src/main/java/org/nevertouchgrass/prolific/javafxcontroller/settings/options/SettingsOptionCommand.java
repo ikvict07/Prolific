@@ -4,10 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
+import org.nevertouchgrass.prolific.service.configurations.creators.CustomCommandRunConfigurationCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import java.util.ArrayList;
@@ -26,6 +29,9 @@ public class SettingsOptionCommand extends AbstractSettingsOption {
 
     @FXML private TextField configNameSetting;
     @FXML private TextField commandSetting;
+
+    @Setter(onMethod_ = @Autowired)
+    private CustomCommandRunConfigurationCreator creator;
 
     @Initialize
     public void init() {
@@ -62,11 +68,10 @@ public class SettingsOptionCommand extends AbstractSettingsOption {
     @Override
     public boolean saveSettings() {
         if (validInput() && !checkDefaultValues()) {
-            RunConfig runConfig = new RunConfig();
-            runConfig.setCommand(Arrays.stream(commandSetting.getText().trim().split("\\s+")).toList());
-            runConfig.setConfigName(configNameSetting.getText().trim());
-            runConfig.setType("Command");
-
+            var ccd = new CustomCommandRunConfigurationCreator.CustomCommandDescription();
+            ccd.setTitle(configNameSetting.getText().trim());
+            ccd.setCommand(Arrays.stream(commandSetting.getText().trim().split("\\s+")).toList());
+            RunConfig runConfig = creator.createRunConfig(ccd);
             Project project = runConfigSettingHeaderController.getProjectPanelController().getProject();
             List<RunConfig> runConfigs = new ArrayList<>(runConfigService.getAllRunConfigs(project).getManuallyAddedConfigs());
             runConfigs.add(runConfig);

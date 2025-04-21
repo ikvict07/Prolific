@@ -66,4 +66,6 @@
     <entry key="setting_jdk_path">Путь к JDK</entry>
     <entry key="power_user">Продвинутый пользователь</entry>
     <entry key="common_user">Обычный пользователь</entry>
+    <entry key="setting_anaconda_path">Путь к Anaconda</entry>
+    <entry key="no_anaconda_configured">Пожалуйста, настройте путь к Anaconda</entry>
 </properties>

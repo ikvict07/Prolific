@@ -33,6 +33,7 @@ public class UserSettingsHolder {
     private String gradlePath;
     private String mavenPath;
     private String jdkPath;
+    private String anacondaPath;
     private String userRole;
 
 
@@ -86,6 +87,9 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.getUser() != null) {
             this.userRole = userSettingsHolder.getUser().getProfile();
+        }
+        if (userSettingsHolder.getAnacondaPath() != null && !userSettingsHolder.getAnacondaPath().isEmpty()) {
+            this.anacondaPath = userSettingsHolder.getAnacondaPath();
         }
     }
 }
