@@ -1,15 +1,17 @@
+
 package org.nevertouchgrass.prolific.javafxcontroller.settings.options;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.StackPane;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
-import org.nevertouchgrass.prolific.service.configurations.creators.CustomCommandRunConfigurationCreator;
+import org.nevertouchgrass.prolific.service.configurations.creators.PythonRunConfigurationCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
@@ -19,37 +21,45 @@ import java.util.List;
 
 @StageComponent(stage = "configsStage")
 @Lazy
-@SuppressWarnings("unused")
-public class SettingsOptionCommand extends AbstractSettingsOption {
+public class SettingsOptionPython extends AbstractSettingsOption {
     @FXML private Label configName;
-    @FXML private Label command;
+    @FXML private Label arguments;
+    @FXML private Label scriptPath;
 
     @FXML private Label configNameErrorMessage;
-    @FXML private Label commandErrorMessage;
+    @FXML private Label scriptPathErrorMessage;
+
     @FXML private TextField configNameSetting;
-    @FXML private TextField commandSetting;
+    @FXML private TextField argumentsSetting;
+    @FXML private TextField scriptPathSetting;
+
+    @FXML private StackPane scriptPathChooser;
 
     @Setter(onMethod_ = @Autowired)
-    private CustomCommandRunConfigurationCreator creator;
+    private PythonRunConfigurationCreator creator;
 
     private boolean isInitialized = false;
 
     @Initialize
     public void init() {
-        fxmlProvider.getFxmlResource("configsOptionCommand");
+        fxmlProvider.getFxmlResource("configsOptionPython");
+
+        pathChooserLocalizationMap.put(scriptPathChooser, localizationProvider.setting_script_path());
+        pathChooserPathSettingMap.put(scriptPathChooser, scriptPathSetting);
+
         setupValidators();
     }
 
     @Override
     public void setupValidators() {
         configNameSetting.setText("");
-        commandSetting.setText("");
+        argumentsSetting.setText("");
+        scriptPathSetting.setText("");
 
         if (!isInitialized) {
             configNameSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
             configNameSetting.textProperty().addListener((_, _, _) -> textChangeListener(configNameSetting, configNameErrorMessage));
-            commandSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
-            commandSetting.textProperty().addListener((_, _, _) -> textChangeListener(commandSetting, commandErrorMessage));
+            scriptPathSetting.textProperty().addListener((_, _, _) -> textChangeListener(scriptPathSetting, scriptPathErrorMessage));
             isInitialized = true;
         }
     }
@@ -57,12 +67,13 @@ public class SettingsOptionCommand extends AbstractSettingsOption {
     @Override
     public boolean validInput() {
         return checkProvidedNonEmptyString(configNameSetting.getText(), configNameSetting, configNameErrorMessage) &
-                checkProvidedNonEmptyString(commandSetting.getText(), commandSetting, commandErrorMessage);
+                checkProvidedPath(scriptPathSetting.getText(), scriptPathSetting, scriptPathErrorMessage) &&
+                checkProvidedNonEmptyString(scriptPathSetting.getText(), scriptPathSetting, scriptPathErrorMessage);
     }
 
     @Override
     public boolean checkDefaultValues() {
-        boolean value = commandSetting.getText().isBlank() && configNameSetting.getText().isBlank();
+        boolean value = scriptPathSetting.getText().isBlank() && configNameSetting.getText().isBlank() && argumentsSetting.getText().isBlank();
 
         runConfigFooterController.changeApplyButtonStyle(value);
         return value;
@@ -71,9 +82,10 @@ public class SettingsOptionCommand extends AbstractSettingsOption {
     @Override
     public boolean saveSettings() {
         if (validInput() && !checkDefaultValues()) {
-            var ccd = new CustomCommandRunConfigurationCreator.CustomCommandDescription();
+            var ccd = new PythonRunConfigurationCreator.PythonConfigDescription();
             ccd.setTitle(configNameSetting.getText().trim());
-            ccd.setCommand(Arrays.stream(commandSetting.getText().trim().split("\\s+")).toList());
+            ccd.setScriptPath(scriptPathSetting.getText().trim());
+            ccd.setArguments(Arrays.stream(argumentsSetting.getText().trim().split("\\s+")).toList());
             RunConfig runConfig = creator.createRunConfig(ccd);
             Project project = runConfigSettingHeaderController.getProjectPanelController().getProject();
             List<RunConfig> runConfigs = new ArrayList<>(runConfigService.getAllRunConfigs(project).getManuallyAddedConfigs());
@@ -90,8 +102,10 @@ public class SettingsOptionCommand extends AbstractSettingsOption {
     public void resetToDefaults() {
         configNameSetting.setText("0");
         configNameSetting.setText("");
-        commandSetting.setText("0");
-        commandSetting.setText("");
+        scriptPathSetting.setText("0");
+        scriptPathSetting.setText("");
+
+        argumentsSetting.setText("");
     }
 
     private void textChangeListener(TextField textField, Label errorMessage) {

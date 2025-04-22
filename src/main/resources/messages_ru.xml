@@ -68,4 +68,21 @@
     <entry key="common_user">Обычный пользователь</entry>
     <entry key="setting_anaconda_path">Путь к Anaconda</entry>
     <entry key="no_anaconda_configured">Пожалуйста, настройте путь к Anaconda</entry>
+    <entry key="setting_script_path">Путь к скрипту</entry>
+    <entry key="config_config_name">Имя конфигурации</entry>
+    <entry key="config_command">Команда</entry>
+    <entry key="config_option_command">Команда</entry>
+    <entry key="config_option_gradle">Gradle</entry>
+    <entry key="config_option_python">Python</entry>
+    <entry key="config_option_anaconda">Anaconda</entry>
+    <entry key="config_option_maven">Maven</entry>
+    <entry key="config_error_empty_config_name">Имя конфигурации не должно быть пустым</entry>
+    <entry key="config_error_empty_command">Команда не должна быть пустой</entry>
+    <entry key="config_save_button">Сохранить</entry>
+    <entry key="config_saved">Конфигурация сохранена</entry>
+    <entry key="config_arguments">Аргументы</entry>
+    <entry key="config_task">Задача</entry>
+    <entry key="config_error_empty_task">Задача не должна быть пустой</entry>
+    <entry key="no_python_configured">Пожалуйста, настройте путь к Python</entry>
+    <entry key="config_error_empty_path">Путь не должен быть пустым</entry>
 </properties>

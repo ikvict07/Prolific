@@ -46,20 +46,18 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
     @Setter(onMethod_ = @Autowired)
     private GradleTaskRunConfigurationCreator gradleTaskRunConfigurationCreator;
 
+    private boolean isInitialized = false;
+
     @Initialize
     public void init() {
-        var startTime = System.currentTimeMillis();
         fxmlProvider.getFxmlResource("configsOptionGradle");
-
         setupValidators();
     }
 
     @Override
     public void setupValidators() {
-
         configNameSetting.setText("");
-        configNameSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
-        configNameSetting.textProperty().addListener((_, _, _) -> textChangeListener(configNameSetting, configNameErrorMessage));
+        argumentsSetting.setText("");
 
         if (taskSetting.getItems().isEmpty()) {
             taskSetting.setDisable(true);
@@ -79,8 +77,14 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
         }
 
 
-        argumentsSetting.setText("");
-        argumentsSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
+        if (!isInitialized) {
+            configNameSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
+            configNameSetting.textProperty().addListener((_, _, _) -> textChangeListener(configNameSetting, configNameErrorMessage));
+            argumentsSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
+            taskSetting.valueProperty().addListener((_, _, _) -> taskChangeListener(taskSetting, taskErrorMessage));
+            isInitialized = true;
+        }
+
     }
 
     @Override
@@ -121,6 +125,13 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
         errorMessage.setManaged(false);
     }
 
+    private void taskChangeListener(ComboBox<String> taskSetting, Label taskErrorMessage) {
+        checkDefaultValues();
+        taskSetting.getStyleClass().remove(ERROR);
+        taskErrorMessage.setVisible(false);
+        taskErrorMessage.setManaged(false);
+    }
+
     private boolean checkNonEmptyTask(ComboBox<String> taskSetting, Label taskErrorMessage) {
         if (taskSetting.getValue() == null) {
             if (!taskSetting.getStyleClass().contains(ERROR)) {
@@ -139,9 +150,13 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
 
     @Override
     public void resetToDefaults() {
+        configNameSetting.setText("0");
         configNameSetting.setText("");
+
         argumentsSetting.setText("");
+
         taskSetting.getItems().clear();
+        taskSetting.setValue("");
         taskSetting.setValue(null);
     }
 }

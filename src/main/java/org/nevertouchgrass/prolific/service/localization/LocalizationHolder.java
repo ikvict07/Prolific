@@ -9,6 +9,7 @@ import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +29,12 @@ public class LocalizationHolder implements ApplicationListener<LocalizationChang
 
     public StringProperty getLocalization(String key) {
         if (!localizationMap.containsKey(key)) {
-            throw new IllegalArgumentException("Key " + key + " not found");
+            var property = localizationManager.getProperties(Locale.forLanguageTag("en")).getProperty(key);
+            if (property != null) {
+                localizationMap.put(key, new SimpleStringProperty(property));
+            } else {
+                localizationMap.put(key, new SimpleStringProperty(localizationManager.get(key)));
+            }
         }
         return localizationMap.get(key);
     }

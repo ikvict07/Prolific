@@ -82,4 +82,7 @@
     <entry key="common_user">Štandardný používateľ</entry>
     <entry key="setting_anaconda_path">Cesta k Anaconda</entry>
     <entry key="no_anaconda_configured">Nakonfigurujte cestu k Anaconda</entry>
+    <entry key="setting_script_path">Cesta k skriptu</entry>
+    <entry key="no_python_configured">Nakonfigurujte cestu k Pythonu</entry>
+    <entry key="config_error_empty_path">Cesta nesmie byť prázdna</entry>
 </properties>

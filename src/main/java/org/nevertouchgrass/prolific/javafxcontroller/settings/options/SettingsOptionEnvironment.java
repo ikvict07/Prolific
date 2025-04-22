@@ -8,6 +8,9 @@ import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.springframework.context.annotation.Lazy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @StageComponent(stage = "settingsStage")
 @Lazy
 public class SettingsOptionEnvironment extends AbstractSettingsOption {
@@ -43,7 +46,6 @@ public class SettingsOptionEnvironment extends AbstractSettingsOption {
     public Label jdkPathErrorMessage;
     @FXML
     public Label anacondaPathErrorMessage;
-
     @FXML
     public TextField pythonPathSetting;
     @FXML
@@ -55,10 +57,11 @@ public class SettingsOptionEnvironment extends AbstractSettingsOption {
     @FXML
     public TextField anacondaPathSetting;
 
+    private boolean isInitialized = false;
+
     @Initialize
     public void init() {
         fxmlProvider.getFxmlResource("settingsOptionEnvironment");
-
         pathChooserLocalizationMap.put(pythonPathChooser, localizationProvider.setting_python_path());
         pathChooserLocalizationMap.put(gradlePathChooser, localizationProvider.setting_gradle_path());
         pathChooserLocalizationMap.put(mvnPathChooser, localizationProvider.setting_maven_path());
@@ -77,19 +80,23 @@ public class SettingsOptionEnvironment extends AbstractSettingsOption {
     @Override
     public void setupValidators() {
         pythonPathSetting.setText(userSettingsHolder.getPythonPath());
-        pythonPathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(pythonPathSetting, pythonPathErrorMessage));
 
         gradlePathSetting.setText(userSettingsHolder.getGradlePath());
-        gradlePathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(gradlePathSetting, gradlePathErrorMessage));
 
         mvnPathSetting.setText(userSettingsHolder.getMavenPath());
-        mvnPathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(mvnPathSetting, mvnPathErrorMessage));
 
         jdkPathSetting.setText(userSettingsHolder.getJdkPath());
-        jdkPathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(jdkPathSetting, jdkPathErrorMessage));
 
         anacondaPathSetting.setText(userSettingsHolder.getAnacondaPath());
-        anacondaPathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(anacondaPathSetting, anacondaPathErrorMessage));
+
+        if (!isInitialized) {
+            gradlePathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(gradlePathSetting, gradlePathErrorMessage));
+            pythonPathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(pythonPathSetting, pythonPathErrorMessage));
+            mvnPathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(mvnPathSetting, mvnPathErrorMessage));
+            jdkPathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(jdkPathSetting, jdkPathErrorMessage));
+            anacondaPathSetting.textProperty().addListener((_, _, _) -> pathChangedListener(anacondaPathSetting, anacondaPathErrorMessage));
+            isInitialized = true;
+        }
     }
 
     @Override

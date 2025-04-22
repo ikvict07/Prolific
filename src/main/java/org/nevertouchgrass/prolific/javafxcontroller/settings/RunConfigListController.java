@@ -12,6 +12,7 @@ import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.javafxcontroller.settings.contract.SettingsOption;
 import org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionCommand;
 import org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionGradle;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionPython;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
@@ -33,6 +34,8 @@ public class RunConfigListController extends AbstractSettingsListController {
     private SettingsOptionCommand settingsOptionCommand;
     @Setter(onMethod_ = @Autowired)
     private SettingsOptionGradle settingsOptionGradle;
+    @Setter(onMethod_ = @Autowired)
+    private SettingsOptionPython settingsOptionPython;
 
     @Setter(onMethod_ = @Autowired)
     private RunConfigFooterController runConfigFooterController;
@@ -54,7 +57,7 @@ public class RunConfigListController extends AbstractSettingsListController {
 
     @Initialize
     public void init() {
-        settingsOptions.addAll(List.of(settingsOptionCommand, settingsOptionGradle));
+        settingsOptions.addAll(List.of(settingsOptionCommand, settingsOptionGradle, settingsOptionPython));
 
         runConfigFooterController.setSaveRunnable(this::saveSettings);
 
@@ -79,7 +82,7 @@ public class RunConfigListController extends AbstractSettingsListController {
         switch (id) {
             case "command" -> switchOptions(settingsOptionCommand, command);
             case "gradle" -> switchOptions(settingsOptionGradle, gradle);
-            case "python" -> switchOptions(settingsOptionCommand, source);
+            case "python" -> switchOptions(settingsOptionPython, python);
             case "anaconda" -> switchOptions(settingsOptionCommand, source);
             case "maven" -> switchOptions(settingsOptionCommand, source);
             default -> switchOptions(settingsOptionCommand, source);
