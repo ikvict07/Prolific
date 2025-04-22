@@ -63,13 +63,13 @@ public class SettingsOptionEnvironment extends AbstractSettingsOption {
         pathChooserLocalizationMap.put(gradlePathChooser, localizationProvider.setting_gradle_path());
         pathChooserLocalizationMap.put(mvnPathChooser, localizationProvider.setting_maven_path());
         pathChooserLocalizationMap.put(jdkPathChooser, localizationProvider.setting_jdk_path());
-        pathChooserLocalizationMap.put(anacondaPath, localizationProvider.setting_anaconda_path());
+        pathChooserLocalizationMap.put(anacondaPathChooser, localizationProvider.setting_anaconda_path());
 
         pathChooserPathSettingMap.put(pythonPathChooser, pythonPathSetting);
         pathChooserPathSettingMap.put(gradlePathChooser, gradlePathSetting);
         pathChooserPathSettingMap.put(mvnPathChooser, mvnPathSetting);
         pathChooserPathSettingMap.put(jdkPathChooser, jdkPathSetting);
-        pathChooserPathSettingMap.put(anacondaPath, anacondaPathSetting);
+        pathChooserPathSettingMap.put(anacondaPathChooser, anacondaPathSetting);
 
         setupValidators();
     }
