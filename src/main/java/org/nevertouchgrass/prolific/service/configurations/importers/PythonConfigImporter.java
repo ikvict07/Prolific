@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
+import org.nevertouchgrass.prolific.service.configurations.creators.PythonRunConfigurationCreator;
 import org.nevertouchgrass.prolific.service.configurations.importers.contract.ConfigImporter;
 import org.nevertouchgrass.prolific.service.parser.DocumentParser;
 import org.nevertouchgrass.prolific.service.settings.PathService;
@@ -24,6 +25,7 @@ public class PythonConfigImporter implements ConfigImporter {
     public static final String CONFIG_NAME = "Python";
     private final PathService pathService;
     private final DocumentParser documentParser;
+    private final PythonRunConfigurationCreator pythonRunConfigurationCreator;
 
     @Override
     public List<RunConfig> importConfig(Project project) {
@@ -65,26 +67,6 @@ public class PythonConfigImporter implements ConfigImporter {
         return CONFIG_NAME;
     }
 
-    private boolean isPython3Available() {
-        try {
-            Process process;
-            ProcessBuilder builder;
-            if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                builder = new ProcessBuilder("where", "python3");
-            } else {
-                builder = new ProcessBuilder("which", "python3");
-            }
-            process = builder.start();
-            return process.waitFor() == 0;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.warn("Python3 check interrupted", e);
-            return false;
-        } catch (Exception e) {
-            log.warn("Failed to check if python3 is available", e);
-            return false;
-        }
-    }
 
     private RunConfig extractPythonConfig(Element config) {
         try {
@@ -110,7 +92,7 @@ public class PythonConfigImporter implements ConfigImporter {
 
             if (scriptPath != null) {
                 scriptPath = scriptPath.replace("$PROJECT_DIR$/", "");
-                String pythonCommand = isPython3Available() ? "python3" : "python";
+                String pythonCommand = pythonRunConfigurationCreator.isPython3Available() ? "python3" : "python";
                 runConfig.getCommand().add(pythonCommand);
                 runConfig.getCommand().add(scriptPath);
 

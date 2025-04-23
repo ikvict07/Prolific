@@ -57,14 +57,14 @@ public class PythonRunConfigurationCreator implements RunConfigurationCreator<Py
         String scriptPath;
     }
 
-    private boolean isPython3Available() {
+    public boolean isPython3Available() {
         try {
             Process process;
             ProcessBuilder builder;
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
                 builder = new ProcessBuilder("where", "python3");
             } else {
-                builder = new ProcessBuilder("which", "python3");
+                builder = new ProcessBuilder("/bin/sh", "-c", "command -v python3");
             }
             process = builder.start();
             return process.waitFor() == 0;
