@@ -13,6 +13,7 @@ import org.nevertouchgrass.prolific.service.configurations.creators.PythonRunCon
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,8 +67,10 @@ public class SettingsOptionPython extends AbstractSettingsOption {
 
     @Override
     public boolean validInput() {
+        var project = runConfigSettingHeaderController.getProjectPanelController().getProject();
+        var path = Path.of(project.getPath()).resolve(scriptPathSetting.getText());
         return checkProvidedNonEmptyString(configNameSetting.getText(), configNameSetting, configNameErrorMessage) &
-                checkProvidedPath(scriptPathSetting.getText(), scriptPathSetting, scriptPathErrorMessage) &&
+                checkProvidedPath(path.toString(), scriptPathSetting, scriptPathErrorMessage) &&
                 checkProvidedNonEmptyString(scriptPathSetting.getText(), scriptPathSetting, scriptPathErrorMessage);
     }
 
