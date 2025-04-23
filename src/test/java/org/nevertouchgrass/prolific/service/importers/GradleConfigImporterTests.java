@@ -1,39 +1,59 @@
 package org.nevertouchgrass.prolific.service.importers;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.Test;
 import org.nevertouchgrass.prolific.BackendTestBase;
-import org.nevertouchgrass.prolific.annotation.ProlificTestApplication;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.service.configurations.importers.GradleConfigImporter;
-import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
+import org.nevertouchgrass.prolific.service.parser.DocumentParser;
+import org.nevertouchgrass.prolific.service.settings.PathService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ProlificTestApplication
+/**
+ * Tests for {@link GradleConfigImporter} class.
+ */
+@SpringBootTest(classes = {GradleConfigImporter.class, PathService.class, DocumentParser.class})
 class GradleConfigImporterTests extends BackendTestBase {
-    private final GradleConfigImporter importer;
+    private final GradleConfigImporter gradleConfigImporter;
 
     @Autowired
-    public GradleConfigImporterTests(GradleConfigImporter importer) {
-        this.importer = importer;
+    public GradleConfigImporterTests(GradleConfigImporter gradleConfigImporter) {
+        this.gradleConfigImporter = gradleConfigImporter;
     }
 
     @MockitoBean
-    private LocalizationProvider localizationProvider;
+    private XmlMapper xmlMapper;
 
     @Test
-    void shouldResolveRunConfigs() {
-        var p = new Project();
-        p.setPath(System.getProperty("user.dir"));
-        var result = importer.importConfig(p);
-        if (Path.of(System.getProperty("user.dir")).resolve(".idea").resolve("workspace.xml").toFile().exists()) {
-            assertThat(result).isNotEmpty();
+    void should_import_gradle_config_from_project() {
+        // Given
+        var project = new Project();
+        project.setPath(getProjectRootPath());
+
+        // When
+        var result = gradleConfigImporter.importConfig(project);
+
+        // Then
+        Path workspaceXmlPath = Path.of(getProjectRootPath())
+                .resolve(".idea")
+                .resolve("workspace.xml");
+
+        if (workspaceXmlPath.toFile().exists()) {
+            // If workspace.xml exists, we expect configurations to be imported
+            assertThat(result)
+                    .as("Run configurations should be imported when workspace.xml exists")
+                    .isNotEmpty();
         } else {
-            assertThat(result).isEmpty();
+            // If workspace.xml doesn't exist, we expect no configurations
+            assertThat(result)
+                    .as("Run configurations should be empty when workspace.xml doesn't exist")
+                    .isEmpty();
         }
     }
 }

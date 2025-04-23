@@ -1,15 +1,20 @@
 package org.nevertouchgrass.prolific;
 
-import org.nevertouchgrass.prolific.configuration.JavaFXConfiguration;
-import org.nevertouchgrass.prolific.javafxcontroller.FooterController;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 
+/**
+ * Base class for backend tests that provides common mock objects and utilities.
+ * Uses a custom display name generator to improve test readability.
+ */
 @SuppressWarnings("unused")
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public abstract class BackendTestBase {
-    @MockitoBean
-    private JavaFXConfiguration javaFXConfiguration;
-    @MockitoBean
-    private JavaFXApplication javaFXApplication;
-    @MockitoBean
-    private FooterController footerController;
+    /**
+     * Helper method to get the project root directory path.
+     * @return The project root directory path as a String
+     */
+    protected String getProjectRootPath() {
+        return System.getProperty("user.dir");
+    }
 }
