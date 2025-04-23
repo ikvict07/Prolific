@@ -427,6 +427,7 @@
 .menu-item {
     -fx-background-color: transparent;
     -fx-text-fill: #DFE1E5;
+    -fx-font-size: 0.9em;
     -fx-padding: 8;
     -fx-background-radius: 4;
 }
