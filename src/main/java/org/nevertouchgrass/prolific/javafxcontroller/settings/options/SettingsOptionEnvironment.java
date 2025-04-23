@@ -8,9 +8,6 @@ import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.springframework.context.annotation.Lazy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @StageComponent(stage = "settingsStage")
 @Lazy
 public class SettingsOptionEnvironment extends AbstractSettingsOption {

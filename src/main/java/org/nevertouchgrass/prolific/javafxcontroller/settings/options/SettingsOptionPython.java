@@ -21,6 +21,7 @@ import java.util.List;
 
 @StageComponent(stage = "configsStage")
 @Lazy
+@SuppressWarnings("unused")
 public class SettingsOptionPython extends AbstractSettingsOption {
     @FXML private Label configName;
     @FXML private Label arguments;
