@@ -27,7 +27,7 @@ public class MavenConfigImporter extends BuildToolConfigImporter {
     @Override
     public void normalize(RunConfig runConfig) {
         super.normalize(runConfig);
-        runConfig.getCommand().addFirst("mvn");
+        runConfig.getCommand().addFirst(isWindows() ? "mvn.cmd" : "mvn");
     }
 
 }

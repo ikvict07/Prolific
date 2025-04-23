@@ -54,6 +54,8 @@
     <entry key="setting_max_scan_depth">Maximálna hĺbka skenovania</entry>
     <entry key="setting_rescan_every_hours">Znovu skenovať každé hodiny</entry>
     <entry key="setting_language">Jazyk</entry>
+    <entry key="create_config">Vytvoriť novu</entry>
+    <entry key="run_config">Konfigurácia spustenia</entry>
     <entry key="settings_option_general">Všeobecné</entry>
     <entry key="settings_saved">Nastavenia uložené</entry>
     <entry key="setting_path_doesnt_exist">Zadaná cesta neexistuje</entry>
@@ -62,4 +64,27 @@
     <entry key="setting_gradle_path">Cesta ku Gradle</entry>
     <entry key="setting_maven_path">Cesta k Mavenu</entry>
     <entry key="setting_jdk_path">Cesta k JDK</entry>
+    <entry key="config_config_name">Názov konfigurácie</entry>
+    <entry key="config_command">Príkaz</entry>
+    <entry key="config_option_command">Príkaz</entry>
+    <entry key="config_option_gradle">Gradle</entry>
+    <entry key="config_option_python">Python</entry>
+    <entry key="config_option_anaconda">Anaconda</entry>
+    <entry key="config_option_maven">Maven</entry>
+    <entry key="config_save_button">Uložiť</entry>
+    <entry key="config_error_empty_config_name">Názov konfigurácie nesmie byť prázdny</entry>
+    <entry key="config_error_empty_command">Príkaz nesmie byť prázdny</entry>
+    <entry key="config_saved">Konfigurácia uložená</entry>
+    <entry key="config_arguments">Argumenty</entry>
+    <entry key="config_task">Úloha</entry>
+    <entry key="config_error_empty_task">Úloha nesmie byť prázdna</entry>
+    <entry key="power_user">Pokročilý používateľ</entry>
+    <entry key="common_user">Štandardný používateľ</entry>
+    <entry key="setting_anaconda_path">Cesta k Anaconda</entry>
+    <entry key="no_anaconda_configured">Nakonfigurujte cestu k Anaconda</entry>
+    <entry key="setting_script_path">Cesta k skriptu</entry>
+    <entry key="no_python_configured">Nakonfigurujte cestu k Pythonu</entry>
+    <entry key="config_error_empty_path">Cesta nesmie byť prázdna</entry>
+    <entry key="config_anaconda_env">Prostredie Anaconda</entry>
+    <entry key="config_error_empty_anaconda_env">Prostredie Anaconda nesmie byť prázdne</entry>
 </properties>

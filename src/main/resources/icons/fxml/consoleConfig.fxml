@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.shape.Rectangle?>
+<StackPane prefWidth="16" prefHeight="16">
+    <Group>
+        <Rectangle x="1.5" y="2.5" width="13" height="11" arcWidth="1.5" arcHeight="1.5" fill="#25324D" stroke="#548AF7"/>
+        <SVGPath content="M4 5.5H5" stroke="#548AF7" strokeLineCap="ROUND"/>
+        <SVGPath content="M7 5.5H8" stroke="#548AF7" strokeLineCap="ROUND"/>
+    </Group>
+</StackPane>

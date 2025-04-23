@@ -9,7 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.exception.ProcessStartFailedException;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
-import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
+import org.nevertouchgrass.prolific.service.runner.ProjectRunnerRegistry;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,7 @@ public class ProcessService {
     private final Set<ProcessWrapper> dead = ConcurrentHashMap.newKeySet();
     private final Set<Consumer<ProcessWrapper>> onKillListeners = ConcurrentHashMap.newKeySet();
     private final List<ProcessAware> processAware;
-    private final DefaultProjectRunner projectRunner;
+    private final ProjectRunnerRegistry projectRunner;
 
     public Set<ProcessWrapper> getLiveProcesses() {
         return Set.copyOf(live);
