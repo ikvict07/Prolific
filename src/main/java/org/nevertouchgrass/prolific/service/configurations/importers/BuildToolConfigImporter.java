@@ -48,4 +48,8 @@ public abstract class BuildToolConfigImporter implements ConfigImporter {
     public void normalize(RunConfig runConfig) {
         runConfig.setType(getType());
     }
+
+    protected boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
+    }
 }
