@@ -11,14 +11,12 @@ import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.Project;
-import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.service.configurations.GradleTasksManager;
 import org.nevertouchgrass.prolific.service.configurations.creators.GradleTaskRunConfigurationCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -108,11 +106,10 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
             ccd.setTitle(configNameSetting.getText().trim());
             ccd.setTaskName(taskSetting.getValue());
             ccd.setOptions(Arrays.stream(argumentsSetting.getText().trim().split("\\s+")).toList());
-            RunConfig runConfig = gradleTaskRunConfigurationCreator.createRunConfig(ccd);
+
             Project project = runConfigSettingHeaderController.getProjectPanelController().getProject();
-            List<RunConfig> runConfigs = new ArrayList<>(runConfigService.getAllRunConfigs(project).getManuallyAddedConfigs());
-            runConfigs.add(runConfig);
-            runConfigService.saveRunConfigs(project, runConfigs);
+            addRunConfig(gradleTaskRunConfigurationCreator, project, ccd);
+
             return true;
         }
         return false;

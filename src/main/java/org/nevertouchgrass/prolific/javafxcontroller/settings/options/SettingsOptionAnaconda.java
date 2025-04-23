@@ -9,14 +9,11 @@ import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.Project;
-import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.service.configurations.creators.AnacondaRunConfigurationCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @StageComponent(stage = "configsStage")
 @Lazy
@@ -63,10 +60,12 @@ public class SettingsOptionAnaconda extends AbstractSettingsOption {
         if (!isInitialized) {
             configNameSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
             anacondaEnvSetting.setTextFormatter(new TextFormatter<String>(this::createNonEmptyStringChange));
+
+            isInitialized = true;
+
             configNameSetting.textProperty().addListener((_, _, _) -> textChangeListener(configNameSetting, configNameErrorMessage));
             scriptPathSetting.textProperty().addListener((_, _, _) -> textChangeListener(scriptPathSetting, scriptPathErrorMessage));
             anacondaEnvSetting.textProperty().addListener((_, _, _) -> textChangeListener(anacondaEnvSetting, anacondaEnvErrorMessage));
-            isInitialized = true;
         }
     }
 
@@ -95,11 +94,9 @@ public class SettingsOptionAnaconda extends AbstractSettingsOption {
             ccd.setScriptPath(scriptPathSetting.getText().trim());
             ccd.setEnvironmentName(anacondaEnvSetting.getText().trim());
             ccd.setScriptArgs(Arrays.stream(scriptPathSetting.getText().trim().split("\\s+")).toList());
-            RunConfig runConfig = creator.createRunConfig(ccd);
+
             Project project = runConfigSettingHeaderController.getProjectPanelController().getProject();
-            List<RunConfig> runConfigs = new ArrayList<>(runConfigService.getAllRunConfigs(project).getManuallyAddedConfigs());
-            runConfigs.add(runConfig);
-            runConfigService.saveRunConfigs(project, runConfigs);
+            addRunConfig(creator, project, ccd);
 
             return true;
         }

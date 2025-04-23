@@ -18,9 +18,12 @@ import org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigFooterCon
 import org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigSettingHeaderController;
 import org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsFooterController;
 import org.nevertouchgrass.prolific.javafxcontroller.settings.contract.SettingsOption;
+import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.configurations.RunConfigService;
+import org.nevertouchgrass.prolific.service.configurations.creators.contract.RunConfigurationCreator;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,5 +166,12 @@ public abstract class AbstractSettingsOption implements SettingsOption {
         if (selectedFile != null) {
             pathChooserPathSettingMap.get(source).setText(selectedFile.getAbsolutePath());
         }
+    }
+
+    protected <T> void addRunConfig(RunConfigurationCreator<T> creator, Project project, T configDescriptor) {
+        RunConfig runConfig = creator.createRunConfig(configDescriptor);
+        List<RunConfig> runConfigs = new ArrayList<>(runConfigService.getAllRunConfigs(project).getManuallyAddedConfigs());
+        runConfigs.add(runConfig);
+        runConfigService.saveRunConfigs(project, runConfigs);
     }
 }

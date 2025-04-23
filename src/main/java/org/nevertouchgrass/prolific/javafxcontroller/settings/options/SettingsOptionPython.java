@@ -9,14 +9,11 @@ import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.model.Project;
-import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.service.configurations.creators.PythonRunConfigurationCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @StageComponent(stage = "configsStage")
 @Lazy
@@ -86,11 +83,9 @@ public class SettingsOptionPython extends AbstractSettingsOption {
             ccd.setTitle(configNameSetting.getText().trim());
             ccd.setScriptPath(scriptPathSetting.getText().trim());
             ccd.setArguments(Arrays.stream(argumentsSetting.getText().trim().split("\\s+")).toList());
-            RunConfig runConfig = creator.createRunConfig(ccd);
+
             Project project = runConfigSettingHeaderController.getProjectPanelController().getProject();
-            List<RunConfig> runConfigs = new ArrayList<>(runConfigService.getAllRunConfigs(project).getManuallyAddedConfigs());
-            runConfigs.add(runConfig);
-            runConfigService.saveRunConfigs(project, runConfigs);
+            addRunConfig(creator, project, ccd);
 
             return true;
         }
