@@ -6,13 +6,13 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
+import javafx.geometry.Side;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Data;
@@ -160,7 +160,6 @@ public class ProjectPanelController {
         menuItem.setGraphic(fxmlProvider.getIcon("addButton"));
         menuItem.addEventFilter(ActionEvent.ANY, _ -> onAddConfig());
         menuItems.add(menuItem);
-
     }
 
     public void addUpdateListener(Consumer<Project> listener) {
@@ -200,8 +199,7 @@ public class ProjectPanelController {
         if (contextMenu.isShowing()) {
             contextMenu.hide();
         } else {
-            Bounds bounds = controlPanel.localToScreen(controlPanel.getBoundsInLocal());
-            contextMenu.show(controlPanel, bounds.getMinX(), bounds.getMaxY());
+            contextMenu.show(controlPanel, Side.BOTTOM, 0, 4);
         }
     }
 
@@ -224,8 +222,7 @@ public class ProjectPanelController {
         if (label != null && !runConfigs.isEmpty()) {
             MenuItem menuItem = new MenuItem();
             menuItem.textProperty().bind(label);
-            menuItem.addEventFilter(ActionEvent.ANY, Event::consume);
-            menuItem.getStyleClass().add("menu-item-disabled");
+            menuItem.setDisable(true);
             menuItems.add(menuItem);
         }
 
@@ -236,7 +233,38 @@ public class ProjectPanelController {
                 configurationName.setText(runConfig.getConfigName());
                 chosenConfig = runConfig;
             }
-            MenuItem menuItem = new MenuItem(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+            MenuItem menuItem;
+            if (label != null && label.equals(localizationProvider.custom_configurations())) {
+                Label config = new Label(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+
+                Parent removeButton = fxmlProvider.getIcon("removeBin");
+
+                if (removeButton instanceof StackPane stackPaneRemoveButton) {
+                    stackPaneRemoveButton.setPadding(new Insets(4));
+                }
+
+                removeButton.getStyleClass().add("icon-button");
+
+                removeButton.setOnMouseClicked(_ -> {
+                    runConfigService.deleteRunConfig(project, runConfig);
+                    if (chosenConfig.equals(runConfig)) {
+                        chosenConfig = null;
+                    }
+                    initializeProjectConfiguration();
+                });
+
+                HBox content = new HBox();
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+
+                content.getChildren().addAll(config, spacer, removeButton);
+
+                content.prefWidthProperty().bind(contextMenu.widthProperty().subtract(48));
+
+                menuItem = new CustomMenuItem(content);
+            } else {
+                menuItem = new MenuItem(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+            }
             menuItem.setOnAction(_ -> {
                 configurationName.setText(runConfig.getConfigName());
                 configTypeIcon.getChildren().clear();

@@ -435,7 +435,7 @@
     -fx-background-color: #444;
 }
 
-.menu-item-disabled:hover {
+.menu-item:disabled {
     -fx-background-color: transparent;
 }
 
