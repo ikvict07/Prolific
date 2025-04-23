@@ -61,6 +61,7 @@ public abstract class AbstractSettingsOption implements SettingsOption {
 
     protected Map<Node, StringProperty> pathChooserLocalizationMap = new HashMap<>();
     protected Map<Node, TextField> pathChooserPathSettingMap = new HashMap<>();
+    protected List<TextField> textFields = new ArrayList<>();
 
     @FXML protected ArrayListHolder<Node> options;
 
@@ -168,10 +169,22 @@ public abstract class AbstractSettingsOption implements SettingsOption {
         }
     }
 
+    @Override
+    public void resetToDefaults() {
+        resetTextFields();
+    }
+
     protected <T> void addRunConfig(RunConfigurationCreator<T> creator, Project project, T configDescriptor) {
         RunConfig runConfig = creator.createRunConfig(configDescriptor);
         List<RunConfig> runConfigs = new ArrayList<>(runConfigService.getAllRunConfigs(project).getManuallyAddedConfigs());
         runConfigs.add(runConfig);
         runConfigService.saveRunConfigs(project, runConfigs);
+    }
+
+    private void resetTextFields() {
+        textFields.forEach(textField -> {
+            textField.setText("0");
+            textField.setText("");
+        });
     }
 }

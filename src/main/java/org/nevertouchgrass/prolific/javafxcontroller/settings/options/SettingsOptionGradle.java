@@ -49,6 +49,9 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
     @Initialize
     public void init() {
         fxmlProvider.getFxmlResource("configsOptionGradle");
+
+        textFields.addAll(List.of(configNameSetting, argumentsSetting));
+
         setupValidators();
     }
 
@@ -147,10 +150,7 @@ public class SettingsOptionGradle extends AbstractSettingsOption {
 
     @Override
     public void resetToDefaults() {
-        configNameSetting.setText("0");
-        configNameSetting.setText("");
-
-        argumentsSetting.setText("");
+        super.resetToDefaults();
 
         taskSetting.getItems().clear();
         taskSetting.setValue("");

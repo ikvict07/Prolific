@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import java.util.Arrays;
+import java.util.List;
 
 @StageComponent(stage = "configsStage")
 @Lazy
@@ -38,6 +39,8 @@ public class SettingsOptionMaven extends AbstractSettingsOption {
     @Initialize
     public void init() {
         fxmlProvider.getFxmlResource("configsOptionMaven");
+
+        textFields.addAll(List.of(configNameSetting, argumentsSetting, taskSetting));
 
         setupValidators();
     }
@@ -87,16 +90,6 @@ public class SettingsOptionMaven extends AbstractSettingsOption {
         }
 
         return false;
-    }
-
-    @Override
-    public void resetToDefaults() {
-        configNameSetting.setText("0");
-        configNameSetting.setText("");
-        taskSetting.setText("0");
-        taskSetting.setText("");
-
-        argumentsSetting.setText("");
     }
 
     private void textChangeListener(TextField textField, Label errorMessage) {

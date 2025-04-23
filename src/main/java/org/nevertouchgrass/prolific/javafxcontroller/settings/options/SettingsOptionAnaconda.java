@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import java.util.Arrays;
+import java.util.List;
 
 @StageComponent(stage = "configsStage")
 @Lazy
@@ -43,6 +44,8 @@ public class SettingsOptionAnaconda extends AbstractSettingsOption {
     @Initialize
     public void init() {
         fxmlProvider.getFxmlResource("configsOptionAnaconda");
+
+        textFields.addAll(List.of(configNameSetting, argumentsSetting, scriptPathSetting, anacondaEnvSetting));
 
         pathChooserLocalizationMap.put(scriptPathChooser, localizationProvider.setting_script_path());
         pathChooserPathSettingMap.put(scriptPathChooser, scriptPathSetting);
@@ -102,18 +105,6 @@ public class SettingsOptionAnaconda extends AbstractSettingsOption {
         }
 
         return false;
-    }
-
-    @Override
-    public void resetToDefaults() {
-        configNameSetting.setText("0");
-        configNameSetting.setText("");
-        scriptPathSetting.setText("0");
-        scriptPathSetting.setText("");
-        anacondaEnvSetting.setText("0");
-        anacondaEnvSetting.setText("");
-
-        argumentsSetting.setText("");
     }
 
     private void textChangeListener(TextField textField, Label errorMessage) {
