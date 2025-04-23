@@ -85,4 +85,6 @@
     <entry key="setting_script_path">Cesta k skriptu</entry>
     <entry key="no_python_configured">Nakonfigurujte cestu k Pythonu</entry>
     <entry key="config_error_empty_path">Cesta nesmie byť prázdna</entry>
+    <entry key="config_anaconda_env">Prostredie Anaconda</entry>
+    <entry key="config_error_empty_anaconda_env">Prostredie Anaconda nesmie byť prázdne</entry>
 </properties>

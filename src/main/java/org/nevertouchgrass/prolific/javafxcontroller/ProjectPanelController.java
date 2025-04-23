@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -254,6 +255,7 @@ public class ProjectPanelController {
                 });
 
                 HBox content = new HBox();
+                content.setAlignment(Pos.CENTER);
                 Region spacer = new Region();
                 HBox.setHgrow(spacer, Priority.ALWAYS);
 

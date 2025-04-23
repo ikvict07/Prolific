@@ -1,5 +1,6 @@
 package org.nevertouchgrass.prolific.service.configurations.creators;
 
+import lombok.Data;
 import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.service.configurations.creators.contract.RunConfigurationCreator;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class MavenRunConfigurationCreator implements RunConfigurationCreator<Mav
         return runConfig;
     }
 
+    @Data
     public static class MavenDescription {
         String title;
         String goal;

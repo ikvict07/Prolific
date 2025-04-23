@@ -7,7 +7,7 @@
 <?import javafx.geometry.Insets?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionPython">
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionAnaconda">
     <fx:define>
         <ArrayListHolder fx:id="options">
             <Label fx:id="configName" userData="localization:config_config_name"
@@ -38,6 +38,14 @@
                            userData="localization:setting_path_doesnt_exist"/>
                 </VBox>
             </HBox>
+
+            <Label fx:id="anacondaEnv" userData="localization:config_anaconda_env"
+                   GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <VBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+                <TextField fx:id="anacondaEnvSetting"/>
+                <Label fx:id="anacondaEnvErrorMessage" managed="false" visible="false" styleClass="error"
+                       userData="localization:config_error_empty_anaconda_env"/>
+            </VBox>
         </ArrayListHolder>
     </fx:define>
 

@@ -85,4 +85,6 @@
     <entry key="no_anaconda_configured">Please configure anaconda path</entry>
     <entry key="no_python_configured">Please configure python path</entry>
     <entry key="config_error_empty_path">Path must not be empty</entry>
+    <entry key="config_anaconda_env">Anaconda env</entry>
+    <entry key="config_error_empty_anaconda_env">Anaconda env must not be empty</entry>
 </properties>

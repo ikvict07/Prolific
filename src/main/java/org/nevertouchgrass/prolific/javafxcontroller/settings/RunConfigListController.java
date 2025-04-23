@@ -10,9 +10,7 @@ import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.javafxcontroller.settings.contract.SettingsOption;
-import org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionCommand;
-import org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionGradle;
-import org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionPython;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.options.*;
 import org.nevertouchgrass.prolific.model.notification.InfoNotification;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
@@ -36,6 +34,10 @@ public class RunConfigListController extends AbstractSettingsListController {
     private SettingsOptionGradle settingsOptionGradle;
     @Setter(onMethod_ = @Autowired)
     private SettingsOptionPython settingsOptionPython;
+    @Setter(onMethod_ = @Autowired)
+    private SettingsOptionAnaconda settingsOptionAnaconda;
+    @Setter(onMethod_ = @Autowired)
+    private SettingsOptionMaven settingsOptionMaven;
 
     @Setter(onMethod_ = @Autowired)
     private RunConfigFooterController runConfigFooterController;
@@ -57,7 +59,7 @@ public class RunConfigListController extends AbstractSettingsListController {
 
     @Initialize
     public void init() {
-        settingsOptions.addAll(List.of(settingsOptionCommand, settingsOptionGradle, settingsOptionPython));
+        settingsOptions.addAll(List.of(settingsOptionCommand, settingsOptionGradle, settingsOptionPython, settingsOptionAnaconda, settingsOptionMaven));
 
         runConfigFooterController.setSaveRunnable(this::saveSettings);
 
@@ -83,8 +85,8 @@ public class RunConfigListController extends AbstractSettingsListController {
             case "command" -> switchOptions(settingsOptionCommand, command);
             case "gradle" -> switchOptions(settingsOptionGradle, gradle);
             case "python" -> switchOptions(settingsOptionPython, python);
-            case "anaconda" -> switchOptions(settingsOptionCommand, source);
-            case "maven" -> switchOptions(settingsOptionCommand, source);
+            case "anaconda" -> switchOptions(settingsOptionAnaconda, anaconda);
+            case "maven" -> switchOptions(settingsOptionMaven, maven);
             default -> switchOptions(settingsOptionCommand, source);
         }
     }

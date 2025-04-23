@@ -85,4 +85,6 @@
     <entry key="config_error_empty_task">Задача не должна быть пустой</entry>
     <entry key="no_python_configured">Пожалуйста, настройте путь к Python</entry>
     <entry key="config_error_empty_path">Путь не должен быть пустым</entry>
+    <entry key="config_anaconda_env">Окружение Anaconda</entry>
+    <entry key="config_error_empty_anaconda_env">Окружение Anaconda не должно быть пустым</entry>
 </properties>
