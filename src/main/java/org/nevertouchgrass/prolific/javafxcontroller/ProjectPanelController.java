@@ -8,7 +8,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Parent;
@@ -239,12 +238,6 @@ public class ProjectPanelController {
                 Label config = new Label(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
 
                 Parent removeButton = fxmlProvider.getIcon("removeBin");
-
-                if (removeButton instanceof StackPane stackPaneRemoveButton) {
-                    stackPaneRemoveButton.setPadding(new Insets(4));
-                }
-
-                removeButton.getStyleClass().add("icon-button");
 
                 removeButton.setOnMouseClicked(_ -> {
                     runConfigService.deleteRunConfig(project, runConfig);
