@@ -62,7 +62,12 @@ public class PythonRunConfigurationCreator implements RunConfigurationCreator<Py
             Process process;
             ProcessBuilder builder;
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                builder = new ProcessBuilder("cmd", "/c", "where", "python3");
+                String systemRoot = System.getenv("SystemRoot");
+                if (systemRoot == null) {
+                    systemRoot = "C:\\Windows";
+                }
+
+                builder = new ProcessBuilder("cmd", "/c", systemRoot + "\\System32\\where.exe", "python3");
             } else {
                 builder = new ProcessBuilder("/bin/sh", "-c", "command -v python3");
             }
