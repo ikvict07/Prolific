@@ -52,13 +52,15 @@ public class SettingsFooterController {
     @SuppressWarnings("unused")
     public void help() {
         String url = properties.getGuidesUrl() + "settings.md";
-        Thread.ofVirtual().start(() -> {
+        new Thread(() -> {
             try {
                 if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                     Desktop.getDesktop().browse(new URI(url));
                 }
-            } catch (IOException | URISyntaxException _) {}
-        });
+            } catch (IOException | URISyntaxException _) {
+                // Ignore
+            }
+        }).start();
     }
 
 
