@@ -545,22 +545,29 @@
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-padding: 6 12 6 12;
+    -fx-border-color: #6F737A;
+    -fx-background-color: #1E1F22;
+    -fx-border-width: 0;
 }
 
 .logs-button:hover {
     -fx-background-color: #3A3C40;
 }
 
+.logs-button.left.selected {
+    -fx-border-width: 0 1 0 0;
+}
+
+.logs-button.right.selected {
+    -fx-border-width: 0 0 0 1;
+}
+
 .logs-button.selected {
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-padding: 6 12 6 12;
-    -fx-border-color: #6F737A;
-    -fx-background-color: #393B40;
+    -fx-background-color: #46484D;
 }
 
 .logs-button.selected:hover {
-    -fx-background-color: #46484D;
+    -fx-background-color: #3A3C40;
 }
 
 .log-text {
@@ -734,6 +741,10 @@
     -fx-border-width: 0 1 0 0;
 }
 
+.search-bar-hbox:hover .sort-arrow {
+    -fx-stroke: #DFE1E5;
+}
+
 .selected {
     -fx-background-color: rgba(90, 155, 213, 0.3);
 }
@@ -899,6 +910,10 @@
 
 .remove-bin:hover .remove-bin-icon {
     -fx-fill: #E46868;
+}
+
+.search-container:hover .search-icon {
+    -fx-stroke: #DFE1E5;
 }
 
 /** {*/

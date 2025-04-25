@@ -11,7 +11,7 @@
         <padding>
             <Insets right="8" left="8"/>
         </padding>
-        <fx:include source="/icons/fxml/search.fxml"/>
+        <fx:include fx:id="search" source="/icons/fxml/search.fxml"/>
 
         <TextField fx:id="textField" styleClass="search-bar-text-field" onAction="#handleAction"/>
         <fx:include source="/icons/fxml/cancel.fxml" fx:id="cancel"/>

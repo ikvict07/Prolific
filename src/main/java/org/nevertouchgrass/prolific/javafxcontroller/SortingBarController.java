@@ -1,8 +1,7 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
-import javafx.collections.ListChangeListener;
+import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import lombok.Setter;
@@ -44,8 +43,8 @@ public class SortingBarController {
     private ProjectComparatorBuilder projectComparatorBuilder;
 
     private Map<HBox, State> arrowContainerToStateMap;
-    private Map<HBox, ProjectComparatorBuilder.ComparatorOption> arrowContainerToComparator = new HashMap<>();
-    private Map<HBox, String> containerToComparatorType = new HashMap<>();
+    private final Map<HBox, ProjectComparatorBuilder.ComparatorOption> arrowContainerToComparator = new HashMap<>();
+    private final Map<HBox, String> containerToComparatorType = new HashMap<>();
 
     @Initialize
     public void init() {
@@ -63,21 +62,14 @@ public class SortingBarController {
         containerToComparatorType.put(sortByTypeArrowContainer, "type");
         containerToComparatorType.put(sortByRunningArrowContainer, "running");
         containerToComparatorType.put(sortByStarredArrowContainer, "starred");
-        setupChildren(sortByTitleArrowContainer);
-        setupChildren(sortByTypeArrowContainer);
-        setupChildren(sortByRunningArrowContainer);
-        setupChildren(sortByStarredArrowContainer);
-        arrowContainerToStateMap.keySet().forEach(arrowContainer -> {
-            arrowContainer.getChildren().addListener((ListChangeListener<? super Node>) _ -> setupChildren(arrowContainer));
-        });
     }
 
-    private void setupChildren(HBox parent) {
-        parent.getChildren().forEach(node -> node.setOnMouseClicked(event -> {
-            arrowContainerToStateMap.put(parent, arrowContainerToStateMap.get(parent).next());
-            changeArrowDirection(parent, arrowContainerToStateMap.get(parent));
-            changeSorting(parent);
-        }));
+    @FXML
+    private void sort(Event event) {
+        HBox parent = (HBox) event.getSource();
+        arrowContainerToStateMap.put(parent, arrowContainerToStateMap.get(parent).next());
+        changeArrowDirection(parent, arrowContainerToStateMap.get(parent));
+        changeSorting(parent);
     }
 
     private void changeSorting(HBox parent) {
@@ -88,7 +80,7 @@ public class SortingBarController {
     }
 
     private void changeArrowDirection(HBox arrowContainer, State state) {
-        arrowContainer.getChildren().clear();
+        arrowContainer.getChildren().removeLast();
         switch (state) {
             case DESC -> arrowContainer.getChildren().add(fxmlProvider.getIcon("sortArrowDown"));
             case DEFAULT -> arrowContainer.getChildren().add(fxmlProvider.getIcon("defaultSorting"));

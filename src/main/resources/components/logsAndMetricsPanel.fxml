@@ -35,8 +35,8 @@
             <Insets top="12" bottom="12" right="16" left="16"/>
         </padding>
         <HBox styleClass="logs-button-container">
-            <Label userData="localization:logs_button" fx:id="logsButton" styleClass="logs-button,selected"  onMouseClicked="#switchLogsButtonStyle"/>
-            <Label userData="localization:metrics_button" fx:id="metricsButton" styleClass="logs-button" onMouseClicked="#switchLogsButtonStyle"/>
+            <Label userData="localization:logs_button" fx:id="logsButton" styleClass="logs-button,left,selected"  onMouseClicked="#switchLogsButtonStyle"/>
+            <Label userData="localization:metrics_button" fx:id="metricsButton" styleClass="logs-button,right" onMouseClicked="#switchLogsButtonStyle"/>
         </HBox>
     </HBox>
 </VBox>

@@ -37,6 +37,8 @@ public class SearchBarController {
     @FXML
     public StackPane cancel;
     @FXML
+    public StackPane search;
+    @FXML
     public StackPane regex;
     @FXML
     public StackPane filter;
@@ -62,6 +64,7 @@ public class SearchBarController {
 
     @FXML
     public void initialize() {
+        search.setOnMouseClicked(_ -> handleAction(new ActionEvent()));
         cancel.setOnMouseClicked(_ -> {
             textField.clear();
             handleAction(new ActionEvent());
