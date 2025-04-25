@@ -13,6 +13,7 @@ import java.util.HashSet;
 
 public abstract class AbstractHeaderController {
     protected Stage stage;
+    @Setter
     private Pane header;
 
     private double xOffset = 0;
@@ -52,10 +53,6 @@ public abstract class AbstractHeaderController {
         });
     }
 
-    protected void setHeader(Pane header) {
-        this.header = header;
-    }
-
     protected void setupResizing() {
         stage.getScene().setOnMouseMoved(this::resizeCursor);
         stage.getScene().setOnMouseDragged(this::resizeWindow);
@@ -68,11 +65,11 @@ public abstract class AbstractHeaderController {
 
         stage.maximizedProperty().addListener((_, _, newValue) -> {
             if (newValue) {
-                stage.getScene().getRoot().setStyle("-fx-background-radius: 0;");
-                header.setStyle("-fx-background-radius: 0;");
+                stage.getScene().getRoot().getStyleClass().add("non-rounded");
+                header.getStyleClass().add("non-rounded");
             } else {
-                stage.getScene().getRoot().setStyle("-fx-background-radius: 16;");
-                header.setStyle("-fx-background-radius: 16 16 0 0;");
+                stage.getScene().getRoot().getStyleClass().remove("non-rounded");
+                header.getStyleClass().remove("non-rounded");
             }
         });
     }

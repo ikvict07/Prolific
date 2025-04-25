@@ -20,6 +20,6 @@
     </center>
 
     <bottom>
-        <fx:include source="configsFooter.fxml"/>
+        <fx:include fx:id="footer" source="configsFooter.fxml"/>
     </bottom>
 </BorderPane>

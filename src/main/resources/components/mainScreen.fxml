@@ -13,5 +13,5 @@
         <fx:include source="projectsPanel.fxml" fx:id="projectsPanel" HBox.hgrow="ALWAYS"/>
         <fx:include source="logsAndMetricsPanel.fxml" fx:id="logsAndMetricsPanel"/>
     </SplitPane>
-    <fx:include source="footer.fxml"  AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
+    <fx:include fx:id="footer" source="footer.fxml"  AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
 </AnchorPane>

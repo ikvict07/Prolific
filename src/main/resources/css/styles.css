@@ -10,13 +10,22 @@
     -fx-background-radius: 16px 16px 0 0;
 }
 
+#header.non-rounded {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
 .settingsScreen {
     -fx-background-radius: 16px;
     -fx-background-color: #2B2D30;
     -fx-border-width: 0.5;
     -fx-border-color: #393B40;
     -fx-border-radius: 16;
+}
 
+.settingsScreen.non-rounded {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .settings-header {
@@ -26,10 +35,20 @@
     -fx-border-color: #393B40;
 }
 
+.settings-header.non-rounded {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
 .settings-footer {
     -fx-border-width: 1 0 0 0;
     -fx-border-color: #393B40;
     -fx-background-radius: 0 0 16 16;
+}
+
+.settings-footer.non-rounded {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .settings-cancel-button {
@@ -89,10 +108,6 @@
     -fx-stroke-width: 1;
     -fx-border-color: #393B40;
     -fx-padding: 0;
-}
-
-.configs-screen {
-    -fx-background-color: #1E1F22;
 }
 
 .settings-split-pane > .split-pane-divider:hover,
@@ -155,8 +170,13 @@
 
 #footer {
     -fx-background-color: #2B2D30;
-    -fx-font-size: 1.25em;
+    -fx-font-size: 1.1em;
     -fx-background-radius: 0 0 16px 16px;
+}
+
+#footer.non-rounded {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .rounded {
@@ -259,6 +279,11 @@
 #mainScreen {
     -fx-background-radius: 16px;
     -fx-background-color: #1E1F22;
+}
+
+#mainScreen.non-rounded {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .defaultText {
@@ -526,7 +551,7 @@
     -fx-background-color: #3A3C40;
 }
 
-.logs-button-selected {
+.logs-button.selected {
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-padding: 6 12 6 12;
@@ -534,7 +559,7 @@
     -fx-background-color: #393B40;
 }
 
-.logs-button-selected:hover {
+.logs-button.selected:hover {
     -fx-background-color: #46484D;
 }
 

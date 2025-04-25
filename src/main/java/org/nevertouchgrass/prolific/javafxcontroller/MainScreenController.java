@@ -21,10 +21,10 @@ public class MainScreenController {
     @Setter(onMethod_ = {@Qualifier("primaryStage"), @Autowired})
     private Stage stage;
 
-    @FXML
-    public AnchorPane mainScreen;
-    @FXML
-    public VBox logsAndMetricsPanel;
+    @FXML private AnchorPane mainScreen;
+    @FXML private VBox logsAndMetricsPanel;
+    @FXML private AnchorPane footer;
+    @FXML private VBox projectsPanel;
 
     @Initialize
     public void init() {
@@ -32,5 +32,12 @@ public class MainScreenController {
         ChangeListener<Number> block2 = (observable, oldValue, newValue) -> mainScreen.setPrefHeight(newValue.doubleValue());
         stage.widthProperty().addListener(block1);
         stage.heightProperty().addListener(block2);
+        stage.maximizedProperty().addListener((_, _, newValue) -> {
+           if (newValue) {
+               footer.getStyleClass().add("non-rounded");
+           } else {
+               footer.getStyleClass().remove("non-rounded");
+           }
+        });
     }
 }

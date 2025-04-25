@@ -12,19 +12,19 @@
     <HBox fx:id="content" AnchorPane.rightAnchor="8">
         <StackPane fx:id="logPane">
             <padding>
-                <Insets top="5" bottom="5" left="10" right="10"/>
+                <Insets top="6" bottom="6" left="10" right="10"/>
             </padding>
             <Label fx:id="notification"/>
         </StackPane>
-        <StackPane fx:id="localePane" styleClass="icon-button">
+        <StackPane fx:id="localePane">
             <padding>
-                <Insets top="5" bottom="5" left="10" right="10"/>
+                <Insets top="6" bottom="6" left="10" right="10"/>
             </padding>
             <Label fx:id="localeLabel" userData="localization:using_locale"/>
         </StackPane>
         <StackPane fx:id="loaderPane" visible="false" styleClass="icon-button" onMouseClicked="#showCancelPopup">
             <padding>
-                <Insets top="5" bottom="5" left="10" right="10"/>
+                <Insets top="6" bottom="6" left="10" right="10"/>
             </padding>
         </StackPane>
     </HBox>

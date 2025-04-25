@@ -12,7 +12,7 @@
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
                AnchorPane.leftAnchor="0.0">
 
-        <Label fx:id="titleText" textFill="#ebecf0" text="Prolific" textAlignment="CENTER"/>
+        <Label fx:id="titleText" textFill="#ebecf0" textAlignment="CENTER"/>
 
         <HBox fx:id="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>
@@ -55,7 +55,7 @@
                 <StackPane>
                     <fx:include source="/icons/fxml/userIcon.fxml"/>
                 </StackPane>
-                <ComboBox fx:id="userList" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <ComboBox fx:id="userList"/>
             </HBox>
         </HBox>
     </StackPane>
