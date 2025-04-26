@@ -7,14 +7,15 @@ import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
+import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AnacondaProjectRunner extends ConfigurableProjectRunner {
     private final NotificationService notificationService;
     private final LocalizationProvider localizationProvider;
-    public AnacondaProjectRunner(ProcessLogsService processLogsService, MetricsService metricsService, ConfiguratorService configuratorService, UserSettingsHolder userSettingsHolder, NotificationService notificationService, LocalizationProvider localizationProvider) {
-        super(processLogsService, metricsService, configuratorService, userSettingsHolder);
+    public AnacondaProjectRunner(ProcessLogsService processLogsService, MetricsService metricsService, ConfiguratorService configuratorService, UserSettingsHolder userSettingsHolder, NotificationService notificationService, LocalizationProvider localizationProvider, PermissionRegistry permissionRegistry) {
+        super(processLogsService, metricsService, configuratorService, userSettingsHolder, permissionRegistry);
         this.notificationService = notificationService;
         this.localizationProvider = localizationProvider;
     }
