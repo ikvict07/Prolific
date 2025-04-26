@@ -618,7 +618,7 @@
     -fx-background-color: rgba(255, 255, 255, 0.2);
     -fx-background-radius: 0;
     -fx-opacity: 1;
-    -fx-font: 12px;
+    -fx-font-size: 12px;
 }
 
 .list-view .scroll-bar .thumb:pressed,
