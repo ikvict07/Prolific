@@ -8,7 +8,7 @@
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.FooterController"
             fx:id="footer"
             id="footer"
-            stylesheets="@/css/styles.css">
+            stylesheets="@/css/styles.css" styleClass="footer">
     <HBox fx:id="content" AnchorPane.rightAnchor="8">
         <StackPane fx:id="logPane">
             <padding>

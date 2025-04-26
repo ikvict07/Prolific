@@ -1,30 +1,31 @@
 package org.nevertouchgrass.prolific.javafxcontroller.settings;
 
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.stage.Stage;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import lombok.Setter;
-import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 
 @StageComponent(stage = "configsStage")
 @Lazy
+@SuppressWarnings("unused")
 public class RunConfigScreenController {
-    @Setter(onMethod_ = {@Qualifier("configsStage"), @Autowired})
-    private Stage stage;
-    @FXML private Parent footer;
+    @FXML private AnchorPane footer;
+    @FXML private StackPane configsHeader;
 
-    @Initialize
-    public void init() {
-        stage.maximizedProperty().addListener((_, _, newValue) -> {
-           if (newValue) {
-               footer.getStyleClass().add("non-rounded");
-           } else {
-               footer.getStyleClass().remove("non-rounded");
-           }
-        });
+    @Setter(onMethod_ = @Autowired)
+    private FxmlProvider fxmlProvider;
+
+    public void initialize() {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("mac")) {
+            configsHeader.getChildren().add(fxmlProvider.getFxmlResource("configsHeaderMac").getParent());
+        } else {
+            configsHeader.getChildren().add(fxmlProvider.getFxmlResource("configsHeaderCommon").getParent());
+        }
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<StackPane xmlns="http://javafx.com/javafx" styleClass="linux-window-button" prefWidth="16" prefHeight="16">
+    <Circle radius="10" styleClass="icon-button" fill="#F0F1F2" opacity="0.13"/>
+    <Group>
+        <Rectangle x="3" y="8" width="10" height="1" fill="#A8ADBD"/>
+    </Group>
+</StackPane>

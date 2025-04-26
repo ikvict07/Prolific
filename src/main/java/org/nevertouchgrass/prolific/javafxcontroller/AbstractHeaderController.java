@@ -3,11 +3,15 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Setter;
+import org.nevertouchgrass.prolific.service.FxmlProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 
@@ -15,6 +19,8 @@ public abstract class AbstractHeaderController {
     protected Stage stage;
     @Setter
     private Pane header;
+    @Setter(onMethod_ = @Autowired)
+    private FxmlProvider fxmlProvider;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -35,6 +41,17 @@ public abstract class AbstractHeaderController {
     private double endX = 0;
 
     protected final HashSet<Object> draggablePanes = new HashSet<>();
+
+    protected void setupMaximizeButton(Node button) {
+        if ("common".equalsIgnoreCase(header.getId()) && button instanceof Group icon) {
+            var restoreWindowButton = fxmlProvider.getIcon("restoreWindowButton");
+            var maximizeWindowButton = fxmlProvider.getIcon("maximizeWindowButton");
+            stage.maximizedProperty().addListener((_, _, newValue) -> {
+                icon.getChildren().clear();
+                icon.getChildren().add(newValue ? restoreWindowButton : maximizeWindowButton);
+            });
+        }
+    }
 
     protected void setupDragging() {
         header.setOnMousePressed(event -> {

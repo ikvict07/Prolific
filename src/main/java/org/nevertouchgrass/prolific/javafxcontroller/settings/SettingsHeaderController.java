@@ -2,13 +2,13 @@ package org.nevertouchgrass.prolific.javafxcontroller.settings;
 
 import jakarta.annotation.PostConstruct;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -32,11 +32,11 @@ public class SettingsHeaderController extends AbstractHeaderController {
     @FXML
     private AnchorPane settingsHeader;
     @FXML
-    public Circle closeButton;
+    public Node closeButton;
     @FXML
-    public Circle minimizeButton;
+    public Node minimizeButton;
     @FXML
-    public Circle maximizeButton;
+    public Node maximizeButton;
     @FXML
     public Label titleText;
     @FXML
@@ -78,6 +78,8 @@ public class SettingsHeaderController extends AbstractHeaderController {
         draggablePanes.add(settingsHeader);
         draggablePanes.add(settingsGradientBox);
         draggablePanes.add(titleText);
+
+        setupMaximizeButton(maximizeButton);
     }
 
     @Override

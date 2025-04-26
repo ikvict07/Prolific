@@ -4,13 +4,13 @@
     -fx-pref-height: 16px;
 }
 
-#header {
+.header {
     -fx-background-color: #2B2D30;
     -fx-font-size: 1.25em;
     -fx-background-radius: 16px 16px 0 0;
 }
 
-#header.non-rounded {
+.header.non-rounded {
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
@@ -168,13 +168,13 @@
     -fx-background-color: #5A5E65;
 }
 
-#footer {
+.footer {
     -fx-background-color: #2B2D30;
     -fx-font-size: 1.1em;
     -fx-background-radius: 0 0 16px 16px;
 }
 
-#footer.non-rounded {
+.footer.non-rounded {
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
@@ -187,7 +187,7 @@
     -fx-background-radius: 0;
 }
 
-#gradientBox {
+.gradientBox {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 0%,
     transparent 0%,
     #344C7D 16.5%,
@@ -244,6 +244,10 @@
 
 .icon-button:hover {
     -fx-background-color: rgba(90, 155, 213, 0.3);
+}
+
+.linux-window-button:hover .icon-button {
+    -fx-opacity: 0.2;
 }
 
 .rounded-icon-button {
@@ -827,32 +831,32 @@
     -fx-border-color: #4E5157;
 }
 
-#profilesPanel:hover .profiles-combo-box .list-cell {
+.profilesPanel:hover .profiles-combo-box .list-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #DFE1E5;
     -fx-border-color: transparent;
 }
 
-#profilesPanel:hover .profiles-combo-box .combo-box-popup .list-cell {
+.profilesPanel:hover .profiles-combo-box .combo-box-popup .list-cell {
     -fx-background-color: #2B2D30;
     -fx-text-fill: #DFE1E5;
     -fx-border-color: transparent;
 }
 
-#profilesPanel:hover .profiles-combo-box .combo-box-popup .list-cell:hover {
+.profilesPanel:hover .profiles-combo-box .combo-box-popup .list-cell:hover {
     -fx-background-color: #494B4E;
 }
 
-#profilesPanel .combo-box-base {
+.profilesPanel .combo-box-base {
     -fx-background-color: transparent;
 }
 
-#profilesPanel .combo-box-base .arrow-button {
+.profilesPanel .combo-box-base .arrow-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
 
-#profilesPanel .combo-box-base .arrow {
+.profilesPanel .combo-box-base .arrow {
     -fx-background-color: #CCCCCC;
 }
 

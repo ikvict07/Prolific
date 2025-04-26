@@ -3,19 +3,18 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.Group?>
+<?import javafx.scene.layout.*?>
 <AnchorPane fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController">
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController" id="common" styleClass="header">
 
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
                AnchorPane.leftAnchor="0.0">
 
         <Label fx:id="titleText" textFill="#ebecf0" textAlignment="CENTER"/>
 
-        <HBox fx:id="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
+        <HBox fx:id="gradientBox" styleClass="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>
                 <Insets left="8"/>
             </padding>
@@ -45,7 +44,7 @@
                 <padding>
                     <Insets right="16"/>
                 </padding>
-                <HBox fx:id="profilesPanel" alignment="CENTER" spacing="10" styleClass="icon-button">
+                <HBox fx:id="profilesPanel" alignment="CENTER" spacing="10" styleClass="icon-button,profilesPanel">
                     <padding>
                         <Insets top="4" bottom="4" left="6" right="6"/>
                     </padding>
@@ -57,12 +56,14 @@
             </HBox>
         </StackPane>
         <HBox spacing="10" alignment="CENTER">
-            <Circle fx:id="minimizeButton" fill="transparent" onMouseClicked="#handleMinimize" radius="5"
-                    styleClass="circle-minimize"/>
-            <Circle fx:id="maximizeButton" fill="transparent" onMouseClicked="#handleMaximize" radius="5"
-                    styleClass="circle-maximize"/>
+            <Group onMouseClicked="#handleMinimize">
+                <fx:include source="/icons/fxml/minimizeWindowButton.fxml"/>
+            </Group>
+            <Group onMouseClicked="#handleMaximize" fx:id="maximizeButton">
+                <fx:include source="/icons/fxml/maximizeWindowButton.fxml"/>
+            </Group>
             <Group onMouseClicked="#handleClose">
-                <fx:include source="/icons/fxml/linux_close_window_button.fxml"/>
+                <fx:include source="/icons/fxml/closeWindowButton.fxml"/>
             </Group>
         </HBox>
     </HBox>

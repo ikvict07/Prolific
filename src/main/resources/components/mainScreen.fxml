@@ -2,19 +2,12 @@
 
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.*?>
-<?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.MainScreenController"
             stylesheets="@/css/styles.css"
             fx:id="mainScreen">
     <StackPane fx:id="header" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
 
-    <fx:define>
-        <ArrayListHolder>
-            <fx:include source="header_mac.fxml" fx:id="headerMac"/>
-            <fx:include source="header_linux.fxml" fx:id="headerLinux"/>
-        </ArrayListHolder>
-    </fx:define>
     <SplitPane AnchorPane.rightAnchor="16" AnchorPane.leftAnchor="16" AnchorPane.bottomAnchor="64"
                AnchorPane.topAnchor="128" dividerPositions="0.5">
         <fx:include source="projectsPanel.fxml" fx:id="projectsPanel" HBox.hgrow="ALWAYS"/>

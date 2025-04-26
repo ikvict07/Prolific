@@ -32,21 +32,19 @@ public class MainScreenController {
     @FXML private StackPane header;
 
     @FXML private AnchorPane headerMac;
-    @FXML private AnchorPane headerLinux;
 
-    @Initialize
-    public void init() {
+    public void initialize() {
         String os = System.getProperty("os.name").toLowerCase();
 
         if (os.contains("mac")) {
-            header.getChildren().add(headerMac);
-        } else if (os.contains("linux")) {
-            header.getChildren().add(headerLinux);
+            header.getChildren().add(fxmlProvider.getFxmlResource("headerMac").getParent());
         } else {
-            log.warn("Unsupported OS: {}", os);
-            throw new RuntimeException("Unsupported OS: " + os);
+            header.getChildren().add(fxmlProvider.getFxmlResource("headerCommon").getParent());
         }
+    }
 
+    @Initialize
+    public void init() {
         ChangeListener<Number> block1 = (observable, oldValue, newValue) -> mainScreen.setPrefWidth(newValue.doubleValue());
         ChangeListener<Number> block2 = (observable, oldValue, newValue) -> mainScreen.setPrefHeight(newValue.doubleValue());
         stage.widthProperty().addListener(block1);
