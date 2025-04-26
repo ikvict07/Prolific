@@ -23,6 +23,10 @@ public class GradleTaskRunConfigurationCreator implements RunConfigurationCreato
         var runConfig = new RunConfig();
         var command = new ArrayList<String>();
         boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+        if (isWindows) {
+            command.add("cmd");
+            command.add("/c");
+        }
         command.add(isWindows ? "gradlew.bat" : "./gradlew");
         command.add(description.getTaskName());
         command.addAll(description.getOptions());
