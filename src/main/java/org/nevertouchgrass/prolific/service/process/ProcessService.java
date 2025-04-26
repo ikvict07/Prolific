@@ -33,6 +33,7 @@ public class ProcessService {
     public Set<ProcessWrapper> getLiveProcesses() {
         return Set.copyOf(live);
     }
+
     public ProcessWrapper runProject(Project project, RunConfig runConfig) throws ProcessStartFailedException {
         var process = projectRunner.runProject(project, runConfig);
         addProcess(project, process);

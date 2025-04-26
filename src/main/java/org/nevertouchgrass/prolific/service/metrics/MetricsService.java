@@ -11,8 +11,6 @@ import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.process.ProcessAware;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.stereotype.Service;
-import oshi.software.os.OSProcess;
-import oshi.software.os.OperatingSystem;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -28,7 +26,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -64,7 +61,7 @@ public class MetricsService implements ProcessAware {
         AtomicBoolean processActive = new AtomicBoolean(true);
         processActiveFlags.put(process, processActive);
 
-//        startMetricsCollection(process, sink, processActive);
+        startMetricsCollection(process, sink, processActive);
     }
 
     private void startMetricsCollection(ProcessWrapper process, Sinks.Many<Metric> sink, AtomicBoolean processActive) {
@@ -124,14 +121,11 @@ public class MetricsService implements ProcessAware {
     }
 
     private long getMemoryUsageForWindows(Set<ProcessHandle> descendants) {
-        var startTime = LocalDateTime.now();
         AtomicReference<Long> memoryUsage = new AtomicReference<>(0L);
         descendants.forEach(d -> {
             var pb = new ProcessBuilder("wmic", "path", "Win32_PerfFormattedData_PerfProc_Process", "where", "IDProcess=" + d.pid(), "get", "WorkingSetPrivate");
             readMemoryUsage(memoryUsage, pb);
         });
-        System.out.println("Memory Usage: " + memoryUsage.get());
-        System.out.println("Time to memory: " + Duration.between(startTime, LocalDateTime.now()).toMillis());
         return memoryUsage.get();
     }
 
@@ -154,14 +148,11 @@ public class MetricsService implements ProcessAware {
     }
 
     private double getCpuForWindows(Set<ProcessHandle> descendants) {
-        var startTime = LocalDateTime.now();
         AtomicReference<Double> cpuUsage = new AtomicReference<>(0d);
         descendants.forEach(d -> {
             var pb = new ProcessBuilder("wmic", "path", "Win32_PerfFormattedData_PerfProc_Process", "where", "IDProcess=" + d.pid(), "get", "PercentProcessorTime");
             cpuUsage.updateAndGet(v -> v + readCpuUsage(pb));
         });
-        System.out.println("CPU Usage: " + cpuUsage.get());
-        System.out.println("Time: " + Duration.between(startTime, LocalDateTime.now()).toMillis());
         return cpuUsage.get();
     }
 

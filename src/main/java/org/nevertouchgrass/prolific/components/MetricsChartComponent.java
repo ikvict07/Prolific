@@ -242,7 +242,7 @@ public class MetricsChartComponent extends VBox {
             allMemoryData.add(memoryData);
 
             boolean isAtEnd = (scrollBar.getValue() >= 95) ||
-                    (viewStartIndex >= allCpuData.size() - timeWindow - 2);
+                              (viewStartIndex >= allCpuData.size() - timeWindow - 2);
 
 
             if (isAtEnd) {

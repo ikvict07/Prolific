@@ -25,7 +25,7 @@ public abstract class DefaultProjectRunner implements ProjectRunner {
     public abstract String getType();
 
     @Override
-        public ProcessWrapper runProject(Project project, RunConfig runConfig) throws ProcessStartFailedException {
+    public ProcessWrapper runProject(Project project, RunConfig runConfig) throws ProcessStartFailedException {
         var processBuilder = new ProcessBuilder(runConfig.getCommand());
         processBuilder.directory(Path.of(project.getPath()).toFile());
         try {
@@ -37,7 +37,7 @@ public abstract class DefaultProjectRunner implements ProjectRunner {
             processLogsService.observeProcess(procWrapper);
             metricsService.observeProcess(procWrapper);
             process.onExit()
-                    .thenAccept(p -> {
+                    .thenAccept(_ -> {
                         var descendantsToReceive = new HashSet<ProcessHandle>();
                         receiveDescendants(process.toHandle(), descendantsToReceive);
                         descendantsToReceive.forEach(ProcessHandle::destroy);
@@ -47,6 +47,7 @@ public abstract class DefaultProjectRunner implements ProjectRunner {
             throw new ProcessStartFailedException("Error occurred while starting the process " + processBuilder, e);
         }
     }
+
     public void receiveDescendants(ProcessHandle process, Set<ProcessHandle> descendantsToReceive) {
         var d = new HashSet<ProcessHandle>();
         var children = process.children().toList();
