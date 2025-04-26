@@ -50,6 +50,7 @@ public class MetricsChartComponent extends VBox {
         if (metricsService != null && process != null) {
             metricsService.subscribeToMetrics(process)
                     .publishOn(Schedulers.single())
+                    .subscribeOn(Schedulers.boundedElastic())
                     .subscribe(metric -> Platform.runLater(() -> metricEvents.push(metric)));
         }
     }

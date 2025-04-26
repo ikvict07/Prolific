@@ -212,7 +212,7 @@ runtime {
         mainClass = "org.springframework.boot.loader.launch.JarLauncher"
         outputDir = "image"
         imageOptions = listOf(
-            "--icon", "src/main/resources/icons/png/IconPl.icns",
+            "--icon", "src/main/resources/icons/png/icon.png",
         )
     }
 }

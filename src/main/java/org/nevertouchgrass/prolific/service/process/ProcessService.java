@@ -39,7 +39,6 @@ public class ProcessService {
         process.getProcess().onExit().thenAccept(_ -> {
             onKillListeners.forEach(c -> c.accept(process));
             dead.add(process);
-            log.debug("Process died: PID {} - {}", process.getPid(), process.getOsProcess().getName());
             removeDeadProcess(process);
         });
         return process;
@@ -64,7 +63,6 @@ public class ProcessService {
             Set<ProcessWrapper> value = observableProcessesMap.getOrDefault(project, ConcurrentHashMap.newKeySet());
             value.add(process);
             observableProcessesMap.put(project, value);
-            log.debug("New process detected: PID {} - {}", process.getPid(), process.getOsProcess().getName());
         }
     }
 

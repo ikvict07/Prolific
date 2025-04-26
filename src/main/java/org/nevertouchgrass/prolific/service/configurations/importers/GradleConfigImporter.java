@@ -34,6 +34,5 @@ public class GradleConfigImporter extends BuildToolConfigImporter {
         } else {
             runConfig.getCommand().addFirst("./gradlew");
         }
-        runConfig.getCommand().addLast("--no-daemon");
     }
 }
