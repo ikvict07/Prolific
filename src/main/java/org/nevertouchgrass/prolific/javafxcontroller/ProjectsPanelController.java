@@ -26,6 +26,7 @@ import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterServi
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 @StageComponent
@@ -61,7 +62,7 @@ public class ProjectsPanelController {
     @Initialize
     private void init() {
         registerListeners();
-        projectsService.getProjects().forEach(this::addProjectToList);
+        var futures = projectsService.getProjects().stream().map(this::addProjectToList).toList();
         content.minWidthProperty().bind(scrollPane.widthProperty());
         content.prefWidthProperty().bind(scrollPane.widthProperty());
         content.maxWidthProperty().bind(scrollPane.widthProperty());
@@ -79,7 +80,7 @@ public class ProjectsPanelController {
             }
         });
         scrollPane.requestFocus();
-        contentChildren = new ArrayList<>(content.getChildren());
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> contentChildren = new ArrayList<>(content.getChildren()));
     }
 
     private void registerListeners() {
@@ -104,7 +105,10 @@ public class ProjectsPanelController {
             var project = (Project) child.getProperties().get(PROJECT_KEY);
             if (project != null && filterFunction.test(project)) {
                 var pos = findInsertionIndex(project);
-                content.getChildren().add(pos, child);
+                var freshContentChildren = content.getChildren();
+                if (!freshContentChildren.stream().map(node -> ((Project) node.getProperties().get(PROJECT_KEY)).getPath()).toList().contains(project.getPath())) {
+                    freshContentChildren.add(pos, child);
+                }
             }
         });
     }
@@ -136,34 +140,46 @@ public class ProjectsPanelController {
         return content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY) != null);
     }
 
-    private void addProjectToList(Project project) {
-        if (!filterFunction.test(project)) return;
+    private CompletableFuture<Void> addProjectToList(Project project) {
+        var projectPanel = generateProjectPanel(project);
+        if (contentChildren != null && !contentChildren.stream()
+                .map(node -> ((Project) node.getProperties().get(PROJECT_KEY)).getPath())
+                .toList().contains(project.getPath())) {
+            contentChildren.add(projectPanel);
+        }
+        if (!filterFunction.test(project)) return CompletableFuture.completedFuture(null);
+        CompletableFuture<Void> uiUpdateFuture = new CompletableFuture<>();
         Platform.runLater(() -> {
-            int index = findInsertionIndex(project);
-            insertProjectPanelAt(index, generateProjectPanel(project));
+            try {
+                int index = findInsertionIndex(project);
+                content.getChildren().add(index, projectPanel);
+                uiUpdateFuture.complete(null);
+            } catch (Exception e) {
+                uiUpdateFuture.completeExceptionally(e);
+            }
         });
+        return uiUpdateFuture;
     }
 
     private void deleteProjectFromList(Project project) {
         Platform.runLater(() -> {
             try {
-                var toDelete = content.getChildren().filtered(node -> node.getProperties().get(PROJECT_KEY).equals(project));
+                var toDelete = content.getChildren().filtered(node -> (((Project) node.getProperties().get(PROJECT_KEY)).getPath()).equals(project.getPath()));
                 content.getChildren().removeAll(toDelete);
-                contentChildren.remove(toDelete.getFirst());
-
+                contentChildren.removeIf(n -> n.getProperties().get(PROJECT_KEY) != null && ((Project) n.getProperties().get(PROJECT_KEY)).getPath().equals(project.getPath()));
             } catch (Exception e) {
-                // ignore
+                // Ignore
             }
         });
     }
 
     public void updateProject(Project project) {
         Platform.runLater(() -> {
-            var toDelete = content.getChildren().stream().filter(node -> ((Project) node.getProperties().get(PROJECT_KEY)).getId().equals(project.getId())).toList();
-            content.getChildren().removeAll(toDelete);
+            var toUpdate = content.getChildren().stream().filter(node -> ((Project) node.getProperties().get(PROJECT_KEY)).getId().equals(project.getId())).toList();
+            content.getChildren().removeAll(toUpdate);
             var newIndex = findInsertionIndex(project);
-            ((ProjectPanelController) toDelete.getFirst().getProperties().get("controller")).updateStar();
-            content.getChildren().add(newIndex, toDelete.getFirst());
+            ((ProjectPanelController) toUpdate.getFirst().getProperties().get("controller")).updateStar();
+            content.getChildren().add(newIndex, toUpdate.getFirst());
         });
 
     }
@@ -184,11 +200,6 @@ public class ProjectsPanelController {
     private int findInsertionIndex(Project project) {
         var index = Collections.binarySearch(content.getChildren().stream().map(node -> node.getProperties().get(PROJECT_KEY)).filter(Objects::nonNull).map(p -> (Project) p).toList(), project, projectComparator);
         return index < 0 ? -index - 1 : index;
-    }
-
-    private void insertProjectPanelAt(int index, Node projectPanel) {
-        content.getChildren().add(index, projectPanel);
-        contentChildren = new ArrayList<>(content.getChildren());
     }
 
     private String getIconTextFromTitle(String title) {

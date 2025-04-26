@@ -21,7 +21,7 @@
         <padding>
             <Insets right="8" left="8"/>
         </padding>
-        <fx:include source="/icons/fxml/filter.fxml" fx:id="filter"/>
+        <fx:include source="/icons/fxml/filter.fxml" fx:id="filterPane"/>
     </HBox>
 </HBox>
 

@@ -1,5 +1,6 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -21,7 +22,11 @@ import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.searching.filters.ProjectFilterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Predicate;
@@ -41,7 +46,7 @@ public class SearchBarController {
     @FXML
     public StackPane regex;
     @FXML
-    public StackPane filter;
+    public StackPane filterPane;
     @FXML
     public HBox filterSection;
 
@@ -61,6 +66,7 @@ public class SearchBarController {
     private final ObservableList<Filters> appliedFilters = FXCollections.observableArrayList();
 
     private ContextMenu contextMenu = new ContextMenu();
+    FluxSink<String> textSink;
 
     @FXML
     public void initialize() {
@@ -79,9 +85,23 @@ public class SearchBarController {
             filterType = isRegex ? Filters.BY_NAME_REGEX : BY_NAME;
             handleAction(new ActionEvent());
         });
-        filter.setOnMouseClicked(event -> {
+        filterPane.setOnMouseClicked(event -> {
             contextMenu = getContextMenu();
-            contextMenu.show(filter, event.getScreenX() + 8, event.getScreenY() + 8);
+            contextMenu.show(filterPane, event.getScreenX() + 8, event.getScreenY() + 8);
+        });
+
+
+        Flux<String> debouncedFlux = Flux.<String>create(sink -> textSink = sink)
+                .sampleTimeout(_ -> Mono.delay(Duration.ofMillis(200)))
+                .publish()
+                .autoConnect();
+
+        debouncedFlux.subscribe(_ -> Platform.runLater(() -> handleAction(new ActionEvent())));
+
+        textField.textProperty().addListener((_, _, newText) -> {
+            if (textSink != null) {
+                textSink.next(newText);
+            }
         });
 
         appliedFilters.addListener((ListChangeListener<? super Filters>) change -> {
@@ -90,7 +110,7 @@ public class SearchBarController {
                     change.getAddedSubList().forEach(added -> {
                         var label = new Label();
                         label.textProperty().bind(localizationHolder.getLocalization(added.name()));
-                        label.setUserData("filter:" + added.name());
+                        label.setUserData("filterPane:" + added.name());
                         label.getStyleClass().add("icon-button");
                         label.setOnMouseClicked(_ -> {
                             appliedFilters.remove(added);
