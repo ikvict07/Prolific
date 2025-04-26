@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.constants.profile.CommonUser;
+import org.nevertouchgrass.prolific.constants.profile.NoMetricsUser;
 import org.nevertouchgrass.prolific.constants.profile.PowerUser;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.service.FxmlProvider;
@@ -104,8 +105,9 @@ public class HeaderController extends AbstractHeaderController {
         userList.getStyleClass().add("combo-box-base");
         var powerUser = new ProfileItem(localizationHolder.getLocalization(PowerUser.PROFILE));
         var commonUser = new ProfileItem(localizationHolder.getLocalization(CommonUser.PROFILE));
+        var noMetricsUser = new ProfileItem(localizationHolder.getLocalization(NoMetricsUser.PROFILE));
 
-        userList.getItems().addAll(powerUser, commonUser);
+        userList.getItems().addAll(powerUser, commonUser, noMetricsUser);
 
         userList.setCellFactory(lv -> createProfileItemCell());
         userList.setButtonCell(createProfileItemCell());
@@ -115,6 +117,8 @@ public class HeaderController extends AbstractHeaderController {
                     userSettingsHolder.setUserRole(PowerUser.PROFILE);
                 } else if (newValue.equals(commonUser)) {
                     userSettingsHolder.setUserRole(CommonUser.PROFILE);
+                }  else if (newValue.equals(noMetricsUser)) {
+                    userSettingsHolder.setUserRole(NoMetricsUser.PROFILE);
                 }
                 userSettingsService.saveSettings();
             }
@@ -124,6 +128,8 @@ public class HeaderController extends AbstractHeaderController {
             userList.getSelectionModel().select(powerUser);
         } else if (currentUser instanceof CommonUser) {
             userList.getSelectionModel().select(commonUser);
+        } else if (currentUser instanceof NoMetricsUser) {
+            userList.getSelectionModel().select(noMetricsUser);
         }
     }
 
