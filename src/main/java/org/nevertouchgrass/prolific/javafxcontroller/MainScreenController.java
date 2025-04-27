@@ -2,29 +2,29 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.nevertouchgrass.prolific.annotation.AnchorPaneController;
-import org.nevertouchgrass.prolific.annotation.ConstraintsIgnoreElementSize;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 
-@AnchorPaneController
-@StageComponent("primaryStage")
+@Lazy
+@Slf4j
+@StageComponent
 @SuppressWarnings("unused")
 public class MainScreenController {
-    @FXML
-    @ConstraintsIgnoreElementSize(left = 0.05, top = 0.20, right = 0.5, bottom = 0.20)
-    public ScrollPane projectsPanel;
+    @Setter(onMethod_ = {@Qualifier("primaryStage"), @Autowired})
     private Stage stage;
 
     @FXML
-    public AnchorPane headerComponent;
-
-    @FXML
     public AnchorPane mainScreen;
-
+    @FXML
+    public VBox logsAndMetricsPanel;
 
     @Initialize
     public void init() {

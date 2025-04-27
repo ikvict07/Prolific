@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.SVGPath?>
+<StackPane xmlns="http://javafx.com/javafx/17.0.12">
+    <padding>
+        <Insets top="6" bottom="6" right="6" left="6"/>
+    </padding>
+    <Group>
+        <SVGPath
+                content="M4.5 10L8 13.5L11.5 10"
+                stroke="#6C707E" strokeLineCap="round" strokeLineJoin="round"/>
+    </Group>
+</StackPane>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<!--suppress JavaFxEventHandler -->
+<AnchorPane fx:id="settingsHeader" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsHeaderController"
+            styleClass="settings-header">
+
+    <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+               AnchorPane.leftAnchor="0.0">
+
+        <Label fx:id="titleText" textFill="#ebecf0" userData="localization:settings" textAlignment="CENTER"/>
+
+        <HBox fx:id="settingsGradientBox" styleClass="settingsGradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
+            <padding>
+                <Insets left="16"/>
+            </padding>
+            <HBox spacing="10">
+                <Circle fx:id="closeButton" fill="transparent" onMouseClicked="#handleClose" radius="5"
+                        styleClass="circle-close"/>
+                <Circle fx:id="minimizeButton" fill="transparent" radius="5" styleClass="circle-minimize"/>
+                <Circle fx:id="maximizeButton" fill="transparent" onMouseClicked="#handleMaximize" radius="5"
+                        styleClass="circle-maximize"/>
+            </HBox>
+        </HBox>
+    </StackPane>
+</AnchorPane>

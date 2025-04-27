@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.SVGPath?>
-<SVGPath fill="TRANSPARENT" stroke="#5FAD65" strokeWidth="1.5"
-         content="M13.5 7.13397C14.1667 7.51888 14.1667 8.48113 13.5 8.86603L4.5 14.0622C3.83333 14.4471 3 13.966 3 13.1962L3 2.80385C3 2.03405 3.83333 1.55292 4.5 1.93782L13.5 7.13397Z"/>
+<StackPane xmlns="http://javafx.com/javafx/17.0.12" styleClass="icon-button">
+    <Group>
+        <SVGPath
+                content="M13.125 7.91747C13.9583 8.39859 13.9583 9.60141 13.125 10.0825L2.625 16.1447C1.79167 16.6258 0.750001 16.0244 0.750001 15.0622L0.750002 2.93782C0.750002 1.97557 1.79167 1.37417 2.625 1.85529L13.125 7.91747Z"
+                fill="TRANSPARENT" stroke="#5FAD65" strokeWidth="1.5">
+        </SVGPath>
+    </Group>
+    <padding>
+        <Insets top="6" bottom="6" right="10" left="10"/>
+    </padding>
+</StackPane>

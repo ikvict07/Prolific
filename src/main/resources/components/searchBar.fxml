@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:id="root"
+      fx:controller="org.nevertouchgrass.prolific.javafxcontroller.SearchBarController" spacing="8">
+    <HBox spacing="8" styleClass="search-bar-hbox">
+        <padding>
+            <Insets right="8" left="8"/>
+        </padding>
+        <fx:include source="/icons/fxml/search.fxml"/>
+
+        <TextField fx:id="textField" styleClass="search-bar-text-field" onAction="#handleAction"/>
+        <fx:include source="/icons/fxml/cancel.fxml" fx:id="cancel"/>
+        <fx:include source="/icons/fxml/regex.fxml" fx:id="regex"/>
+    </HBox>
+    <HBox fx:id="filterSection" alignment="CENTER_LEFT" spacing="8">
+        <padding>
+            <Insets right="8" left="8"/>
+        </padding>
+        <fx:include source="/icons/fxml/filter.fxml" fx:id="filter"/>
+    </HBox>
+</HBox>
+

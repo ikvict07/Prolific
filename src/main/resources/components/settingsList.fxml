@@ -1,0 +1,41 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
+<!--suppress JavaFxEventHandler -->
+<SplitPane dividerPositions="0.15" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsListController"
+           xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/styles.css" styleClass="settings-split-pane"
+           onMouseEntered="#handleMouseEntered">
+    <VBox spacing="8">
+        <padding>
+            <Insets top="16" bottom="16" left="8" right="8"/>
+        </padding>
+        <Label fx:id="general" id="general" userData="localization:settings_option_general" styleClass="settings-option"
+               onMouseClicked="#setSettingsList"/>
+        <Label fx:id="environment" id="environment" userData="localization:settings_option_environment"
+               styleClass="settings-option" onMouseClicked="#setSettingsList"/>
+
+        <fx:define>
+            <ArrayListHolder fx:id="settingsLabels">
+                <fx:reference source="general"/>
+                <fx:reference source="environment"/>
+            </ArrayListHolder>
+        </fx:define>
+    </VBox>
+
+    <GridPane fx:id="settingsList" hgap="24" vgap="32">
+        <padding>
+            <Insets top="32" right="16" bottom="16" left="16"/>
+        </padding>
+
+        <columnConstraints>
+            <ColumnConstraints halignment="LEFT"/>
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+    </GridPane>
+
+</SplitPane>

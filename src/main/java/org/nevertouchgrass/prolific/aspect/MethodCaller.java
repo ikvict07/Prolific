@@ -29,28 +29,31 @@ public class MethodCaller {
 
 
                             if (value.isAssignableFrom(entityClass)) {
-                                Object bean = null;
+                                Object bean;
 
                                 if (beanFactory.containsSingleton(beanName)) {
                                     bean = beanFactory.getSingleton(beanName);
+                                } else {
+                                    bean = null;
                                 }
                                 if (bean != null) {
-                                    try {
-                                        method.setAccessible(true);
-                                        method.invoke(bean, entity);
-                                        log.info("Called method {} in bean {} for entity {}",
-                                                method.getName(), bean.getClass().getSimpleName(), entityClass.getSimpleName());
-                                    } catch (Exception e) {
-                                        log.error("Failed to invoke {} method {} in bean {} caused by {}",
-                                                method.getName(), annotationToCall, bean.getClass().getSimpleName(), e.getCause());
-                                    }
+                                    new Thread(() -> {
+                                        try {
+                                            method.setAccessible(true);
+                                            method.invoke(bean, entity);
+                                            log.info("Called method {} in bean {} for entity {}",
+                                                    method.getName(), bean.getClass().getSimpleName(), entityClass.getSimpleName());
+                                        } catch (Exception e) {
+                                            log.error("Failed to invoke {} method {} in bean {} caused by {}",
+                                                    method.getName(), annotationToCall, bean.getClass().getSimpleName(), e.getCause());
+                                        }
+                                    }).start();
                                 }
                             }
                         }
                     }
                 }
             }
-
         }
     }
 

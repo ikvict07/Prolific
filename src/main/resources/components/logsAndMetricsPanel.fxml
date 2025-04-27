@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.nevertouchgrass.prolific.javafxcontroller.LogsAndMetricsPanelController"
+      stylesheets="@/css/styles.css">
+
+    <HBox spacing="4" styleClass="logs-header" alignment="CENTER">
+        <padding>
+            <Insets top="12" bottom="12" right="16" left="16"/>
+        </padding>
+        <Label fx:id="runningProjects" styleClass="running-projects-label" textOverrun="CENTER_ELLIPSIS"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox fx:id="projectLogsDropdown" spacing="10" styleClass="project-logs-dropdown" onMouseClicked="#showRunningProjects">
+            <padding>
+                <Insets top="4" bottom="4" left="8" right="8"/>
+            </padding>
+            <Label fx:id="chosenProject"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <fx:include fx:id="foldButton" source="/icons/fxml/unfold_button.fxml"/>
+        </HBox>
+    </HBox>
+
+    <HBox fx:id="placeForScrollPane" VBox.vgrow="ALWAYS" styleClass="logs-center">
+        <StackPane HBox.hgrow="ALWAYS">
+            <Label fx:id="chooseProjectFirst" userData="localization:choose_project_first"/>
+        </StackPane>
+    </HBox>
+
+    <HBox styleClass="logs-footer">
+        <padding>
+            <Insets top="12" bottom="12" right="16" left="16"/>
+        </padding>
+        <HBox styleClass="logs-button-container">
+            <Label userData="localization:logs_button" fx:id="logsButton" styleClass="logs-button-selected" onMouseClicked="#switchLogsButtonStyle"/>
+            <Label userData="localization:metrics_button" fx:id="metricsButton" styleClass="logs-button" onMouseClicked="#switchLogsButtonStyle"/>
+        </HBox>
+    </HBox>
+</VBox>

@@ -15,14 +15,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getFieldPairs;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getFindAllQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getFindByIdQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getInsertQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getTableName;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.getUpdateQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.prepareInsertQuery;
-import static org.nevertouchgrass.prolific.repository.RepositoryUtils.toSnakeCase;
+import static org.nevertouchgrass.prolific.repository.RepositoryUtils.*;
 
 /**
  * Simple implementation of a basic repository.
@@ -45,79 +38,94 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
     @SneakyThrows
     @SuppressWarnings("java:S3011")
     public T save(T t) {
-        var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
-        var fieldPairs = getFieldPairs(t.getClass());
-        String query = getInsertQuery(tableName, fieldPairs);
+        try {
+            var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
+            var fieldPairs = getFieldPairs(t.getClass());
+            String query = getInsertQuery(tableName, fieldPairs);
 
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            prepareInsertQuery(t, fieldPairs, preparedStatement);
-            preparedStatement.executeUpdate();
-            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    Integer id = generatedKeys.getInt(1);
-                    log.info("Saved: {} with ID: {}", t, id);
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                prepareInsertQuery(t, fieldPairs, preparedStatement);
+                preparedStatement.executeUpdate();
+                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        Integer id = generatedKeys.getInt(1);
+                        log.info("Saved: {} with ID: {}", t, id);
 
-                    Field idField = t.getClass().getDeclaredField("id");
-                    idField.setAccessible(true);
-                    idField.set(t, id);
-                } else {
-                    log.warn("No ID obtained for {}", t);
+                        Field idField = t.getClass().getDeclaredField("id");
+                        idField.setAccessible(true);
+                        idField.set(t, id);
+                    } else {
+                        log.warn("No ID obtained for {}", t);
+                    }
+                } catch (Exception e) {
+                    log.error("Error while saving entity: {}", t, e);
                 }
-            } catch (Exception e) {
-                log.error("Error while saving entity: {}", t, e);
             }
+            log.info("Saved: {}", t);
+            return t;
+        } catch (Exception e) {
+            log.error("Error while saving entity: {}", t, e);
+            throw e;
         }
-        log.info("Saved: {}", t);
-        return t;
     }
 
 
     @Override
     @SneakyThrows
     public Iterable<T> saveAll(Iterable<T> t) {
-        var iter = t.iterator();
-        if (!iter.hasNext()) {
-            return t;
-        }
-        var first = iter.next();
-        var tableName = first.getClass().getSimpleName().toLowerCase() + "s";
-        var fieldPairs = getFieldPairs(first.getClass());
-        String query = getInsertQuery(tableName, fieldPairs);
-
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            connection.setAutoCommit(false);
-
-            for (var entity : t) {
-                prepareInsertQuery(entity, fieldPairs, preparedStatement);
-                preparedStatement.addBatch();
+        try {
+            var iter = t.iterator();
+            if (!iter.hasNext()) {
+                return t;
             }
+            var first = iter.next();
+            var tableName = first.getClass().getSimpleName().toLowerCase() + "s";
+            var fieldPairs = getFieldPairs(first.getClass());
+            String query = getInsertQuery(tableName, fieldPairs);
 
-            preparedStatement.executeBatch();
-            connection.commit();
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                connection.setAutoCommit(false);
+
+                for (var entity : t) {
+                    prepareInsertQuery(entity, fieldPairs, preparedStatement);
+                    preparedStatement.addBatch();
+                }
+
+                preparedStatement.executeBatch();
+                connection.commit();
+            }
+            log.info("Saved: {}", t);
+            return t;
+        } catch (Exception e) {
+            log.error("Error while saving entities: {}", t, e);
+            throw e;
         }
-        log.info("Saved: {}", t);
-        return t;
     }
 
     @Override
     @SneakyThrows
     public Iterable<T> findAll(Class<T> clazz) {
-        List<T> results = new ArrayList<>();
-        var tableName = getTableName(clazz);
-        var fieldPairs = getFieldPairs(clazz);
-        var query = getFindAllQuery(fieldPairs, tableName);
+        try {
+            List<T> results = new ArrayList<>();
+            var tableName = getTableName(clazz);
+            var fieldPairs = getFieldPairs(clazz);
+            var query = getFindAllQuery(fieldPairs, tableName);
 
-        log.info("Executing query: {}", query);
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
-            while (resultSet.next()) {
+            log.info("Executing query: {}", query);
+            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
+                while (resultSet.next()) {
 
-                List<Object> values = extractValuesFromResultSet(fieldPairs, resultSet);
-                results.add(clazz.getConstructor(values.stream().map(Object::getClass).toArray(Class[]::new)).newInstance(values.toArray()));
+                    List<Object> values = extractValuesFromResultSet(fieldPairs, resultSet);
+                    results.add(clazz.getConstructor(values.stream().map(Object::getClass).toArray(Class[]::new)).newInstance(values.toArray()));
+                }
             }
+            results.forEach(r -> log.info("Found: {}", r));
+            log.info("Found {} projects", results.size());
+            return results;
+        } catch (Exception e) {
+            log.error("Error while finding all entities", e);
+            throw e;
         }
-        results.forEach(r -> log.info("Found: {}", r));
-        log.info("Found {} projects", results.size());
-        return results;
     }
 
     private static List<Object> extractValuesFromResultSet(List<AbstractMap.SimpleEntry<Field, String>> fieldPairs, ResultSet resultSet) throws SQLException {
@@ -137,21 +145,26 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
     @Override
     @SneakyThrows
     public T findById(Long id, Class<T> clazz) {
-        var tableName = getTableName(clazz);
-        var fieldPairs = getFieldPairs(clazz);
-        var query = getFindByIdQuery(fieldPairs, tableName);
+        try {
+            var tableName = getTableName(clazz);
+            var fieldPairs = getFieldPairs(clazz);
+            var query = getFindByIdQuery(fieldPairs, tableName);
 
-        log.info("Executing query: {}", query);
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setLong(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    List<Object> values = extractValuesFromResultSet(fieldPairs, resultSet);
-                    return clazz.getConstructor(values.stream().map(Object::getClass).toArray(Class[]::new)).newInstance(values.toArray());
+            log.info("Executing query: {}", query);
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setLong(1, id);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        List<Object> values = extractValuesFromResultSet(fieldPairs, resultSet);
+                        return clazz.getConstructor(values.stream().map(Object::getClass).toArray(Class[]::new)).newInstance(values.toArray());
+                    }
                 }
             }
+            return null;
+        } catch (Exception e) {
+            log.error("Error while finding entity by id: {}", id, e);
+            throw e;
         }
-        return null;
     }
 
     @SuppressWarnings({"SqlSourceToSinkFlow"})
@@ -166,19 +179,45 @@ public abstract class BasicRepositoryImplementationProvider<T> implements BasicR
     @Override
     @SneakyThrows
     public T update(T t) {
-        var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
-        var fieldPairs = getFieldPairs(t.getClass());
-        var query = getUpdateQuery(fieldPairs, tableName);
+        try {
+            var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
+            var fieldPairs = getFieldPairs(t.getClass());
+            var query = getUpdateQuery(fieldPairs, tableName);
 
-        log.info("Executing query: {}", query);
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            prepareInsertQuery(t, fieldPairs, preparedStatement);
+            log.info("Executing query: {}", query);
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                prepareInsertQuery(t, fieldPairs, preparedStatement);
+                var id = t.getClass().getDeclaredField("id");
+                id.setAccessible(true);
+                preparedStatement.setLong(fieldPairs.size() + 1, (Integer) id.get(t));
+                preparedStatement.executeUpdate();
+            }
+            return t;
+        } catch (Exception e) {
+            log.error("Error while updating entity: {}", t, e);
+            throw e;
+        }
+    }
+
+    @Override
+    @SneakyThrows
+    public T delete(T t) {
+        try {
+            var tableName = t.getClass().getSimpleName().toLowerCase() + "s";
             var id = t.getClass().getDeclaredField("id");
             id.setAccessible(true);
-            preparedStatement.setLong(fieldPairs.size() + 1, (Integer) id.get(t));
-            preparedStatement.executeUpdate();
+            var idValue = (Integer) id.get(t);
+            var query = getDeleteQuery(tableName);
+            log.info("Executing query: {}", query);
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, idValue);
+                preparedStatement.executeUpdate();
+            }
+            log.info("Deleted: {}", t);
+        } catch (Exception e) {
+            log.error("Error while deleting entity: {}", t, e);
+            throw e;
         }
         return t;
     }
-
 }

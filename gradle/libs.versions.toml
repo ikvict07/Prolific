@@ -1,29 +1,43 @@
 [versions]
-oshi = "6.6.6"
-springBoot = "3.4.3"
+springBoot = "3.4.4"
 springDependencyManagement = "1.1.7"
 javaFx = "0.0.13"
-jlink = "2.25.0"
 log4j = "2.24.3"
 jackson = "2.18.2"
 jscksonTypes = "2.18.2"
-mock = "5.14.0"
+mock = "5.17.0"
 sqlite = "3.49.1.0"
 hikari = "6.2.1"
+beryx = "1.12.2"
+reactor = "3.7.4"
+richtext = "0.11.4"
+lombok = "1.18.38"
+springBootTest = "3.4.4"
+junitBom = "5.13.0-M2"
+jakarta = "3.0.0"
+freeFair = "8.13.1"
+
 [libraries]
 springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
 springBoot = { module = "org.springframework.boot:spring-boot-starter" }
-springBootTest = { module = "org.springframework.boot:spring-boot-starter-test" }
-oshiCore = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
-lombok = { module = "org.projectlombok:lombok" }
-junitJupiter = { module = "org.junit.platform:junit-platform-launcher" }
+springBootTest = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBootTest" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+junitBom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
+junitApi = { module = "org.junit.jupiter:junit-jupiter-api" }
+junitEngine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junitLauncher = { module = "org.junit.platform:junit-platform-launcher" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mock" }
 jacksonXml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
 jacksonTypes = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jscksonTypes" }
 logging = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
-sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite"}
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
 springAop = { module = "org.springframework.boot:spring-boot-starter-aop" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+reactor = { module = "io.projectreactor:reactor-core", version.ref = "reactor" }
+richtext = { module = "org.fxmisc.richtext:richtextfx", version.ref = "richtext"}
+jakarta = { module = "jakarta.annotation:jakarta.annotation-api", version.ref = "jakarta" }
+
 [bundles]
 spring = [
     "springBootParent",
@@ -32,14 +46,19 @@ spring = [
 ]
 testing = [
     "springBootTest",
-    "junitJupiter",
     "mockito",
+    "junitApi",
+    "junitEngine",
+    "junitLauncher"
 ]
 
 [plugins]
 springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
 springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
 javaFx = { id = "org.openjfx.javafxplugin", version.ref = "javaFx" }
-jlink = { id = "org.beryx.jlink", version.ref = "jlink" }
 application = { id = "application" }
 maven-publish = { id = "maven-publish" }
+jacoco = { id = "jacoco" }
+beryx = { id = "org.beryx.runtime", version.ref = "beryx" }
+generate-localization-provider = { id = "org.nevertouchgrass.prolific.generate-localization-provider"}
+lombok = { id = "io.freefair.lombok", version.ref = "freeFair" }

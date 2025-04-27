@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionCommand">
+    <fx:define>
+        <ArrayListHolder fx:id="options">
+            <Label fx:id="configName" userData="localization:config_config_name"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+                <TextField fx:id="configNameSetting"/>
+                <Label fx:id="configNameErrorMessage" managed="false" visible="false" styleClass="error"
+                       userData="localization:config_error_empty_config_name"/>
+            </VBox>
+
+            <Label fx:id="command" userData="localization:config_command"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <VBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+                <TextField fx:id="commandSetting"/>
+                <Label fx:id="commandErrorMessage" managed="false" visible="false" styleClass="error"
+                       userData="localization:config_error_empty_command"/>
+            </VBox>
+        </ArrayListHolder>
+    </fx:define>
+
+</AnchorPane>

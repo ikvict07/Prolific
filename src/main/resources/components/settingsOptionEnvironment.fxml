@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionEnvironment">
+    <fx:define>
+        <ArrayListHolder fx:id="options">
+            <Label fx:id="pythonPath" userData="localization:setting_python_path"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <HBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                <StackPane fx:id="pythonPathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
+                    <padding>
+                        <Insets topRightBottomLeft="4"/>
+                    </padding>
+                    <fx:include source="/icons/fxml/folder.fxml"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <TextField fx:id="pythonPathSetting"/>
+                    <Label fx:id="pythonPathErrorMessage" visible="false" managed="false"
+                           userData="localization:setting_path_doesnt_exist" styleClass="error"/>
+                </VBox>
+            </HBox>
+
+            <Label fx:id="gradlePath" userData="localization:setting_gradle_path"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <HBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                <StackPane fx:id="gradlePathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
+                    <padding>
+                        <Insets topRightBottomLeft="4"/>
+                    </padding>
+                    <fx:include source="/icons/fxml/folder.fxml"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <TextField fx:id="gradlePathSetting"/>
+                    <Label fx:id="gradlePathErrorMessage" visible="false" managed="false"
+                           userData="localization:setting_path_doesnt_exist" styleClass="error"/>
+                </VBox>
+            </HBox>
+
+            <Label fx:id="mvnPath" userData="localization:setting_maven_path"
+                   GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <HBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                <StackPane fx:id="mvnPathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
+                    <padding>
+                        <Insets topRightBottomLeft="4"/>
+                    </padding>
+                    <fx:include source="/icons/fxml/folder.fxml"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <TextField fx:id="mvnPathSetting"/>
+                    <Label fx:id="mvnPathErrorMessage" visible="false" managed="false"
+                           userData="localization:setting_path_doesnt_exist" styleClass="error"/>
+                </VBox>
+            </HBox>
+
+            <Label fx:id="jdkPath" userData="localization:setting_jdk_path"
+                   GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <HBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                <StackPane fx:id="jdkPathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
+                    <padding>
+                        <Insets topRightBottomLeft="4"/>
+                    </padding>
+                    <fx:include source="/icons/fxml/folder.fxml"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <TextField fx:id="jdkPathSetting"/>
+                    <Label fx:id="jdkPathErrorMessage" visible="false" managed="false"
+                           userData="localization:setting_path_doesnt_exist" styleClass="error"/>
+                </VBox>
+            </HBox>
+            <Label fx:id="anacondaPath" userData="localization:setting_anaconda_path"
+                   GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <HBox spacing="8" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                <StackPane fx:id="anacondaPathChooser" onMouseClicked="#chooseDirectoryPath" styleClass="icon-button">
+                    <padding>
+                        <Insets topRightBottomLeft="4"/>
+                    </padding>
+                    <fx:include source="/icons/fxml/folder.fxml"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <TextField fx:id="anacondaPathSetting"/>
+                    <Label fx:id="anacondaPathErrorMessage" visible="false" managed="false"
+                           userData="localization:setting_path_doesnt_exist" styleClass="error"/>
+                </VBox>
+            </HBox>
+        </ArrayListHolder>
+    </fx:define>
+</AnchorPane>

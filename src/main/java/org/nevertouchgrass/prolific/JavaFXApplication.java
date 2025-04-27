@@ -12,8 +12,9 @@ import org.nevertouchgrass.prolific.events.JavaFxStartEvent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.javafxcontroller.HeaderController;
-import org.nevertouchgrass.prolific.service.UserSettingsService;
+import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationEventPublisher;
@@ -42,7 +43,7 @@ public class JavaFXApplication implements ApplicationRunner {
 
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public JavaFXApplication(Stage primaryStage, Parent mainScreenParent, HeaderController headerController,
+    public JavaFXApplication(@Qualifier("primaryStage") Stage primaryStage, Parent mainScreenParent, HeaderController headerController,
                              ApplicationEventPublisher applicationEventPublisher, UserSettingsService userSettingsService) {
         this.primaryStage = primaryStage;
         this.mainScreenParent = mainScreenParent;
@@ -56,7 +57,6 @@ public class JavaFXApplication implements ApplicationRunner {
         Platform.runLater(() -> {
             applicationEventPublisher.publishEvent(new JavaFxStartEvent(this));
             primaryStage.initStyle(StageStyle.TRANSPARENT);
-
             Scene scene = new Scene(mainScreenParent, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
 

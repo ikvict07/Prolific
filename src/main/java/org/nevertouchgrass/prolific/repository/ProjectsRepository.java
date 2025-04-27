@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,48 @@ import java.util.List;
 public class ProjectsRepository extends BasicRepositoryImplementationProvider<Project> {
     public ProjectsRepository(DataSource dataSource) {
         super(dataSource);
+    }
+
+
+    @SneakyThrows
+    public Project findByPath(String path) {
+        try {
+            String sql = "SELECT id, title, type, path, is_manually_added, is_starred FROM projects WHERE path = ?";
+
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, path);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return constructProject(resultSet);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while finding project by path", e);
+            throw e;
+        }
+        return null;
+    }
+
+    private static Project constructProject(ResultSet resultSet) throws SQLException {
+        var project = new Project();
+        project.setId(resultSet.getInt("id"));
+        project.setTitle(resultSet.getString("title"));
+        project.setType(resultSet.getString("type"));
+        project.setPath(resultSet.getString("path"));
+        project.setIsManuallyAdded(resultSet.getBoolean("is_manually_added"));
+        project.setIsStarred(resultSet.getBoolean("is_starred"));
+        return project;
+    }
+
+    @Override
+    public Project save(Project project) {
+        var existingProject = findByPath(project.getPath());
+        if (existingProject != null) {
+            return existingProject;
+        }
+        return super.save(project);
     }
 
     @SneakyThrows
@@ -31,14 +74,7 @@ public class ProjectsRepository extends BasicRepositoryImplementationProvider<Pr
 
             while (resultSet.next()) {
                 Project project = new Project();
-                project.setId(resultSet.getInt("id"));
-                project.setTitle(resultSet.getString("title"));
-                project.setType(resultSet.getString("type"));
-                project.setPath(resultSet.getString("path"));
-                project.setIsManuallyAdded(resultSet.getBoolean("is_manually_added"));
-                project.setIsStarred(resultSet.getBoolean("is_starred"));
-                deletedProject.add(project);
-
+                deletedProject.add(constructProject(resultSet));
             }
         }
 

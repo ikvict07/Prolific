@@ -1,5 +1,7 @@
 package org.nevertouchgrass.prolific.annotation;
 
+import org.springframework.stereotype.Component;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -9,10 +11,11 @@ import java.lang.annotation.RetentionPolicy;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Component
 public @interface StageComponent {
 	/**
 	 *
 	 * @return Name of the stage related to this component, for example, primaryStage
 	 */
-	String value() default "";
+	String stage() default "primaryStage";
 }

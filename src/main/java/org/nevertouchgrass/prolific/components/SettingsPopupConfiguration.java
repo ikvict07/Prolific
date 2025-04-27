@@ -1,32 +1,35 @@
 package org.nevertouchgrass.prolific.components;
 
 import javafx.scene.Parent;
-import javafx.stage.Popup;
+import javafx.scene.control.ContextMenu;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+
+import static org.nevertouchgrass.prolific.util.ContextMenuCreator.getContextMenu;
 
 
 @Configuration
+@RequiredArgsConstructor
 public class SettingsPopupConfiguration {
+    private final ApplicationContext applicationContext;
 
     @Bean
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public Popup settingsPopup(Parent settingsDropdownParent) {
-        Popup popup = new Popup();
-        popup.setAutoHide(true);
-        popup.setAutoFix(true);
-        popup.getContent().add(settingsDropdownParent);
-        return popup;
+    @Lazy
+    public ContextMenu settingsPopup() {
+        ContextMenu contextMenu = new ContextMenu();
+        var options = (Parent)applicationContext.getBean("settingsDropdownParent");
+        return getContextMenu(contextMenu, options);
     }
 
     @Bean
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public Popup projectSettingsPopup(Parent projectSettingDropdownParent) {
-        Popup popup = new Popup();
-        popup.setAutoHide(true);
-        popup.setAutoFix(true);
-        popup.getContent().add(projectSettingDropdownParent);
-        popup.getProperties().put("content", projectSettingDropdownParent);
-        return popup;
+    @Lazy
+    public ContextMenu projectSettingsPopup() {
+        ContextMenu contextMenu = new ContextMenu();
+        var options = (Parent) applicationContext.getBean("projectSettingDropdownParent");
+        return getContextMenu(contextMenu, options);
     }
+
 }
