@@ -1,5 +1,4 @@
 [versions]
-oshi = "6.6.6"
 springBoot = "3.4.4"
 springDependencyManagement = "1.1.7"
 javaFx = "0.0.13"
@@ -22,7 +21,6 @@ freeFair = "8.13.1"
 springBootParent = { module = "org.springframework.boot:spring-boot-starter-parent", version.ref = "springBoot" }
 springBoot = { module = "org.springframework.boot:spring-boot-starter" }
 springBootTest = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBootTest" }
-oshiCore = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 junitBom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
 junitApi = { module = "org.junit.jupiter:junit-jupiter-api" }

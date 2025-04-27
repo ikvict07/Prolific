@@ -21,12 +21,15 @@ import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
+import org.nevertouchgrass.prolific.constants.action.SeeMetricsAction;
+import org.nevertouchgrass.prolific.listener.InitializeAnnotationProcessor;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.TerminatedProcessInfo;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
+import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,10 +82,12 @@ public class LogsAndMetricsPanelController {
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
     private ProcessWrapper currentProcess;
     private StringProperty projectChoice;
+    @Setter(onMethod_ = @Autowired)
+    private PermissionRegistry permissionRegistry;
 
     /**
      * Will be called by InitializeAnnotationProcessor
-     * @see org.nevertouchgrass.prolific.listener.InitializeAnnotationProcessor
+     * @see InitializeAnnotationProcessor
      */
     @Initialize
     @SuppressWarnings("unused")
@@ -196,8 +201,11 @@ public class LogsAndMetricsPanelController {
                         componentProvider.init();
                         return componentProvider;
                     });
-            placeForScrollPane.getChildren().add(component.getLogsScrollPane());
+            placeForScrollPane.getChildren().add(component.getComponent());
         } else {
+            if (!permissionRegistry.getChecker(SeeMetricsAction.class).hasPermission(new SeeMetricsAction())) {
+                return;
+            }
             var component = metricsComponents.computeIfAbsent(processWrapper,
                     _ -> new MetricsChartComponent(metricsService, processWrapper));
             placeForScrollPane.getChildren().add(component);

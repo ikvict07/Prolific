@@ -41,7 +41,6 @@ val mockitoAgent = configurations.create("mockitoAgent")
 
 dependencies {
     implementation(libs.bundles.spring)
-    implementation(libs.oshiCore)
     implementation(libs.logging)
     implementation(libs.log4j.core)
     implementation(libs.jacksonXml)
@@ -212,7 +211,7 @@ runtime {
         mainClass = "org.springframework.boot.loader.launch.JarLauncher"
         outputDir = "image"
         imageOptions = listOf(
-            "--icon", "src/main/resources/icons/png/IconPl.icns",
+            "--icon", "src/main/resources/icons/png/icon.png",
         )
     }
 }

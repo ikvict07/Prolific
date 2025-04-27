@@ -1,4 +1,4 @@
-package org.nevertouchgrass.prolific.javafxcontroller;
+package org.nevertouchgrass.prolific.javafxcontroller.settings;
 
 import jakarta.annotation.PostConstruct;
 import javafx.fxml.FXML;
@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
+import org.nevertouchgrass.prolific.javafxcontroller.AbstractHeaderController;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

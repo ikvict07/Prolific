@@ -2,29 +2,20 @@ package org.nevertouchgrass.prolific.util;
 
 import lombok.Getter;
 import lombok.Setter;
-import oshi.SystemInfo;
-import oshi.software.os.OSProcess;
 
+@Setter
 @Getter
 public class ProcessWrapper {
-    private final OSProcess osProcess;
-    @Setter
     private Process process;
-    @Setter
     private String name;
 
     public int getPid() {
-
-        return osProcess.getProcessID();
+        return (int) process.pid();
     }
 
-    public ProcessWrapper(OSProcess osProcess) {
-        this.osProcess = osProcess;
-    }
 
     public static ProcessWrapper of(Process process) {
-        var osProcess = new SystemInfo().getOperatingSystem().getProcess((int) process.pid());
-        var inst = new ProcessWrapper(osProcess);
+        var inst = new ProcessWrapper();
         inst.setProcess(process);
         return inst;
     }

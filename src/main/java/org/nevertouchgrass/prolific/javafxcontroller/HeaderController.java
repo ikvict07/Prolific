@@ -1,11 +1,16 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+<<<<<<< HEAD
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+=======
+import javafx.scene.control.*;
+>>>>>>> upstream/windows-support
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -16,7 +21,15 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.constants.profile.CommonUser;
+import org.nevertouchgrass.prolific.constants.profile.NoMetricsUser;
+import org.nevertouchgrass.prolific.constants.profile.PowerUser;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
+import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
+import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
+import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
+import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,9 +56,23 @@ public class HeaderController extends AbstractHeaderController {
     @FXML
     public Label titleText;
     @FXML
+    public HBox profilesPanel;
+    @FXML
+    ComboBox<ProfileItem> userList = new ComboBox<>();
+    @FXML
     private AnchorPane header;
     @FXML
     private Circle closeButton;
+    @Setter(onMethod_ = @Autowired)
+    private FxmlProvider fxmlProvider;
+    @Setter(onMethod_ = @Autowired)
+    private LocalizationProvider localizationProvider;
+    @Setter(onMethod_ = @Autowired)
+    private LocalizationHolder localizationHolder;
+    @Setter(onMethod_ = @Autowired)
+    private UserSettingsService userSettingsService;
+    @Setter(onMethod_ = @Autowired)
+    private UserSettingsHolder userSettingsHolder;
 
     @Autowired
     public void setStage(@Qualifier("primaryStage") Stage stage) {
@@ -64,6 +91,7 @@ public class HeaderController extends AbstractHeaderController {
     @Setter(onMethod_ = @Autowired)
     private ObjectFactory<Alert> alertFactory;
 
+
     @Initialize
     public void init() {
         setHeader(header);
@@ -78,6 +106,55 @@ public class HeaderController extends AbstractHeaderController {
         draggablePanes.add(header);
         draggablePanes.add(gradientBox);
         draggablePanes.add(titleText);
+        header.requestFocus();
+        userList.getStyleClass().clear();
+        userList.getStyleClass().add("profiles-combo-box");
+        userList.getStyleClass().add("combo-box-base");
+        var powerUser = new ProfileItem(localizationHolder.getLocalization(PowerUser.PROFILE));
+        var commonUser = new ProfileItem(localizationHolder.getLocalization(CommonUser.PROFILE));
+        var noMetricsUser = new ProfileItem(localizationHolder.getLocalization(NoMetricsUser.PROFILE));
+
+        userList.getItems().addAll(powerUser, commonUser, noMetricsUser);
+
+        userList.setCellFactory(lv -> createProfileItemCell());
+        userList.setButtonCell(createProfileItemCell());
+        userList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                if (newValue.equals(powerUser)) {
+                    userSettingsHolder.setUserRole(PowerUser.PROFILE);
+                } else if (newValue.equals(commonUser)) {
+                    userSettingsHolder.setUserRole(CommonUser.PROFILE);
+                }  else if (newValue.equals(noMetricsUser)) {
+                    userSettingsHolder.setUserRole(NoMetricsUser.PROFILE);
+                }
+                userSettingsService.saveSettings();
+            }
+        });
+        var currentUser = userSettingsHolder.getUser();
+        if (currentUser instanceof PowerUser) {
+            userList.getSelectionModel().select(powerUser);
+        } else if (currentUser instanceof CommonUser) {
+            userList.getSelectionModel().select(commonUser);
+        } else if (currentUser instanceof NoMetricsUser) {
+            userList.getSelectionModel().select(noMetricsUser);
+        }
+    }
+
+    private static ListCell<ProfileItem> createProfileItemCell() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(ProfileItem item, boolean empty) {
+                textProperty().unbind();
+
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    textProperty().bind(item.displayTextProperty());
+                }
+            }
+        };
     }
 
     @Override
@@ -115,4 +192,25 @@ public class HeaderController extends AbstractHeaderController {
         alert.setContentText("Unknown project type");
         alert.showAndWait();
     }
+<<<<<<< HEAD
+=======
+
+    public static class ProfileItem {
+        private final StringProperty displayText;
+
+        public ProfileItem(StringProperty displayText) {
+            this.displayText = displayText;
+        }
+
+        public StringProperty displayTextProperty() {
+            return displayText;
+        }
+
+        @Override
+        public String toString() {
+            return displayText.get();
+        }
+    }
+
+>>>>>>> upstream/windows-support
 }

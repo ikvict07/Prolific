@@ -6,16 +6,13 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Data;
@@ -23,6 +20,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigSettingHeaderController;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.ProjectRunConfigs;
 import org.nevertouchgrass.prolific.model.RunConfig;
@@ -37,12 +35,14 @@ import org.nevertouchgrass.prolific.service.icons.ProjectTypeIconRegistry;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.process.ProcessService;
-import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
+import org.nevertouchgrass.prolific.service.runner.ProjectRunnerRegistry;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
@@ -51,7 +51,7 @@ import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 @Scope("prototype")
 @Data
 public class ProjectPanelController {
-    public final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
+    public static final String PROJECT_RUN_ERROR_MESSAGE = "Error while running project {}";
     @FXML
     public StackPane star;
     @FXML
@@ -96,13 +96,15 @@ public class ProjectPanelController {
     @Setter(onMethod_ = @Autowired)
     private NotificationService notificationService;
     @Setter(onMethod_ = @Autowired)
-    private DefaultProjectRunner projectRunner;
+    private ProjectRunnerRegistry projectRunner;
     @Setter(onMethod_ = @Autowired)
     private FxmlProvider fxmlProvider;
     @Setter(onMethod_ = @Autowired)
     private ProcessService processService;
     @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
+    @Setter(onMethod_ = @Autowired)
+    private RunConfigSettingHeaderController runConfigSettingHeaderController;
 
     private ContextMenu contextMenu;
     private ProjectRunConfigs projectRunConfigs;
@@ -111,6 +113,8 @@ public class ProjectPanelController {
     private ProcessWrapper currentProcess = null;
     private Property<Boolean> isProjectRunning = new SimpleBooleanProperty(false);
     private ProjectsService projectsService;
+
+    private final List<Consumer<Project>> updateListeners = new ArrayList<>();
 
     public void init() {
         String iconColorStyle = colorService.generateRandomColorStyle(colorService.getSeedForProject(project));
@@ -121,13 +125,10 @@ public class ProjectPanelController {
         projectInfo.prefWidthProperty().bind(projectPanel.widthProperty().multiply(0.8));
         configurationName.maxWidthProperty().bind(projectInfo.widthProperty().multiply(0.3));
 
-        projectRunConfigs = runConfigService.getAllRunConfigs(project);
-
         contextMenu = new ContextMenu();
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
 
-        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
-        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
+        initializeProjectConfiguration();
         isProjectRunning.addListener((_, _, newValue) -> Platform.runLater(() -> {
             if (newValue) {
                 runContent.getChildren().clear();
@@ -141,6 +142,28 @@ public class ProjectPanelController {
                 run.setOnMouseClicked((_ -> runProject()));
             }
         }));
+    }
+
+    private void onAddConfig() {
+        runConfigSettingHeaderController.setProjectPanelController(this);
+        runConfigSettingHeaderController.open();
+    }
+
+    private void generateAddRunConfigContextMenuItem(StringProperty label) {
+        ObservableList<MenuItem> menuItems = contextMenu.getItems();
+        if (!(projectRunConfigs.getImportedConfigs().isEmpty() && projectRunConfigs.getManuallyAddedConfigs().isEmpty())) {
+            SeparatorMenuItem separator = new SeparatorMenuItem();
+            menuItems.add(separator);
+        }
+        MenuItem menuItem = new MenuItem();
+        menuItem.textProperty().bind(label);
+        menuItem.setGraphic(fxmlProvider.getIcon("addButton"));
+        menuItem.addEventFilter(ActionEvent.ANY, _ -> onAddConfig());
+        menuItems.add(menuItem);
+    }
+
+    public void addUpdateListener(Consumer<Project> listener) {
+        updateListeners.add(listener);
     }
 
     public void setProject(Project project) {
@@ -176,9 +199,16 @@ public class ProjectPanelController {
         if (contextMenu.isShowing()) {
             contextMenu.hide();
         } else {
-            Bounds bounds = controlPanel.localToScreen(controlPanel.getBoundsInLocal());
-            contextMenu.show(controlPanel, bounds.getMinX(), bounds.getMaxY());
+            contextMenu.show(controlPanel, Side.BOTTOM, 0, 4);
         }
+    }
+
+    public void initializeProjectConfiguration() {
+        contextMenu.getItems().clear();
+        projectRunConfigs = runConfigService.getAllRunConfigs(project);
+        generateContextMenuItems(projectRunConfigs.getManuallyAddedConfigs(), localizationProvider.custom_configurations());
+        generateContextMenuItems(projectRunConfigs.getImportedConfigs(), localizationProvider.imported_configurations());
+        generateAddRunConfigContextMenuItem(localizationProvider.create_config());
     }
 
     private void switchConfigurationButtonIcon() {
@@ -192,8 +222,7 @@ public class ProjectPanelController {
         if (label != null && !runConfigs.isEmpty()) {
             MenuItem menuItem = new MenuItem();
             menuItem.textProperty().bind(label);
-            menuItem.addEventFilter(ActionEvent.ANY, Event::consume);
-            menuItem.getStyleClass().add("menu-item-disabled");
+            menuItem.setDisable(true);
             menuItems.add(menuItem);
         }
 
@@ -204,7 +233,33 @@ public class ProjectPanelController {
                 configurationName.setText(runConfig.getConfigName());
                 chosenConfig = runConfig;
             }
-            MenuItem menuItem = new MenuItem(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+            MenuItem menuItem;
+            if (label != null && label.equals(localizationProvider.custom_configurations())) {
+                Label config = new Label(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+
+                Parent removeButton = fxmlProvider.getIcon("removeBin");
+
+                removeButton.setOnMouseClicked(_ -> {
+                    runConfigService.deleteRunConfig(project, runConfig);
+                    if (chosenConfig.equals(runConfig)) {
+                        chosenConfig = null;
+                    }
+                    initializeProjectConfiguration();
+                });
+
+                HBox content = new HBox();
+                content.setAlignment(Pos.CENTER);
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+
+                content.getChildren().addAll(config, spacer, removeButton);
+
+                content.prefWidthProperty().bind(contextMenu.widthProperty().subtract(48));
+
+                menuItem = new CustomMenuItem(content);
+            } else {
+                menuItem = new MenuItem(runConfig.getConfigName(), projectTypeIconRegistry.getConfigTypeIcon(runConfig.getType()));
+            }
             menuItem.setOnAction(_ -> {
                 configurationName.setText(runConfig.getConfigName());
                 configTypeIcon.getChildren().clear();
@@ -241,12 +296,14 @@ public class ProjectPanelController {
 
     public void stopProject() {
         if (currentProcess != null) {
+            currentProcess.getProcess().onExit().thenAccept(_ -> new Thread(() -> updateListeners.forEach(c -> c.accept(project))).start());
             currentProcess.getProcess().destroy();
             currentProcess = null;
             notificationService.notifyInfo(InfoNotification.of(localizationProvider.log_info_project_stopped(), project.getTitle()));
             log.info("Project {} stopped", project.getTitle());
         }
         isProjectRunning.setValue(false);
+
     }
 
     private void runProjectLambda() {
@@ -260,5 +317,6 @@ public class ProjectPanelController {
             log.error(PROJECT_RUN_ERROR_MESSAGE, project.getTitle(), e);
             throw new IllegalStateException(e);
         }
+        updateListeners.forEach(c -> c.accept(project));
     }
 }

@@ -13,9 +13,14 @@ import java.util.concurrent.PriorityBlockingQueue;
 @Getter
 @ToString
 public class ProcessLogs {
+    private boolean isUsed = false;
     private final Queue<LogWrapper> logs = new PriorityBlockingQueue<>();
 
     public void addLog(LogWrapper log) {
+        if (isUsed) {
+            return;
+        }
         logs.add(log);
+        isUsed = true;
     }
 }

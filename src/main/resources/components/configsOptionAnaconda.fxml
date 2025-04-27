@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
+<?import javafx.geometry.Insets?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionAnaconda">
+    <fx:define>
+        <ArrayListHolder fx:id="options">
+            <Label fx:id="configName" userData="localization:config_config_name"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+                <TextField fx:id="configNameSetting"/>
+                <Label fx:id="configNameErrorMessage" managed="false" visible="false" styleClass="error"
+                       userData="localization:config_error_empty_config_name"/>
+            </VBox>
+
+            <Label fx:id="arguments" userData="localization:config_arguments" GridPane.rowIndex="1"
+                   GridPane.columnIndex="0"/>
+            <TextField fx:id="argumentsSetting" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label fx:id="scriptPath" userData="localization:setting_script_path"
+                   GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+
+            <HBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                <StackPane fx:id="scriptPathChooser" onMouseClicked="#chooseFilePath" styleClass="icon-button">
+                    <padding>
+                        <Insets topRightBottomLeft="4"/>
+                    </padding>
+                    <fx:include source="/icons/fxml/folder.fxml"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <TextField fx:id="scriptPathSetting"/>
+                    <Label fx:id="scriptPathErrorMessage" managed="false" visible="false" styleClass="error"
+                           userData="localization:setting_path_doesnt_exist"/>
+                </VBox>
+            </HBox>
+
+            <Label fx:id="anacondaEnv" userData="localization:config_anaconda_env"
+                   GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <VBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+                <TextField fx:id="anacondaEnvSetting"/>
+                <Label fx:id="anacondaEnvErrorMessage" managed="false" visible="false" styleClass="error"
+                       userData="localization:config_error_empty_anaconda_env"/>
+            </VBox>
+        </ArrayListHolder>
+    </fx:define>
+
+</AnchorPane>

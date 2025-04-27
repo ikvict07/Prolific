@@ -1,57 +1,71 @@
 package org.nevertouchgrass.prolific.service;
 
-import javafx.beans.property.SimpleStringProperty;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.nevertouchgrass.prolific.BackendTestBase;
-import org.nevertouchgrass.prolific.annotation.ProlificTestApplication;
-import org.nevertouchgrass.prolific.model.notification.InfoNotification;
+import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.scaners.ProjectScannerService;
+import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
+import org.nevertouchgrass.prolific.service.settings.XmlProjectScannerConfigLoaderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.nio.file.Path;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests for {@link ProjectScannerService} class.
+ */
 @Log4j2
-@ProlificTestApplication
+@SpringBootTest(classes = {ProjectScannerService.class, UserSettingsService.class})
 class ProjectScannerServiceTests extends BackendTestBase {
     @Autowired
     private ProjectScannerService projectScannerService;
+
     @MockitoBean
     private NotificationService notificationService;
+
     @MockitoBean
     private LocalizationProvider localizationProvider;
 
+    @MockitoBean
+    private UserSettingsHolder userSettingsHolder;
+
+    @MockitoBean
+    private XmlProjectScannerConfigLoaderService xmlProjectScannerConfigLoaderService;
+
+    @MockitoBean
+    private UserSettingsService userSettingsService;
+
     @Test
     @SneakyThrows
-    void givenNothing_whenScanForProjects_returnProjects() {
-        Mockito.doNothing().when(notificationService).notifyInfo(Mockito.any(InfoNotification.class));
-        Mockito.doReturn(new SimpleStringProperty("test")).when(localizationProvider).log_info_scanning_for_projects();
-        Mockito.doReturn(new SimpleStringProperty("test")).when(localizationProvider).log_info_scanning_for_projects_finished();
-        Mockito.doReturn(new SimpleStringProperty("test")).when(localizationProvider).log_info_scanning_for_projects_cancelled();
+    void should_scan_for_projects_and_return_consistent_results() {
+        // Given
+        String path = getProjectRootPath();
 
-        String path = System.getProperty("user.dir");
+        // When - First scan to get expected results
         Set<Path> expected = projectScannerService.scanForProjects(path);
 
+        // When - Second scan to measure performance and get actual results
         long startTime = System.currentTimeMillis();
         Set<Path> actual = projectScannerService.scanForProjects(path);
-        log.info("Running time: {}", System.currentTimeMillis() - startTime);
+        long duration = System.currentTimeMillis() - startTime;
 
+        // Log results for debugging
+        log.info("Scan completed in {} ms", duration);
         log.info("Path: {}", path);
-        log.info("Actual set: {}", actual);
-        log.info("Expected set: {}", expected);
+        log.info("Found {} projects", actual.size());
 
-        Assertions.assertNotNull(actual);
-
-        Assertions.assertEquals(expected.size(), actual.size(), "Expected and actual differ in sizes");
-
-        Assertions.assertIterableEquals(expected, actual, "The actual set differs from the expected set");
+        // Then
+        assertThat(actual)
+                .isNotNull()
+                .hasSize(expected.size())
+                .containsExactlyInAnyOrderElementsOf(expected);
     }
 }

@@ -142,12 +142,16 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.exception.ProcessStartFailedException;
 import org.nevertouchgrass.prolific.model.Project;
 import org.nevertouchgrass.prolific.model.RunConfig;
+<<<<<<< HEAD
 import org.nevertouchgrass.prolific.model.TerminatedProcessInfo;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.ProcessMetrics;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;   // <-- NEW
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;      // <-- NEW
 import org.nevertouchgrass.prolific.service.runner.DefaultProjectRunner;
+=======
+import org.nevertouchgrass.prolific.service.runner.ProjectRunnerRegistry;
+>>>>>>> upstream/windows-support
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.stereotype.Service;
 
@@ -165,7 +169,7 @@ public class ProcessService {
     private final Set<ProcessWrapper> dead = ConcurrentHashMap.newKeySet();
     private final Set<Consumer<ProcessWrapper>> onKillListeners = ConcurrentHashMap.newKeySet();
     private final List<ProcessAware> processAware;
-    private final DefaultProjectRunner projectRunner;
+    private final ProjectRunnerRegistry projectRunner;
 
     // --- NEW: Inject services to access logs & metrics ---
     private final ProcessLogsService processLogsService;
@@ -192,6 +196,7 @@ public class ProcessService {
         process.getProcess().onExit().thenAccept(_ -> {
             onKillListeners.forEach(c -> c.accept(process));
             dead.add(process);
+<<<<<<< HEAD
             log.debug("Process died: PID {} - {}", process.getPid(), process.getOsProcess().getName());
 
             // --- NEW: Record this as a terminated run ---
@@ -216,6 +221,8 @@ public class ProcessService {
             processStartTimes.remove(process);
 
 
+=======
+>>>>>>> upstream/windows-support
             removeDeadProcess(process);
         });
         return process;
@@ -240,7 +247,6 @@ public class ProcessService {
             Set<ProcessWrapper> value = observableProcessesMap.getOrDefault(project, ConcurrentHashMap.newKeySet());
             value.add(process);
             observableProcessesMap.put(project, value);
-            log.debug("New process detected: PID {} - {}", process.getPid(), process.getOsProcess().getName());
         }
     }
 

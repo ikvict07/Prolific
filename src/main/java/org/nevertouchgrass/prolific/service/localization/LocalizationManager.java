@@ -28,10 +28,6 @@ public class LocalizationManager {
         return ((XMLMessageSource) messageSource).getProperties(locale);
     }
 
-    public Locale getLocale() {
-        return Locale.forLanguageTag(userSettingsHolder.getLocale().getLanguage());
-    }
-
     public void setLocale(Locale locale) {
         userSettingsHolder.setLocale(locale);
         userSettingsService.saveSettings();

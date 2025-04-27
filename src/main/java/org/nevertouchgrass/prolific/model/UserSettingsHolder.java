@@ -4,9 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
+import lombok.Getter;
+import org.nevertouchgrass.prolific.constants.profile.CommonUser;
+import org.nevertouchgrass.prolific.constants.profile.NoMetricsUser;
+import org.nevertouchgrass.prolific.constants.profile.PowerUser;
+import org.nevertouchgrass.prolific.constants.profile.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -19,8 +25,8 @@ public class UserSettingsHolder {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd['T'HH:mm:ss]")
     private LocalDateTime lastScanDate = LocalDateTime.now().minusYears(100);
     private Integer rescanEveryHours;
-    private List<Project> userProjects;
     private Integer maximumProjectDepth = 6;
+    @Getter
     private List<String> excludedDirs;
     private List<String> supportedTranslations;
     private Locale locale;
@@ -28,6 +34,24 @@ public class UserSettingsHolder {
     private String gradlePath;
     private String mavenPath;
     private String jdkPath;
+    private String anacondaPath;
+    private String userRole;
+
+
+    public void setExcludedDirs(List<String> excludedDirs) {
+        this.excludedDirs = new ArrayList<>(excludedDirs);
+    }
+
+    public User getUser() {
+        if (userRole == null || userRole.isEmpty()) {
+            return new CommonUser();
+        }
+        return switch (userRole) {
+            case PowerUser.PROFILE -> new PowerUser();
+            case NoMetricsUser.PROFILE -> new NoMetricsUser();
+            default -> new CommonUser();
+        };
+    }
 
     public void load(UserSettingsHolder userSettingsHolder) {
         if (userSettingsHolder.getBaseScanDirectory() != null && !userSettingsHolder.getBaseScanDirectory().isEmpty()) {
@@ -38,9 +62,6 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.getRescanEveryHours() != null) {
             this.rescanEveryHours = userSettingsHolder.getRescanEveryHours();
-        }
-        if (userSettingsHolder.getUserProjects() != null) {
-            this.userProjects = userSettingsHolder.getUserProjects();
         }
         if (userSettingsHolder.maximumProjectDepth != null) {
             this.maximumProjectDepth = userSettingsHolder.getMaximumProjectDepth();
@@ -65,6 +86,12 @@ public class UserSettingsHolder {
         }
         if (userSettingsHolder.getJdkPath() != null && !userSettingsHolder.getJdkPath().isEmpty()) {
             this.jdkPath = userSettingsHolder.getJdkPath();
+        }
+        if (userSettingsHolder.getUser() != null) {
+            this.userRole = userSettingsHolder.getUser().getProfile();
+        }
+        if (userSettingsHolder.getAnacondaPath() != null && !userSettingsHolder.getAnacondaPath().isEmpty()) {
+            this.anacondaPath = userSettingsHolder.getAnacondaPath();
         }
     }
 }

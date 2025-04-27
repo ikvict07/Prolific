@@ -6,13 +6,13 @@
 <?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsOptionGeneral">
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.options.SettingsOptionGeneral">
     <fx:define>
         <ArrayListHolder fx:id="options">
             <Label fx:id="rootPath" userData="localization:setting_root_path_to_scan"
                    GridPane.rowIndex="0" GridPane.columnIndex="0"/>
             <HBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
-                <StackPane fx:id="rootPathChooser" styleClass="icon-button" onMouseClicked="#choosePath">
+                <StackPane fx:id="rootPathChooser" styleClass="icon-button" onMouseClicked="#chooseDirectoryPath">
                     <padding>
                         <Insets topRightBottomLeft="4"/>
                     </padding>
