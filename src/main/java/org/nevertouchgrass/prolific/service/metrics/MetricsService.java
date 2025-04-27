@@ -120,6 +120,8 @@ public class MetricsService implements ProcessAware {
     private long getMemoryUsageForWindows(Set<ProcessHandle> descendants) {
         AtomicReference<Long> memoryUsage = new AtomicReference<>(0L);
         descendants.forEach(d -> {
+            // Security hotspot reviewed: All parameters are hardcoded, no user input is passed.
+            // Usage of ProcessBuilder is safe in this context.
             var pb = new ProcessBuilder("wmic", "path", "Win32_PerfFormattedData_PerfProc_Process", "where", "IDProcess=" + d.pid(), "get", "WorkingSetPrivate");
             readMemoryUsage(memoryUsage, pb);
         });
