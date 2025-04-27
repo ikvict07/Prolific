@@ -62,8 +62,8 @@ public class MetricsChartComponent extends VBox {
         HBox.setHgrow(this, Priority.ALWAYS);
         VBox.setVgrow(this, Priority.ALWAYS);
 
-        createCharts();     // Re-use your existing method
-        createScrollBar();  // For consistent look
+        createCharts();
+        createScrollBar();
 
         // Fill allCpuData/allMemoryData from historical metrics
         if (metrics != null && metrics.getMetrics() != null) {
@@ -86,18 +86,15 @@ public class MetricsChartComponent extends VBox {
                 }
             }
 
-            // Set the axis upper bound based on maxCpuUsage after processing all data
             yCpuAxis.setUpperBound(Math.min(
                     Runtime.getRuntime().availableProcessors() * 100d + 10,
                     Math.ceil(maxCpuUsage * 1.2 / 10) * 10 + 10
             ));
 
-            // Show scrollbar if needed
             if (allCpuData.size() > timeWindow * 2) {
                 scrollBar.setVisible(true);
             }
 
-            // Populate the visible chart with last N (timeWindow) data points
             long startIndex = Math.max(0, allCpuData.size() - timeWindow);
             updateChartView(startIndex);
         }

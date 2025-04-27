@@ -21,7 +21,6 @@ import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
-import org.nevertouchgrass.prolific.constants.action.SeeMetricsAction;
 import org.nevertouchgrass.prolific.listener.InitializeAnnotationProcessor;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
@@ -36,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,8 +77,11 @@ public class LogsAndMetricsPanelController {
     private ObservableMap<Project, Set<ProcessWrapper>> processes;
     private SimpleIntegerProperty runningProjectsCount;
 
+
+    private ProcessWrapper currentProcess = null;
+    private TerminatedProcessInfo selectedTerminatedInfo = null;
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
-    private ProcessWrapper currentProcess;
+    private final Map<ProcessWrapper, MetricsChartComponent> metricsComponents = new HashMap<>();
     private StringProperty projectChoice;
     @Setter(onMethod_ = @Autowired)
     private PermissionRegistry permissionRegistry;
@@ -119,6 +120,7 @@ public class LogsAndMetricsPanelController {
                 } else {
                     menuItem.addEventHandler(ActionEvent.ACTION, _ -> {
                         projectChoice.unbind();
+                        chosenProject.textProperty().unbind();
                         projectChoice.set(project.getTitle());
 
                         ContextMenu subMenu = new ContextMenu();
@@ -135,7 +137,7 @@ public class LogsAndMetricsPanelController {
                 }
                 contextMenu.getItems().add(menuItem);
             } else if (change.wasRemoved()) {
-                Platform.runLater(() -> contextMenu.getItems().removeIf(item -> item.getId().equals(change.getKey().getTitle())));
+                Platform.runLater(() -> contextMenu.getItems().removeIf(item -> item.getId() != null && item.getId().equals(change.getKey().getTitle())));
             }
             runningProjectsCount.set(processes.size());
         });
@@ -171,9 +173,7 @@ public class LogsAndMetricsPanelController {
             logsButton.getStyleClass().addAll(label, "logs-button");
             isLogsOpened = false;
         }
-        if (currentProcess != null) {
-            changeLogs(currentProcess);
-        }
+        changeLogs(currentProcess, selectedTerminatedInfo);
     }
 
     private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, Project project, String text, ProcessWrapper processWrapper) {
@@ -181,47 +181,16 @@ public class LogsAndMetricsPanelController {
         menuItem.setHideOnClick(false);
         menuItem.setOnAction(_ -> Platform.runLater(() -> {
             projectChoice.unbind();
+            chosenProject.textProperty().unbind();
             projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
             currentProcess = processWrapper;
-            changeLogs(processWrapper);
+            selectedTerminatedInfo = null;
+            changeLogs(currentProcess, null);
         }));
     }
 
-    private final Map<ProcessWrapper, MetricsChartComponent> metricsComponents = new HashMap<>();
-
-
-    private void changeLogs(ProcessWrapper processWrapper) {
-        placeForScrollPane.getChildren().clear();
-        var processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-        var flux = processLogsService.subscribeToLogs(processWrapper);
-        if (isLogsOpened) {
-            var component = logsAndMetricsTextComponents.computeIfAbsent(processWrapper,
-                    _ -> {
-                        var componentProvider = new LogsAndMetricsTextComponent(processLogs, flux);
-                        componentProvider.init();
-                        return componentProvider;
-                    });
-            placeForScrollPane.getChildren().add(component.getComponent());
-        } else {
-            if (!permissionRegistry.getChecker(SeeMetricsAction.class).hasPermission(new SeeMetricsAction())) {
-                return;
-            }
-            var component = metricsComponents.computeIfAbsent(processWrapper,
-                    _ -> new MetricsChartComponent(metricsService, processWrapper));
-            placeForScrollPane.getChildren().add(component);
-        }
-    }
-
-    //new code added......
-
     private void refreshContextMenu() {
-        System.out.println("Refreshing dropdown. Recent runs: " + processService.getRecentTerminatedRuns().size());
-
         contextMenu.getItems().clear();
-        //debug
-        System.out.println("RECENT in refreshContextMenu : " + processService.getRecentTerminatedRuns().size());
-        for (var info : processService.getRecentTerminatedRuns()) System.out.println(info);
-        // 1. Add running processes (current logic)
         processes.forEach((project, processWrappers) -> {
             for (ProcessWrapper processWrapper : processWrappers) {
                 ProjectRunEntry entry = new ProjectRunEntry(project, project.getTitle() + " - " + processWrapper.getName() + " (Running)", processWrapper);
@@ -230,8 +199,6 @@ public class LogsAndMetricsPanelController {
                 contextMenu.getItems().add(item);
             }
         });
-
-        // 2. Add a separator and recently terminated runs
         contextMenu.getItems().add(new SeparatorMenuItem());
         for (TerminatedProcessInfo info : processService.getRecentTerminatedRuns()) {
             ProjectRunEntry entry = new ProjectRunEntry(info);
@@ -239,41 +206,69 @@ public class LogsAndMetricsPanelController {
             item.setOnAction(e -> Platform.runLater(() -> selectProjectRun(entry)));
             contextMenu.getItems().add(item);
         }
-
         if (contextMenu.getItems().isEmpty()) {
             CustomMenuItem empty = new CustomMenuItem(new Label("No projects available"));
             empty.setDisable(true);
             contextMenu.getItems().add(empty);
         }
-
     }
-
 
     private void selectProjectRun(ProjectRunEntry entry) {
         projectChoice.unbind();
+        chosenProject.textProperty().unbind();
         chosenProject.setText(entry.toString());
 
-        placeForScrollPane.getChildren().clear();
         if (entry.isRunning) {
             currentProcess = entry.runningProcess;
-            changeLogs(entry.runningProcess);
+            selectedTerminatedInfo = null;
         } else {
-            // Show logs and metrics for terminated process
-            var logs = entry.terminatedInfo.getLogs();
-            var metrics = entry.terminatedInfo.getMetrics();
+            currentProcess = null;
+            selectedTerminatedInfo = entry.terminatedInfo;
+        }
+        changeLogs(currentProcess, selectedTerminatedInfo);
+    }
 
-            if (isLogsOpened) {
-                var component = new LogsAndMetricsTextComponent(logs, null); // no live flux
+    /**
+     * Universal method for showing logs or metrics for either a running or terminated process.
+     */
+    private void changeLogs(ProcessWrapper processWrapper, TerminatedProcessInfo terminatedInfo) {
+        placeForScrollPane.getChildren().clear();
+
+        if (isLogsOpened) {
+            if (processWrapper != null) {
+                // Live logs for running process
+                var processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
+                var flux = processLogsService.subscribeToLogs(processWrapper);
+                var component = logsAndMetricsTextComponents.computeIfAbsent(processWrapper,
+                        _ -> {
+                            var componentProvider = new LogsAndMetricsTextComponent(processLogs, flux);
+                            componentProvider.init();
+                            return componentProvider;
+                        });
+                placeForScrollPane.getChildren().add(component.getComponent());
+            } else if (terminatedInfo != null) {
+                // Logs for terminated process
+                var logs = terminatedInfo.getLogs();
+                var component = new LogsAndMetricsTextComponent(logs, null);
                 component.init();
-                placeForScrollPane.getChildren().add(component.getLogsScrollPane());
-            } else {
-                var component = new MetricsChartComponent(metrics); // You might need to add this constructor!
+                placeForScrollPane.getChildren().add(component.getComponent());
+            }
+        } else {
+            if (processWrapper != null) {
+                // Live metrics for running process
+                var component = metricsComponents.computeIfAbsent(processWrapper,
+                        _ -> new MetricsChartComponent(metricsService, processWrapper));
+                placeForScrollPane.getChildren().add(component);
+            } else if (terminatedInfo != null) {
+                // Metrics for terminated process
+                var metrics = terminatedInfo.getMetrics();
+                var component = new MetricsChartComponent(metrics);
                 placeForScrollPane.getChildren().add(component);
             }
         }
     }
 
-    // --- Add this inside your controller ---
+    //helper class for dropdown entries
     public static class ProjectRunEntry {
         public final Project project;
         public final String displayName;

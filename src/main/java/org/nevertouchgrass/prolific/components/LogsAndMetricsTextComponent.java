@@ -45,30 +45,31 @@ public class LogsAndMetricsTextComponent {
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
         processBatchesWithDelay(new ArrayList<>(processLogs.getLogs()), 0);
-
-        logsFlux.bufferTimeout(100, Duration.ofMillis(250))
-                .subscribeWith(new BaseSubscriber<List<LogWrapper>>() {
-                    @Override
-                    protected void hookOnSubscribe(Subscription subscription) {
-                        request(1);
-                    }
-
-                    @Override
-                    protected void hookOnNext(List<LogWrapper> batch) {
-                        if (batch.isEmpty()) {
+        if(logsFlux != null) {
+            logsFlux.bufferTimeout(100, Duration.ofMillis(250))
+                    .subscribeWith(new BaseSubscriber<List<LogWrapper>>() {
+                        @Override
+                        protected void hookOnSubscribe(Subscription subscription) {
                             request(1);
-                            return;
                         }
 
-                        List<LogWrapper> sortedBatch = new ArrayList<>(batch);
-                        Collections.sort(sortedBatch);
+                        @Override
+                        protected void hookOnNext(List<LogWrapper> batch) {
+                            if (batch.isEmpty()) {
+                                request(1);
+                                return;
+                            }
 
-                        Platform.runLater(() -> {
-                            processLogBatch(sortedBatch);
-                            request(1);
-                        });
-                    }
-                });
+                            List<LogWrapper> sortedBatch = new ArrayList<>(batch);
+                            Collections.sort(sortedBatch);
+
+                            Platform.runLater(() -> {
+                                processLogBatch(sortedBatch);
+                                request(1);
+                            });
+                        }
+                    });
+        }
     }
 
     private void configureTextArea() {

@@ -3,14 +3,8 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-<<<<<<< HEAD
-import javafx.scene.control.Alert;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
-=======
 import javafx.scene.control.*;
->>>>>>> upstream/windows-support
+
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -192,8 +186,7 @@ public class HeaderController extends AbstractHeaderController {
         alert.setContentText("Unknown project type");
         alert.showAndWait();
     }
-<<<<<<< HEAD
-=======
+
 
     public static class ProfileItem {
         private final StringProperty displayText;
@@ -212,5 +205,5 @@ public class HeaderController extends AbstractHeaderController {
         }
     }
 
->>>>>>> upstream/windows-support
+
 }
