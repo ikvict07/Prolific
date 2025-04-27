@@ -119,4 +119,5 @@ public class ProcessLogsService implements ProcessAware {
 
         queueProcessingFlags.remove(process);
     }
+
 }

@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.nevertouchgrass.prolific.model.Metric;
+import org.nevertouchgrass.prolific.model.ProcessMetrics;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.reactfx.EventSource;
@@ -53,6 +54,54 @@ public class MetricsChartComponent extends VBox {
                     .subscribe(metric -> Platform.runLater(() -> metricEvents.push(metric)));
         }
     }
+    //new added
+    public MetricsChartComponent(ProcessMetrics metrics) {
+        setMaxWidth(Double.MAX_VALUE);
+        this.getStyleClass().add("metrics-chart");
+        HBox.setHgrow(this, Priority.ALWAYS);
+        VBox.setVgrow(this, Priority.ALWAYS);
+
+        createCharts();     // Re-use your existing method
+        createScrollBar();  // For consistent look
+
+        // Fill allCpuData/allMemoryData from historical metrics
+        if (metrics != null && metrics.getMetrics() != null) {
+            for (Metric metric : metrics.getMetrics()) {
+                String formattedTime = metric.getTimeStamp().format(timeFormatter);
+                double cpuValue = metric.getCpuUsage();
+                double memoryInMB = metric.getMemoryUsage() / (1024.0 * 1024.0);
+
+                XYChart.Data<String, Number> cpuData = new XYChart.Data<>(formattedTime, cpuValue);
+                XYChart.Data<String, Number> memoryData = new XYChart.Data<>(formattedTime, memoryInMB);
+
+                allCpuData.add(cpuData);
+                allMemoryData.add(memoryData);
+
+                if (cpuValue > maxCpuUsage) {
+                    maxCpuUsage = cpuValue;
+                }
+                if (memoryInMB > yMemAxis.getUpperBound()) {
+                    yMemAxis.setUpperBound(Math.ceil(memoryInMB * 1.2 / 100) * 100);
+                }
+            }
+
+            // Set the axis upper bound based on maxCpuUsage after processing all data
+            yCpuAxis.setUpperBound(Math.min(
+                    Runtime.getRuntime().availableProcessors() * 100d + 10,
+                    Math.ceil(maxCpuUsage * 1.2 / 10) * 10 + 10
+            ));
+
+            // Show scrollbar if needed
+            if (allCpuData.size() > timeWindow * 2) {
+                scrollBar.setVisible(true);
+            }
+
+            // Populate the visible chart with last N (timeWindow) data points
+            long startIndex = Math.max(0, allCpuData.size() - timeWindow);
+            updateChartView(startIndex);
+        }
+    }
+
 
     private void createCharts() {
         CategoryAxis xCpuAxis = new CategoryAxis();

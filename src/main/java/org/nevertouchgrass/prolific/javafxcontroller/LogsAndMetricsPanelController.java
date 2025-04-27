@@ -11,6 +11,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import lombok.NonNull;
@@ -22,6 +23,7 @@ import org.nevertouchgrass.prolific.components.LogsAndMetricsTextComponent;
 import org.nevertouchgrass.prolific.components.MetricsChartComponent;
 import org.nevertouchgrass.prolific.model.ProcessLogs;
 import org.nevertouchgrass.prolific.model.Project;
+import org.nevertouchgrass.prolific.model.TerminatedProcessInfo;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,6 +65,7 @@ public class LogsAndMetricsPanelController {
 
     private final ContextMenu contextMenu = new ContextMenu();
     @Setter(onMethod_ = @Autowired)
+    @Autowired
     private ProcessService processService;
     @Setter(onMethod_ = @Autowired)
     private ProcessLogsService processLogsService;
@@ -133,6 +137,7 @@ public class LogsAndMetricsPanelController {
     }
 
     public void showRunningProjects() {
+        refreshContextMenu();
         if (contextMenu.isShowing()) {
             contextMenu.hide();
         } else {
@@ -198,4 +203,95 @@ public class LogsAndMetricsPanelController {
             placeForScrollPane.getChildren().add(component);
         }
     }
+
+    //new code added......
+
+    private void refreshContextMenu() {
+        System.out.println("Refreshing dropdown. Recent runs: " + processService.getRecentTerminatedRuns().size());
+
+        contextMenu.getItems().clear();
+        //debug
+        System.out.println("RECENT in refreshContextMenu : " + processService.getRecentTerminatedRuns().size());
+        for (var info : processService.getRecentTerminatedRuns()) System.out.println(info);
+        // 1. Add running processes (current logic)
+        processes.forEach((project, processWrappers) -> {
+            for (ProcessWrapper processWrapper : processWrappers) {
+                ProjectRunEntry entry = new ProjectRunEntry(project, project.getTitle() + " - " + processWrapper.getName() + " (Running)", processWrapper);
+                CustomMenuItem item = new CustomMenuItem(new Label(entry.toString()));
+                item.setOnAction(e -> Platform.runLater(() -> selectProjectRun(entry)));
+                contextMenu.getItems().add(item);
+            }
+        });
+
+        // 2. Add a separator and recently terminated runs
+        contextMenu.getItems().add(new SeparatorMenuItem());
+        for (TerminatedProcessInfo info : processService.getRecentTerminatedRuns()) {
+            ProjectRunEntry entry = new ProjectRunEntry(info);
+            CustomMenuItem item = new CustomMenuItem(new Label(entry.toString()));
+            item.setOnAction(e -> Platform.runLater(() -> selectProjectRun(entry)));
+            contextMenu.getItems().add(item);
+        }
+
+        if (contextMenu.getItems().isEmpty()) {
+            CustomMenuItem empty = new CustomMenuItem(new Label("No projects available"));
+            empty.setDisable(true);
+            contextMenu.getItems().add(empty);
+        }
+
+    }
+
+
+    private void selectProjectRun(ProjectRunEntry entry) {
+        projectChoice.unbind();
+        chosenProject.setText(entry.toString());
+
+        placeForScrollPane.getChildren().clear();
+        if (entry.isRunning) {
+            currentProcess = entry.runningProcess;
+            changeLogs(entry.runningProcess);
+        } else {
+            // Show logs and metrics for terminated process
+            var logs = entry.terminatedInfo.getLogs();
+            var metrics = entry.terminatedInfo.getMetrics();
+
+            if (isLogsOpened) {
+                var component = new LogsAndMetricsTextComponent(logs, null); // no live flux
+                component.init();
+                placeForScrollPane.getChildren().add(component.getLogsScrollPane());
+            } else {
+                var component = new MetricsChartComponent(metrics); // You might need to add this constructor!
+                placeForScrollPane.getChildren().add(component);
+            }
+        }
+    }
+
+    // --- Add this inside your controller ---
+    public static class ProjectRunEntry {
+        public final Project project;
+        public final String displayName;
+        public final boolean isRunning;
+        public final ProcessWrapper runningProcess;
+        public final TerminatedProcessInfo terminatedInfo;
+
+        // For running process
+        public ProjectRunEntry(Project project, String displayName, ProcessWrapper runningProcess) {
+            this.project = project;
+            this.displayName = displayName;
+            this.isRunning = true;
+            this.runningProcess = runningProcess;
+            this.terminatedInfo = null;
+        }
+        // For terminated process
+        public ProjectRunEntry(TerminatedProcessInfo info) {
+            this.project = info.getProject();
+            this.displayName = info.getProject().getTitle() + " - " + info.getRunConfig().getConfigName() + " (Finished at " + info.getEndedAt() + ")";
+            this.isRunning = false;
+            this.runningProcess = null;
+            this.terminatedInfo = info;
+        }
+
+        @Override
+        public String toString() { return displayName; }
+    }
+
 }

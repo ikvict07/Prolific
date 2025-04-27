@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -251,4 +248,10 @@ public class MetricsService implements ProcessAware {
     private void destroy() {
         stopObserving();
     }
+
+
+    public Map<ProcessWrapper, ProcessMetrics> getMetrics() {
+        return Map.copyOf(metrics);
+    }
+
 }
