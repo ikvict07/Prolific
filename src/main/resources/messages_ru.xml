@@ -88,4 +88,5 @@
     <entry key="config_anaconda_env">Окружение Anaconda</entry>
     <entry key="config_error_empty_anaconda_env">Окружение Anaconda не должно быть пустым</entry>
     <entry key="no_metrics_user">Без метрик</entry>
+    <entry key="label_running">(Запущен)</entry>
 </properties>

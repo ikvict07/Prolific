@@ -193,7 +193,11 @@ public class LogsAndMetricsPanelController {
         contextMenu.getItems().clear();
         processes.forEach((project, processWrappers) -> {
             for (ProcessWrapper processWrapper : processWrappers) {
-                ProjectRunEntry entry = new ProjectRunEntry(project, project.getTitle() + " - " + processWrapper.getName() + " (Running)", processWrapper);
+               // ProjectRunEntry entry = new ProjectRunEntry(project, project.getTitle() + " - " + processWrapper.getName() + " (Running)", processWrapper);
+                ProjectRunEntry entry = new ProjectRunEntry(
+                        project,
+                        project.getTitle() + " - " + processWrapper.getName() + " " + localizationProvider.label_running().get(), processWrapper);
+
                 CustomMenuItem item = new CustomMenuItem(new Label(entry.toString()));
                 item.setOnAction(e -> Platform.runLater(() -> selectProjectRun(entry)));
                 contextMenu.getItems().add(item);

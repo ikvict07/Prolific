@@ -88,4 +88,5 @@
     <entry key="config_error_empty_path">Path must not be empty</entry>
     <entry key="config_anaconda_env">Anaconda env</entry>
     <entry key="config_error_empty_anaconda_env">Anaconda env must not be empty</entry>
+    <entry key="label_running">(Running)</entry>
 </properties>

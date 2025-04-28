@@ -88,4 +88,5 @@
     <entry key="config_anaconda_env">Prostredie Anaconda</entry>
     <entry key="config_error_empty_anaconda_env">Prostredie Anaconda nesmie byť prázdne</entry>
     <entry key="no_metrics_user">Bez metric</entry>
+    <entry key="label_running">(Beží)</entry>
 </properties>
