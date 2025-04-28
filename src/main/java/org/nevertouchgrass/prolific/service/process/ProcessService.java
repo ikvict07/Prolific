@@ -43,7 +43,6 @@ public class ProcessService {
 
     private final ObservableMap<Project, Set<ProcessWrapper>> observableProcessesMap = FXCollections.observableHashMap();
 
-    // Use thread-safe deque for recent runs
     private final Deque<TerminatedProcessInfo> recentTerminatedRuns = new ConcurrentLinkedDeque<>();
     private static final int MAX_RECENT_RUNS = 10;
 
@@ -55,7 +54,6 @@ public class ProcessService {
         var process = projectRunner.runProject(project, runConfig);
         addProcess(project, process);
 
-        // Track process info for terminated runs
         processToProject.put(process, project);
         processToRunConfig.put(process, runConfig);
         processStartTimes.put(process, LocalDateTime.now());
@@ -63,10 +61,8 @@ public class ProcessService {
         process.getProcess().onExit().thenAccept(_ -> {
             onKillListeners.forEach(c -> c.accept(process));
             dead.add(process);
-            log.debug("Process died: PID {} - {}", process.getPid(), process.getProcess().toString() // or .pid(), or another method, depending on your needs
-            );
+            log.debug("Process died: PID {} - {}", process.getPid(), process.getProcess().toString());
 
-            // Record this as a terminated run
             Project proj = processToProject.get(process);
             RunConfig config = processToRunConfig.get(process);
             LocalDateTime startedAt = processStartTimes.get(process);
@@ -76,12 +72,9 @@ public class ProcessService {
             ProcessLogs logs = processLogsService.getLogs().get(process);
             ProcessMetrics metrics = metricsService.getMetrics().get(process);
 
-            recordTerminatedRun(new TerminatedProcessInfo(
-                    proj, config, startedAt, endedAt, exitCode, logs, metrics
-            ));
-            System.out.println("Recorded recent run for project: " + (proj != null ? proj.getTitle() : "null"));
+            recordTerminatedRun(new TerminatedProcessInfo(proj, config, logs, metrics));
+            log.debug("Recorded recent run for project: {}", proj != null ? proj.getTitle() : "null");
 
-            // Clean up tracking maps
             processToProject.remove(process);
             processToRunConfig.remove(process);
             processStartTimes.remove(process);

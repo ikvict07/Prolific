@@ -193,10 +193,7 @@ public class LogsAndMetricsPanelController {
         contextMenu.getItems().clear();
         processes.forEach((project, processWrappers) -> {
             for (ProcessWrapper processWrapper : processWrappers) {
-               // ProjectRunEntry entry = new ProjectRunEntry(project, project.getTitle() + " - " + processWrapper.getName() + " (Running)", processWrapper);
-                ProjectRunEntry entry = new ProjectRunEntry(
-                        project,
-                        project.getTitle() + " - " + processWrapper.getName() + " " + localizationProvider.label_running().get(), processWrapper);
+                ProjectRunEntry entry = new ProjectRunEntry(project, project.getTitle() + " - " + processWrapper.getName() + " " + localizationProvider.label_running().get(), processWrapper);
 
                 CustomMenuItem item = new CustomMenuItem(new Label(entry.toString()));
                 item.setOnAction(e -> Platform.runLater(() -> selectProjectRun(entry)));
@@ -252,7 +249,7 @@ public class LogsAndMetricsPanelController {
                 placeForScrollPane.getChildren().add(component.getComponent());
             } else if (terminatedInfo != null) {
                 // Logs for terminated process
-                var logs = terminatedInfo.getLogs();
+                var logs = terminatedInfo.logs();
                 var component = new LogsAndMetricsTextComponent(logs, null);
                 component.init();
                 placeForScrollPane.getChildren().add(component.getComponent());
@@ -265,7 +262,7 @@ public class LogsAndMetricsPanelController {
                 placeForScrollPane.getChildren().add(component);
             } else if (terminatedInfo != null) {
                 // Metrics for terminated process
-                var metrics = terminatedInfo.getMetrics();
+                var metrics = terminatedInfo.metrics();
                 var component = new MetricsChartComponent(metrics);
                 placeForScrollPane.getChildren().add(component);
             }
@@ -290,8 +287,8 @@ public class LogsAndMetricsPanelController {
         }
         // For terminated process
         public ProjectRunEntry(TerminatedProcessInfo info) {
-            this.project = info.getProject();
-            this.displayName = info.getProject().getTitle() + " - " + info.getRunConfig().getConfigName() + " (Finished at " + info.getEndedAt() + ")";
+            this.project = info.project();
+            this.displayName = info.project().getTitle() + " - " + info.runConfig().getConfigName();
             this.isRunning = false;
             this.runningProcess = null;
             this.terminatedInfo = info;
