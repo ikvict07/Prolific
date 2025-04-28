@@ -265,7 +265,6 @@ public class LogsAndMetricsPanelController {
         }
     }
 
-    //helper class for dropdown entries
     public static class ProjectRunEntry {
         public final Project project;
         public final String displayName;
@@ -273,7 +272,6 @@ public class LogsAndMetricsPanelController {
         public final ProcessWrapper runningProcess;
         public final TerminatedProcessInfo terminatedInfo;
 
-        // For running process
         public ProjectRunEntry(Project project, String displayName, ProcessWrapper runningProcess) {
             this.project = project;
             this.displayName = displayName;
@@ -281,7 +279,7 @@ public class LogsAndMetricsPanelController {
             this.runningProcess = runningProcess;
             this.terminatedInfo = null;
         }
-        // For terminated process
+
         public ProjectRunEntry(TerminatedProcessInfo info) {
             this.project = info.project();
             this.displayName = info.project().getTitle() + " - " + info.runConfig().getConfigName();
