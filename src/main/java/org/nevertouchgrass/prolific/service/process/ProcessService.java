@@ -112,7 +112,6 @@ public class ProcessService {
      */
     @PreDestroy
     public void destroy() {
-        // Clear collections to help with garbage collection
         live.clear();
         dead.clear();
         onKillListeners.clear();

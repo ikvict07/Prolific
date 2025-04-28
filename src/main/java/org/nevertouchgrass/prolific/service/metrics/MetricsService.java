@@ -30,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.nevertouchgrass.prolific.util.ProcessUtl.receiveDescendants;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -212,18 +214,6 @@ public class MetricsService implements ProcessAware {
             }
         }
         return cpuUsage.get();
-    }
-
-    public void receiveDescendants(ProcessHandle process, Set<ProcessHandle> descendantsToReceive) {
-        var d = new HashSet<ProcessHandle>();
-        var children = process.children().toList();
-        var descendants = process.descendants().toList();
-        d.add(process);
-        d.addAll(children);
-        d.addAll(descendants);
-        descendantsToReceive.addAll(d);
-        children.forEach(c -> receiveDescendants(c, descendantsToReceive));
-        children.forEach(c -> receiveDescendants(c, descendantsToReceive));
     }
 
     public Flux<Metric> subscribeToMetrics(ProcessWrapper process) {

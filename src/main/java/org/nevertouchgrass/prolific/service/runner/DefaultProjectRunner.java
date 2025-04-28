@@ -15,7 +15,8 @@ import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
-import java.util.Set;
+
+import static org.nevertouchgrass.prolific.util.ProcessUtl.receiveDescendants;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -51,17 +52,5 @@ public abstract class DefaultProjectRunner implements ProjectRunner {
         } catch (IOException e) {
             throw new ProcessStartFailedException("Error occurred while starting the process " + processBuilder, e);
         }
-    }
-
-    public void receiveDescendants(ProcessHandle process, Set<ProcessHandle> descendantsToReceive) {
-        var d = new HashSet<ProcessHandle>();
-        var children = process.children().toList();
-        var descendants = process.descendants().toList();
-        d.add(process);
-        d.addAll(children);
-        d.addAll(descendants);
-        descendantsToReceive.addAll(d);
-        children.forEach(c -> receiveDescendants(c, descendantsToReceive));
-        children.forEach(c -> receiveDescendants(c, descendantsToReceive));
     }
 }
