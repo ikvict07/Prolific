@@ -172,7 +172,12 @@ public class LogsAndMetricsPanelController {
             logsButton.getStyleClass().addAll(label, "logs-button");
             isLogsOpened = false;
         }
-        changeLogs(currentProcess, selectedTerminatedInfo);
+        if (currentProcess != null) {
+            showRunningLogs(currentProcess);
+        } else if (selectedTerminatedInfo != null) {
+            showTerminatedLogs(selectedTerminatedInfo);
+        }
+
     }
 
     private void setupProcessMenuItem(@NonNull CustomMenuItem menuItem, Project project, String text, ProcessWrapper processWrapper) {
@@ -183,7 +188,7 @@ public class LogsAndMetricsPanelController {
             projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
             currentProcess = processWrapper;
             selectedTerminatedInfo = null;
-            changeLogs(currentProcess, null);
+            showRunningLogs(currentProcess);
         }));
     }
 
@@ -222,48 +227,53 @@ public class LogsAndMetricsPanelController {
             currentProcess = null;
             selectedTerminatedInfo = entry.terminatedInfo;
         }
-        changeLogs(currentProcess, selectedTerminatedInfo);
+        if (currentProcess != null) {
+            showRunningLogs(currentProcess);
+        } else if (selectedTerminatedInfo != null) {
+            showTerminatedLogs(selectedTerminatedInfo);
+        }
+
     }
 
-    /**
-     * Universal method for showing logs or metrics for either a running or terminated process.
-     */
-    private void changeLogs(ProcessWrapper processWrapper, TerminatedProcessInfo terminatedInfo) {
+    private void showRunningLogs(ProcessWrapper processWrapper) {
+        placeForScrollPane.getChildren().clear();
+        // Live logs for running process
+        var processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
+        var flux = processLogsService.subscribeToLogs(processWrapper);
+
+        if (isLogsOpened) {
+            var component = logsAndMetricsTextComponents.computeIfAbsent(processWrapper, _ -> {
+                var componentProvider = new LogsAndMetricsTextComponent(processLogs, flux);
+                componentProvider.init();
+                return componentProvider;
+            });
+            placeForScrollPane.getChildren().add(component.getComponent());
+        } else {
+            // Live metrics for running process
+            var component = metricsComponents.computeIfAbsent(processWrapper, _ ->
+                    new MetricsChartComponent(metricsService, processWrapper)
+            );
+            placeForScrollPane.getChildren().add(component);
+        }
+    }
+
+    private void showTerminatedLogs(TerminatedProcessInfo terminatedInfo) {
         placeForScrollPane.getChildren().clear();
 
         if (isLogsOpened) {
-            if (processWrapper != null) {
-                // Live logs for running process
-                var processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
-                var flux = processLogsService.subscribeToLogs(processWrapper);
-                var component = logsAndMetricsTextComponents.computeIfAbsent(processWrapper,
-                        _ -> {
-                            var componentProvider = new LogsAndMetricsTextComponent(processLogs, flux);
-                            componentProvider.init();
-                            return componentProvider;
-                        });
-                placeForScrollPane.getChildren().add(component.getComponent());
-            } else if (terminatedInfo != null) {
-                // Logs for terminated process
-                var logs = terminatedInfo.logs();
-                var component = new LogsAndMetricsTextComponent(logs, null);
-                component.init();
-                placeForScrollPane.getChildren().add(component.getComponent());
-            }
+            // Logs for terminated process
+            var logs = terminatedInfo.logs();
+            var component = new LogsAndMetricsTextComponent(logs, null);
+            component.init();
+            placeForScrollPane.getChildren().add(component.getComponent());
         } else {
-            if (processWrapper != null) {
-                // Live metrics for running process
-                var component = metricsComponents.computeIfAbsent(processWrapper,
-                        _ -> new MetricsChartComponent(metricsService, processWrapper));
-                placeForScrollPane.getChildren().add(component);
-            } else if (terminatedInfo != null) {
-                // Metrics for terminated process
-                var metrics = terminatedInfo.metrics();
-                var component = new MetricsChartComponent(metrics);
-                placeForScrollPane.getChildren().add(component);
-            }
+            // Metrics for terminated process
+            var metrics = terminatedInfo.metrics();
+            var component = new MetricsChartComponent(metrics);
+            placeForScrollPane.getChildren().add(component);
         }
     }
+
 
     public static class ProjectRunEntry {
         public final Project project;
