@@ -69,7 +69,7 @@ public class InitializeAnnotationProcessor implements ApplicationListener<StageI
                         property.bind(localizationHolder.getLocalization(localizationKey));
                     }
                 } catch (Exception e) {
-                    // IDK
+                    // IDC
                     log.error("Error while processing field: {}", field.getName(), e);
                 }
             });

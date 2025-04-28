@@ -11,6 +11,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import lombok.NonNull;
@@ -33,9 +34,8 @@ import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static org.nevertouchgrass.prolific.util.UIUtil.switchPaneChildren;
 
@@ -83,6 +83,7 @@ public class LogsAndMetricsPanelController {
 
     /**
      * Will be called by InitializeAnnotationProcessor
+     *
      * @see InitializeAnnotationProcessor
      */
     @Initialize
@@ -92,50 +93,92 @@ public class LogsAndMetricsPanelController {
         chosenProject.textProperty().bind(projectChoice);
         contextMenu.showingProperty().addListener((_, _, _) -> switchConfigurationButtonIcon());
         runningProjects.textProperty().set(localizationProvider.running_projects_count().get());
+
         processes = processService.getObservableLiveProcesses();
+        var deadProcesses = processService.getObservableDeadProcesses();
+
+        List<CustomMenuItem> liveProcessMenuItems = new ArrayList<>();
+        List<CustomMenuItem> deadProcessMenuItems = new ArrayList<>();
+
+        var delimiter = new MenuItem();
+        delimiter.textProperty().bind(localizationProvider.dead());
+        delimiter.setDisable(true);
+
         runningProjectsCount = new SimpleIntegerProperty(processes.size());
-        runningProjectsCount.addListener((_, oldValue, newValue) -> Platform.runLater(() -> runningProjects.textProperty().set(localizationProvider.running_projects_count().get().replaceAll("\\d+", String.valueOf(newValue)))));
-        localizationProvider.running_projects_count().addListener((_, oldValue, newValue) -> Platform.runLater(() -> runningProjects.textProperty().set(newValue.replaceAll("\\d+", String.valueOf(runningProjectsCount.getValue())))));
+        runningProjectsCount.addListener((_, oldValue, newValue) -> Platform.runLater(() ->
+                runningProjects.textProperty().set(localizationProvider.running_projects_count()
+                        .get()
+                        .replaceAll("\\d+", String.valueOf(newValue)))));
+
+        localizationProvider.running_projects_count().addListener((_, oldValue, newValue) -> Platform.runLater(() ->
+                runningProjects.textProperty().set(newValue.replaceAll("\\d+", String.valueOf(runningProjectsCount.getValue())))));
+
         runningProjects.textProperty().bindBidirectional(localizationProvider.running_projects_count());
+
         processes.addListener((MapChangeListener<? super Project, ? super Set<ProcessWrapper>>) change -> {
             if (change.wasAdded()) {
-                Project project = change.getKey();
-
-                CustomMenuItem menuItem = new CustomMenuItem(new Label(project.getTitle()));
-                menuItem.setId(project.getTitle());
-                menuItem.setHideOnClick(false);
-
-                Set<ProcessWrapper> processWrappers = processes.get(change.getKey());
-
-                if (processWrappers.size() == 1) {
-                    ProcessWrapper processWrapper = processWrappers.iterator().next();
-                    setupProcessMenuItem(menuItem, project, project.getTitle() + " - " + processWrapper.getName(), processWrapper);
-
-                    menuItem.fire();
-                } else {
-                    menuItem.addEventHandler(ActionEvent.ACTION, _ -> {
-                        projectChoice.unbind();
-                        projectChoice.set(project.getTitle());
-
-                        ContextMenu subMenu = new ContextMenu();
-
-                        for (ProcessWrapper processWrapper : processWrappers) {
-                            CustomMenuItem item = new CustomMenuItem();
-                            setupProcessMenuItem(item, project, processWrapper.getName(), processWrapper);
-                            subMenu.getItems().add(item);
-                        }
-
-                        Bounds bounds = menuItem.getStyleableNode().localToScreen(menuItem.getStyleableNode().getBoundsInLocal());
-                        subMenu.show(menuItem.getParentPopup(), bounds.getMaxX(), bounds.getMinY());
-                    });
-                }
-                contextMenu.getItems().add(menuItem);
+                CustomMenuItem menuItem = createMenuItemForProcess(change.getKey(), change.getValueAdded());
+                liveProcessMenuItems.add(menuItem);
             } else if (change.wasRemoved()) {
-                Platform.runLater(() -> contextMenu.getItems().removeIf(item -> item.getId().equals(change.getKey().getTitle())));
+                liveProcessMenuItems.removeIf(item -> item.getId().equals(change.getKey().getTitle()));
             }
+            refreshContextMenu(liveProcessMenuItems, deadProcessMenuItems, delimiter);
             runningProjectsCount.set(processes.size());
         });
+
+        deadProcesses.addListener((MapChangeListener<? super Project, ? super Set<ProcessWrapper>>) change -> {
+            if (change.wasAdded()) {
+                CustomMenuItem menuItem = createMenuItemForProcess(change.getKey(), change.getValueAdded());
+                menuItem.setId(change.getKey().getTitle() + "_dead");
+                deadProcessMenuItems.add(menuItem);
+            } else if (change.wasRemoved()) {
+                deadProcessMenuItems.removeIf(item -> item.getId().equals(change.getKey().getTitle() + "_dead"));
+            }
+            refreshContextMenu(liveProcessMenuItems, deadProcessMenuItems, delimiter);
+        });
     }
+
+    private CustomMenuItem createMenuItemForProcess(Project project, Set<ProcessWrapper> processWrappers) {
+        CustomMenuItem menuItem = new CustomMenuItem(new Label(project.getTitle()));
+        menuItem.setId(project.getTitle());
+        menuItem.setHideOnClick(false);
+
+        if (processWrappers.size() == 1) {
+            ProcessWrapper processWrapper = processWrappers.iterator().next();
+            setupProcessMenuItem(menuItem, project, project.getTitle() + " - " + processWrapper.getName(), processWrapper);
+            menuItem.fire();
+        } else {
+            menuItem.addEventHandler(ActionEvent.ACTION, _ -> {
+                projectChoice.unbind();
+                projectChoice.set(project.getTitle());
+
+                ContextMenu subMenu = new ContextMenu();
+
+                for (ProcessWrapper processWrapper : processWrappers) {
+                    CustomMenuItem item = new CustomMenuItem();
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                    setupProcessMenuItem(item, project, processWrapper.getName() + " - " + processWrapper.getTerminalTime().format(timeFormatter), processWrapper);
+                    subMenu.getItems().add(item);
+                }
+
+                Bounds bounds = menuItem.getStyleableNode().localToScreen(menuItem.getStyleableNode().getBoundsInLocal());
+                subMenu.show(menuItem.getParentPopup(), bounds.getMaxX(), bounds.getMinY());
+            });
+        }
+        return menuItem;
+    }
+
+    private void refreshContextMenu(List<CustomMenuItem> liveItems, List<CustomMenuItem> deadItems, MenuItem delimiter) {
+        Platform.runLater(() -> {
+            contextMenu.getItems().clear();
+            contextMenu.getItems().addAll(liveItems);
+            if (!deadItems.isEmpty()) {
+                contextMenu.getItems().add(delimiter);
+                contextMenu.getItems().addAll(deadItems);
+            }
+        });
+    }
+
 
     public void showRunningProjects() {
         if (contextMenu.isShowing()) {

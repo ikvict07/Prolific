@@ -3,11 +3,14 @@ package org.nevertouchgrass.prolific.util;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalTime;
+
 @Setter
 @Getter
 public class ProcessWrapper {
     private Process process;
     private String name;
+    private LocalTime terminalTime;
 
     public int getPid() {
         return (int) process.pid();
