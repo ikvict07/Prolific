@@ -82,6 +82,9 @@ public class LogsAndMetricsPanelController {
     private TerminatedProcessInfo selectedTerminatedInfo = null;
     private final Map<ProcessWrapper, LogsAndMetricsTextComponent> logsAndMetricsTextComponents = new HashMap<>();
     private final Map<ProcessWrapper, MetricsChartComponent> metricsComponents = new HashMap<>();
+    private final Map<TerminatedProcessInfo, LogsAndMetricsTextComponent> terminatedLogsComponents = new HashMap<>();
+    private final Map<TerminatedProcessInfo, MetricsChartComponent> terminatedMetricsComponents = new HashMap<>();
+
     private StringProperty projectChoice;
     @Setter(onMethod_ = @Autowired)
     private PermissionRegistry permissionRegistry;
@@ -218,6 +221,7 @@ public class LogsAndMetricsPanelController {
     }
 
     private void selectProjectRun(ProjectRunEntry entry) {
+        chosenProject.textProperty().unbind();
         chosenProject.setText(entry.toString());
 
         if (entry.isRunning) {
@@ -261,19 +265,20 @@ public class LogsAndMetricsPanelController {
         placeForScrollPane.getChildren().clear();
 
         if (isLogsOpened) {
-            // Logs for terminated process
-            var logs = terminatedInfo.logs();
-            var component = new LogsAndMetricsTextComponent(logs, null);
-            component.init();
+            var component = terminatedLogsComponents.computeIfAbsent(terminatedInfo, _ -> {
+                var logs = terminatedInfo.logs();
+                var componentProvider = new LogsAndMetricsTextComponent(logs, null);
+                componentProvider.init();
+                return componentProvider;
+            });
             placeForScrollPane.getChildren().add(component.getComponent());
         } else {
-            // Metrics for terminated process
-            var metrics = terminatedInfo.metrics();
-            var component = new MetricsChartComponent(metrics);
+            var component = terminatedMetricsComponents.computeIfAbsent(terminatedInfo, _ ->
+                    new MetricsChartComponent(terminatedInfo.metrics())
+            );
             placeForScrollPane.getChildren().add(component);
         }
     }
-
 
     public static class ProjectRunEntry {
         public final Project project;
