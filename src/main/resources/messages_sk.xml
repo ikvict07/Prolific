@@ -89,4 +89,5 @@
     <entry key="config_error_empty_anaconda_env">Prostredie Anaconda nesmie byť prázdne</entry>
     <entry key="no_metrics_user">Bez metric</entry>
     <entry key="label_running">(Beží)</entry>
+    <entry key="no_projects_available">Žiadne projekty nie sú k dispozícii</entry>
 </properties>

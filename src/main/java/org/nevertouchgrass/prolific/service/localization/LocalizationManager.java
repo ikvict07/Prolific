@@ -21,6 +21,7 @@ public class LocalizationManager {
 
     public String get(String key) {
         Locale locale = userSettingsHolder.getLocale();
+
         return messageSource.getMessage(key, null, locale);
     }
 

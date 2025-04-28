@@ -120,7 +120,6 @@ public class LogsAndMetricsPanelController {
                 } else {
                     menuItem.addEventHandler(ActionEvent.ACTION, _ -> {
                         projectChoice.unbind();
-                        chosenProject.textProperty().unbind();
                         projectChoice.set(project.getTitle());
 
                         ContextMenu subMenu = new ContextMenu();
@@ -181,7 +180,6 @@ public class LogsAndMetricsPanelController {
         menuItem.setHideOnClick(false);
         menuItem.setOnAction(_ -> Platform.runLater(() -> {
             projectChoice.unbind();
-            chosenProject.textProperty().unbind();
             projectChoice.set(project.getTitle() + " - " + processWrapper.getName());
             currentProcess = processWrapper;
             selectedTerminatedInfo = null;
@@ -208,15 +206,13 @@ public class LogsAndMetricsPanelController {
             contextMenu.getItems().add(item);
         }
         if (contextMenu.getItems().isEmpty()) {
-            CustomMenuItem empty = new CustomMenuItem(new Label("No projects available"));
+            CustomMenuItem empty = new CustomMenuItem(new Label(localizationProvider.no_projects_available().get()));
             empty.setDisable(true);
             contextMenu.getItems().add(empty);
         }
     }
 
     private void selectProjectRun(ProjectRunEntry entry) {
-        projectChoice.unbind();
-        chosenProject.textProperty().unbind();
         chosenProject.setText(entry.toString());
 
         if (entry.isRunning) {
