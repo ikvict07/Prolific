@@ -3,10 +3,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import org.nevertouchgrass.prolific.service.PeriodicalScanningService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +16,11 @@ public class SettingsDropdownController {
 
     private PeriodicalScanningService periodicalScanningService;
     @Autowired
-    public void set(PeriodicalScanningService periodicalScanningService) {
+    public void setPeriodicalScanningService(PeriodicalScanningService periodicalScanningService) {
         this.periodicalScanningService = periodicalScanningService;
     }
     @FXML
-    private void showLicenseWindow() {
+    public void showLicenseWindow() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/licenseWindow.fxml"));
             AnchorPane licensePane = loader.load();
@@ -38,8 +35,6 @@ public class SettingsDropdownController {
             e.printStackTrace();
         }
     }
-
-
     public void rescan() {
         periodicalScanningService.rescan();
     }

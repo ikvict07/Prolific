@@ -1,29 +1,38 @@
 package org.nevertouchgrass.prolific.licensing;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Map;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.Map;
+
 public class HttpClientConfig {
-    private static final HttpClient client = HttpClient.newHttpClient();
+    private static final RestTemplate restTemplate = new RestTemplate();
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static HttpResponse<String> postJson(String url, Map<String, String> payload, String token) throws Exception {
+    public static ResponseEntity<String> postJson(String url, Map<String, String> payload, String token) throws Exception {
         String requestBody = mapper.writeValueAsString(payload);
 
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
         if (token != null) {
-            builder.header("Authorization", "Bearer " + token);
+            headers.set("Authorization", "Bearer " + token);
         }
 
-        HttpRequest request = builder.build();
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+
+        return restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
     }
+
+    public static boolean isBackendAvailable(String serviceUrl) {
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(serviceUrl + "/ping", String.class);
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (Exception e) {
+            System.err.println("Backend not reachable: " + e.getMessage());
+            return false;
+        }
+    }
+
 }
