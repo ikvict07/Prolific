@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.beryx.runtime.JPackageTask
+
+
 plugins {
     java
     alias(libs.plugins.jacoco)
@@ -99,7 +102,11 @@ tasks.register<Exec>("runLinux") {
     dependsOn(tasks.bootJar)
     workingDir = rootDir
     environment("GDK_BACKEND", "x11")
-    commandLine("java", "-Dprism.order=sw", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
+    commandLine(
+        "java",
+        "-Dprism.order=sw",
+        "-jar",
+        "${tasks.bootJar.get().archiveFile.get().asFile}")
 }
 
 tasks.register<Exec>("runWindows") {
@@ -107,7 +114,12 @@ tasks.register<Exec>("runWindows") {
     group = "application"
     dependsOn(tasks.bootJar)
     workingDir = rootDir
-    commandLine("java", "-Dprism.order=sw", "-jar", "${tasks.bootJar.get().archiveFile.get().asFile}")
+    commandLine(
+        "java",
+        "-Dprism.order=sw",
+        "-jar",
+        "${tasks.bootJar.get().archiveFile.get().asFile}"
+    )
 }
 
 tasks.register<Exec>("runMac") {
@@ -204,15 +216,36 @@ runtime {
     )
 
     distDir = layout.buildDirectory.dir("install/Prolific-boot").get().asFile
+
     jpackage {
         installerName = "ProlificInstaller"
         imageName = "Prolific"
-        appVersion = "1.0.1"
-        mainJar = "Prolific-1.0.1.jar"
-        mainClass = "org.springframework.boot.loader.launch.JarLauncher"
+        appVersion = version.toString()
         outputDir = "image"
+        mainClass = "org.springframework.boot.loader.launch.JarLauncher"
+        mainJar = "Prolific-$version.jar"
+
+        jvmArgs.addAll(
+            listOf(
+                "--add-exports", "javafx.graphics/com.sun.glass.ui=ALL-UNNAMED",
+                "-Dprism.order=sw"
+            )
+        )
+    }
+}
+
+tasks.register<JPackageTask>("jpackageLinux") {
+    jpackageData.apply {
+        installerType = "deb"
         imageOptions = listOf(
-            "--icon", "src/main/resources/icons/png/IconPl.icns",
+            "--icon", "src/main/jpackage/linux/Prolific.png"
+        )
+        application.applicationName = "Prolific"
+        installerOptions = listOf(
+            "--linux-shortcut",
+            "--linux-menu-group", "Utility",
+            "--icon", "src/main/jpackage/linux/Prolific.png",
+            "--resource-dir", "src/main/jpackage/linux"
         )
     }
 }
