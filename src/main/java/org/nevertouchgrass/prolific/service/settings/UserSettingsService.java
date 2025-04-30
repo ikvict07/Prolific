@@ -31,57 +31,71 @@ public class UserSettingsService {
     @SneakyThrows
     public void loadSettings() {
         Path settingsFilePath = pathService.getSettingsPath();
-        UserSettingsHolder sett = xmlMapper.readValue(Files.newInputStream(settingsFilePath), UserSettingsHolder.class);
-        log.info("Loaded settings: {}", sett);
-        if (sett.getBaseScanDirectory() == null || sett.getBaseScanDirectory().isEmpty()) {
-            setDefaultBaseScanDirectory();
-        }
-        if (sett.getLastScanDate() == null) {
-            setDefaultLastScanDate();
-        }
-        if (sett.getRescanEveryHours() == null) {
-            setDefaultRescanEvery();
-        }
-        if (sett.getMaximumProjectDepth() == null) {
-            setDefaultProjectDepth();
-        }
-        if (sett.getExcludedDirs() == null) {
-            setDefaultExcludedDirs();
-        }
-        if (sett.getSupportedTranslations() == null) {
-            setDefaultSupportedTranslations();
-        }
-        if (sett.getLocale() == null || sett.getLocale().getLanguage().isEmpty()) {
-            setDefaultLocale();
-        }
-        if (sett.getPythonPath() == null || sett.getPythonPath().isEmpty()) {
-            setDefaultPythonPath();
-        }
-        if (sett.getGradlePath() == null || sett.getGradlePath().isEmpty()) {
-            setDefaultGradlePath();
-        }
-        if (sett.getMavenPath() == null || sett.getMavenPath().isEmpty()) {
-            setDefaultMavenPath();
-        }
-        if (sett.getJdkPath() == null || sett.getJdkPath().isEmpty()) {
-            setDefaultJdkPath();
-        }
-        if (sett.getUser() == null) {
-            setDefaultUser();
-        }
-        if (sett.getAnacondaPath() == null || sett.getAnacondaPath().isEmpty()) {
-            setDefaultAnacondaPath();
-        }
-        userSettingsHolder.load(sett);
+        loadSettingsFrom(settingsFilePath);
         log.info("Using settings: {}", userSettingsHolder);
     }
 
+    public synchronized void loadSettingsFrom(Path path) {
+        try {
+            UserSettingsHolder sett = xmlMapper.readValue(Files.newInputStream(path), UserSettingsHolder.class);
+            if (sett.getBaseScanDirectory() == null || sett.getBaseScanDirectory().isEmpty()) {
+                setDefaultBaseScanDirectory();
+            }
+            if (sett.getLastScanDate() == null) {
+                setDefaultLastScanDate();
+            }
+            if (sett.getRescanEveryHours() == null) {
+                setDefaultRescanEvery();
+            }
+            if (sett.getMaximumProjectDepth() == null) {
+                setDefaultProjectDepth();
+            }
+            if (sett.getExcludedDirs() == null) {
+                setDefaultExcludedDirs();
+            }
+            if (sett.getSupportedTranslations() == null) {
+                setDefaultSupportedTranslations();
+            }
+            if (sett.getLocale() == null || sett.getLocale().getLanguage().isEmpty()) {
+                setDefaultLocale();
+            }
+            if (sett.getPythonPath() == null || sett.getPythonPath().isEmpty()) {
+                setDefaultPythonPath();
+            }
+            if (sett.getGradlePath() == null || sett.getGradlePath().isEmpty()) {
+                setDefaultGradlePath();
+            }
+            if (sett.getMavenPath() == null || sett.getMavenPath().isEmpty()) {
+                setDefaultMavenPath();
+            }
+            if (sett.getJdkPath() == null || sett.getJdkPath().isEmpty()) {
+                setDefaultJdkPath();
+            }
+            if (sett.getUser() == null) {
+                setDefaultUser();
+            }
+            if (sett.getAnacondaPath() == null || sett.getAnacondaPath().isEmpty()) {
+                setDefaultAnacondaPath();
+            }
+            userSettingsHolder.load(sett);
+            saveSettings();
+        } catch (Exception e) {
+            log.error("Failed to load settings from path: {}", path, e);
+            throw new RuntimeException("Failed to load settings from path: " + path, e);
+        }
+    }
 
     @SneakyThrows
     public synchronized void saveSettings() {
         log.info("Saving settings: {}", userSettingsHolder);
         Path settingsFilePath = pathService.getSettingsPath();
-        xmlMapper.writeValue(Files.newOutputStream(settingsFilePath), userSettingsHolder);
+        saveSettingsTo(settingsFilePath);
+    }
+
+    @SneakyThrows
+    public synchronized void saveSettingsTo(Path path) {
+        log.info("Saving settings to: {}", path);
+        xmlMapper.writeValue(Files.newOutputStream(path), userSettingsHolder);
     }
 
     private void setDefaultUser() {
@@ -153,6 +167,7 @@ public class UserSettingsService {
         userSettingsHolder.setJdkPath("");
         saveSettings();
     }
+
     public void setDefaultAnacondaPath() {
         userSettingsHolder.setAnacondaPath("");
         saveSettings();

@@ -920,6 +920,17 @@
     -fx-stroke: #DFE1E5;
 }
 
+.dialog-pane {
+    -fx-background-color: #2B2D30;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-color: #1E1F22;
+    -fx-border-width: 0;
+    -fx-padding: 10px;
+}
+
+
+
 /** {*/
 /*    -fx-border-width: 1px;*/
 /*    -fx-border-color: red;*/

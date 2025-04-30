@@ -30,7 +30,11 @@ public class PathService {
     @Getter
     private Path projectFilesPath;
 
-    private final static String OS_NAME = "os.name";
+    private static final String OS_NAME = "os.name";
+
+    public String getSettingsName() {
+        return "settings";
+    }
 
     @PostConstruct
     public void init() {
@@ -69,7 +73,7 @@ public class PathService {
     @SneakyThrows
     public Path getSettingsPath() {
         Path settingsPath = projectFilesPath;
-        Path settingsFilePath = settingsPath.resolve("settings.xml");
+        Path settingsFilePath = settingsPath.resolve(getSettingsName() + ".xml");
         Files.createDirectories(settingsPath);
         if (!Files.exists(settingsFilePath)) {
             Files.createFile(settingsFilePath);
