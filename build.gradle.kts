@@ -44,7 +44,6 @@ val mockitoAgent = configurations.create("mockitoAgent")
 
 dependencies {
     implementation(libs.bundles.spring)
-    implementation(libs.oshiCore)
     implementation(libs.logging)
     implementation(libs.log4j.core)
     implementation(libs.jacksonXml)

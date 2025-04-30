@@ -6,13 +6,14 @@ import org.nevertouchgrass.prolific.model.RunConfig;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
 import org.nevertouchgrass.prolific.service.logging.ProcessLogsService;
 import org.nevertouchgrass.prolific.service.metrics.MetricsService;
+import org.nevertouchgrass.prolific.service.permissions.PermissionRegistry;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 
 public abstract class ConfigurableProjectRunner extends DefaultProjectRunner {
     protected final ConfiguratorService configuratorService;
     protected final UserSettingsHolder userSettingsHolder;
-    public ConfigurableProjectRunner(ProcessLogsService processLogsService, MetricsService metricsService, ConfiguratorService configuratorService, UserSettingsHolder userSettingsHolder) {
-        super(processLogsService, metricsService);
+    protected ConfigurableProjectRunner(ProcessLogsService processLogsService, MetricsService metricsService, ConfiguratorService configuratorService, UserSettingsHolder userSettingsHolder, PermissionRegistry permissionRegistry) {
+        super(processLogsService, metricsService, permissionRegistry);
         this.configuratorService = configuratorService;
         this.userSettingsHolder = userSettingsHolder;
     }

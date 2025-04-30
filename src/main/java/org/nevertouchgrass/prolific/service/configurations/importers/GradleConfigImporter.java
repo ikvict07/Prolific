@@ -26,7 +26,13 @@ public class GradleConfigImporter extends BuildToolConfigImporter {
     @Override
     public void normalize(RunConfig runConfig) {
         super.normalize(runConfig);
-        runConfig.getCommand().addFirst(isWindows() ? "gradlew.bat" : "./gradlew");
-        runConfig.getCommand().addLast("--no-daemon");
+        if (isWindows()) {
+            var command = runConfig.getCommand();
+            command.addFirst("gradlew.bat");
+            command.addFirst("/c");
+            command.addFirst("cmd");
+        } else {
+            runConfig.getCommand().addFirst("./gradlew");
+        }
     }
 }
