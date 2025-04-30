@@ -3,11 +3,11 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import lombok.Setter;
@@ -17,7 +17,6 @@ import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.constants.profile.CommonUser;
 import org.nevertouchgrass.prolific.constants.profile.PowerUser;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
-import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
 import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
@@ -40,9 +39,9 @@ public class HeaderController extends AbstractHeaderController {
     @FXML
     public StackPane settingsButton;
     @FXML
-    public Circle minimizeButton;
+    public Node minimizeButton;
     @FXML
-    public Circle maximizeButton;
+    public Node maximizeButton;
     @FXML
     public HBox gradientBox;
     @FXML
@@ -54,9 +53,7 @@ public class HeaderController extends AbstractHeaderController {
     @FXML
     private AnchorPane header;
     @FXML
-    private Circle closeButton;
-    @Setter(onMethod_ = @Autowired)
-    private FxmlProvider fxmlProvider;
+    private Node closeButton;
     @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
     @Setter(onMethod_ = @Autowired)
@@ -125,6 +122,8 @@ public class HeaderController extends AbstractHeaderController {
         } else if (currentUser instanceof CommonUser) {
             userList.getSelectionModel().select(commonUser);
         }
+
+        setupMaximizeButton(maximizeButton);
     }
 
     private static ListCell<ProfileItem> createProfileItemCell() {
@@ -196,5 +195,4 @@ public class HeaderController extends AbstractHeaderController {
             return displayText.get();
         }
     }
-
 }

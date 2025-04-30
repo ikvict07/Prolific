@@ -12,12 +12,12 @@
         <!-- Cross Line 1 -->
         <SVGPath
                 content="M8 18 L18 8"
-                fill="TRANSPARENT" stroke="#CED0D6" strokeWidth="1" strokeLineCap="round">
+                fill="TRANSPARENT" stroke="#CED0D6" strokeLineCap="round">
         </SVGPath>
         <!-- Cross Line 2 -->
         <SVGPath
                 content="M18 18 L8 8"
-                fill="TRANSPARENT" stroke="#CED0D6" strokeWidth="1" strokeLineCap="round">
+                fill="TRANSPARENT" stroke="#CED0D6" strokeLineCap="round">
         </SVGPath>
     </Group>
 </StackPane>

@@ -87,4 +87,8 @@
     <entry key="config_error_empty_path">Cesta nesmie byť prázdna</entry>
     <entry key="config_anaconda_env">Prostredie Anaconda</entry>
     <entry key="config_error_empty_anaconda_env">Prostredie Anaconda nesmie byť prázdne</entry>
+    <entry key="no_metrics_user">Bez metric</entry>
+    <entry key="dead">Mrtve procesy</entry>
+    <entry key="export">Exportovať</entry>
+    <entry key="import_label">Importovať</entry>
 </properties>

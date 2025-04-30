@@ -7,14 +7,14 @@
 <?import javafx.scene.shape.Circle?>
 <AnchorPane fx:id="header" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController">
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.HeaderController" styleClass="header">
 
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
                AnchorPane.leftAnchor="0.0">
 
-        <Label fx:id="titleText" textFill="#ebecf0" text="Prolific" textAlignment="CENTER"/>
+        <Label fx:id="titleText" textFill="#ebecf0" textAlignment="CENTER"/>
 
-        <HBox fx:id="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
+        <HBox fx:id="gradientBox" styleClass="gradientBox" alignment="CENTER_LEFT" spacing="12" fillHeight="false">
             <padding>
                 <Insets left="16"/>
             </padding>
@@ -48,14 +48,14 @@
             <padding>
                 <Insets right="16"/>
             </padding>
-            <HBox fx:id="profilesPanel" alignment="CENTER" spacing="10" styleClass="icon-button">
+            <HBox fx:id="profilesPanel" alignment="CENTER" spacing="10" styleClass="icon-button,profilesPanel">
                 <padding>
                     <Insets top="4" bottom="4" left="6" right="6"/>
                 </padding>
                 <StackPane>
                     <fx:include source="/icons/fxml/userIcon.fxml"/>
                 </StackPane>
-                <ComboBox fx:id="userList" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <ComboBox fx:id="userList"/>
             </HBox>
         </HBox>
     </StackPane>

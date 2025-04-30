@@ -82,9 +82,13 @@
     <entry key="config_error_empty_task">Task must not be empty</entry>
     <entry key="power_user">Power user</entry>
     <entry key="common_user">Default user</entry>
+    <entry key="no_metrics_user">No metrics</entry>
     <entry key="no_anaconda_configured">Please configure anaconda path</entry>
     <entry key="no_python_configured">Please configure python path</entry>
     <entry key="config_error_empty_path">Path must not be empty</entry>
     <entry key="config_anaconda_env">Anaconda env</entry>
     <entry key="config_error_empty_anaconda_env">Anaconda env must not be empty</entry>
+    <entry key="dead">Dead processes</entry>
+    <entry key="export">Export</entry>
+    <entry key="import_label">Import</entry>
 </properties>

@@ -3,17 +3,24 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Setter;
+import org.nevertouchgrass.prolific.service.FxmlProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 
 public abstract class AbstractHeaderController {
     protected Stage stage;
+    @Setter
     private Pane header;
+    @Setter(onMethod_ = @Autowired)
+    private FxmlProvider fxmlProvider;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -35,6 +42,17 @@ public abstract class AbstractHeaderController {
 
     protected final HashSet<Object> draggablePanes = new HashSet<>();
 
+    protected void setupMaximizeButton(Node button) {
+        if ("common".equalsIgnoreCase(header.getId()) && button instanceof Group icon) {
+            var restoreWindowButton = fxmlProvider.getIcon("restoreWindowButton");
+            var maximizeWindowButton = fxmlProvider.getIcon("maximizeWindowButton");
+            stage.maximizedProperty().addListener((_, _, newValue) -> {
+                icon.getChildren().clear();
+                icon.getChildren().add(newValue ? restoreWindowButton : maximizeWindowButton);
+            });
+        }
+    }
+
     protected void setupDragging() {
         header.setOnMousePressed(event -> {
             if (draggablePanes.contains(event.getTarget())) {
@@ -52,10 +70,6 @@ public abstract class AbstractHeaderController {
         });
     }
 
-    protected void setHeader(Pane header) {
-        this.header = header;
-    }
-
     protected void setupResizing() {
         stage.getScene().setOnMouseMoved(this::resizeCursor);
         stage.getScene().setOnMouseDragged(this::resizeWindow);
@@ -68,11 +82,11 @@ public abstract class AbstractHeaderController {
 
         stage.maximizedProperty().addListener((_, _, newValue) -> {
             if (newValue) {
-                stage.getScene().getRoot().setStyle("-fx-background-radius: 0;");
-                header.setStyle("-fx-background-radius: 0;");
+                stage.getScene().getRoot().getStyleClass().add("non-rounded");
+                header.getStyleClass().add("non-rounded");
             } else {
-                stage.getScene().getRoot().setStyle("-fx-background-radius: 16;");
-                header.setStyle("-fx-background-radius: 16 16 0 0;");
+                stage.getScene().getRoot().getStyleClass().remove("non-rounded");
+                header.getStyleClass().remove("non-rounded");
             }
         });
     }
