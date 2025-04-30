@@ -86,42 +86,20 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
 
     @Override
     public void setupValidators() {
+        if (!isInitialized) {
+            initializeUIComponents();
+            isInitialized = true;
+        }
+        updateUIValues();
+
+    }
+
+    private void updateUIValues() {
         rootPathSetting.setText(userSettingsHolder.getBaseScanDirectory());
         excludedDirsSetting.setText(String.join(";", userSettingsHolder.getExcludedDirs()));
 
-        if (!isInitialized) {
-            TextFormatter<Integer> rescanEveryHoursFormatter = new TextFormatter<>(new IntegerStringConverter(),
-                    userSettingsHolder.getRescanEveryHours(), it -> createIntegerChange(it, RESCAN_MIN, RESCAN_MAX));
-            TextFormatter<Integer> maxScanDepthFormatter = new TextFormatter<>(new IntegerStringConverter(),
-                    userSettingsHolder.getMaximumProjectDepth(), it -> createIntegerChange(it, MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX));
-
-            SpinnerValueFactory<Integer> rescanEveryHoursValueFactory =
-                    new SpinnerValueFactory.IntegerSpinnerValueFactory(RESCAN_MIN, RESCAN_MAX, userSettingsHolder.getRescanEveryHours());
-            setupSpinnerValidation(rescanEveryHoursSetting, rescanEveryHoursValueFactory, rescanEveryHoursFormatter);
-
-            SpinnerValueFactory<Integer> maxScanDepthValueFactory =
-                    new SpinnerValueFactory.IntegerSpinnerValueFactory(MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX, userSettingsHolder.getMaximumProjectDepth());
-            setupSpinnerValidation(maxScanDepthSetting, maxScanDepthValueFactory, maxScanDepthFormatter);
-
-            rootPathSetting.textProperty().addListener(
-                    (_, _, _) -> {
-                        checkDefaultValues();
-                        rootPathSetting.getStyleClass().remove(ERROR);
-                        rootPathErrorMessage.setVisible(false);
-                        rootPathErrorMessage.setManaged(false);
-                    }
-            );
-
-            excludedDirsSetting.textProperty().addListener((_, _, _) -> checkDefaultValues());
-
-            languageSetting.valueProperty().addListener((_, _, _) -> checkDefaultValues());
-
-            rescanEveryHoursSetting.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(RESCAN_MIN, RESCAN_MAX, userSettingsHolder.getRescanEveryHours()));
-
-            maxScanDepthSetting.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX, userSettingsHolder.getMaximumProjectDepth()));
-
-            isInitialized = true;
-        }
+        rescanEveryHoursSetting.getValueFactory().setValue(userSettingsHolder.getRescanEveryHours());
+        maxScanDepthSetting.getValueFactory().setValue(userSettingsHolder.getMaximumProjectDepth());
 
         var supportedTranslations = userSettingsHolder.getSupportedTranslations().stream().map(it -> {
             var locale = Locale.forLanguageTag(it);
@@ -133,6 +111,34 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
         var locale = userSettingsHolder.getLocale().getDisplayLanguage(userSettingsHolder.getLocale());
         languageSetting.getSelectionModel().select(locale);
     }
+
+    private void initializeUIComponents() {
+        TextFormatter<Integer> rescanEveryHoursFormatter = new TextFormatter<>(new IntegerStringConverter(),
+                userSettingsHolder.getRescanEveryHours(), it -> createIntegerChange(it, RESCAN_MIN, RESCAN_MAX));
+        TextFormatter<Integer> maxScanDepthFormatter = new TextFormatter<>(new IntegerStringConverter(),
+                userSettingsHolder.getMaximumProjectDepth(), it -> createIntegerChange(it, MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX));
+
+        SpinnerValueFactory<Integer> rescanEveryHoursValueFactory =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(RESCAN_MIN, RESCAN_MAX, userSettingsHolder.getRescanEveryHours());
+        setupSpinnerValidation(rescanEveryHoursSetting, rescanEveryHoursValueFactory, rescanEveryHoursFormatter);
+
+        SpinnerValueFactory<Integer> maxScanDepthValueFactory =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(MAX_SCAN_DEPTH_MIN, MAX_SCAN_DEPTH_MAX, userSettingsHolder.getMaximumProjectDepth());
+        setupSpinnerValidation(maxScanDepthSetting, maxScanDepthValueFactory, maxScanDepthFormatter);
+
+        rootPathSetting.textProperty().addListener(
+                (_, _, _) -> {
+                    checkDefaultValues();
+                    rootPathSetting.getStyleClass().remove(ERROR);
+                    rootPathErrorMessage.setVisible(false);
+                    rootPathErrorMessage.setManaged(false);
+                }
+        );
+
+        excludedDirsSetting.textProperty().addListener((_, _, _) -> checkDefaultValues());
+        languageSetting.valueProperty().addListener((_, _, _) -> checkDefaultValues());
+    }
+
 
     @Override
     public boolean validInput() {

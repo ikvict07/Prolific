@@ -234,7 +234,28 @@ runtime {
     }
 }
 
+tasks.register<JPackageTask>("jpackageMac") {
+    group = "build"
+    description = "Create a Mac installer"
+    jpackageData.apply {
+        installerType = "dmg"
+        imageOptions = listOf(
+            "--icon", "src/main/resources/icons/png/icon.icns"
+        )
+        application.applicationName = "Prolific"
+        installerOptions = listOf(
+            "--mac-package-name", "Prolific",
+            "--mac-sign",
+            "--mac-package-identifier", "org.nevertouchgrass.prolific",
+            "--mac-signing-key-user-name", "Developer ID Installer: Never Touch Grass (9F2K3J4L5M)",
+            "--icon", "src/main/resources/icons/png/icon.icns",
+        )
+    }
+}
+
 tasks.register<JPackageTask>("jpackageLinux") {
+    group = "build"
+    description = "Create a Linux installer"
     jpackageData.apply {
         installerType = "deb"
         imageOptions = listOf(
