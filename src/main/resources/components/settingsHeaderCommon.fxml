@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress JavaFxEventHandler -->
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.*?>
+<AnchorPane fx:id="settingsHeader" onMouseClicked="#handleHeaderMaximize" stylesheets="@/css/styles.css"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsHeaderController"
+            styleClass="settings-header" id="common">
+
+    <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+               AnchorPane.leftAnchor="0.0">
+
+        <Label fx:id="titleText" textFill="#ebecf0" userData="localization:settings" textAlignment="CENTER"/>
+
+        <HBox fx:id="settingsGradientBox" styleClass="settingsGradientBox" alignment="CENTER_RIGHT" spacing="12" fillHeight="false">
+            <padding>
+                <Insets right="16"/>
+            </padding>
+            <HBox spacing="10" alignment="CENTER">
+                <Group>
+                    <fx:include source="/icons/fxml/minimizeWindowButton.fxml"/>
+                </Group>
+                <Group onMouseClicked="#handleMaximize" fx:id="maximizeButton">
+                    <fx:include source="/icons/fxml/maximizeWindowButton.fxml"/>
+                </Group>
+                <Group onMouseClicked="#handleClose">
+                    <fx:include source="/icons/fxml/closeWindowButton.fxml"/>
+                </Group>
+            </HBox>
+        </HBox>
+    </StackPane>
+</AnchorPane>

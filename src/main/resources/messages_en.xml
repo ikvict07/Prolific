@@ -89,4 +89,7 @@
     <entry key="config_anaconda_env">Anaconda env</entry>
     <entry key="config_error_empty_anaconda_env">Anaconda env must not be empty</entry>
     <entry key="dead">Dead processes</entry>
+    <entry key="dead">Dead processes</entry>
+    <entry key="export">Export</entry>
+    <entry key="import_label">Import</entry>
 </properties>

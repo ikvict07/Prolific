@@ -6,8 +6,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import lombok.Setter;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
+import org.nevertouchgrass.prolific.configuration.SpringFXConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @StageComponent(stage = "configsStage")
 @Lazy
@@ -17,18 +23,37 @@ public class RunConfigFooterController {
     @Setter(onMethod_ = @Autowired)
     private RunConfigSettingHeaderController runConfigSettingHeaderController;
 
-    @FXML private AnchorPane configFooter;
-    @FXML private HBox content;
+    @FXML
+    private AnchorPane configFooter;
+    @FXML
+    private HBox content;
 
-    @FXML private Label cancelButton;
-    @FXML private Label submitButton;
+    @FXML
+    private Label cancelButton;
+    @FXML
+    private Label submitButton;
 
     @Setter
     private Runnable saveRunnable;
+    @Setter(onMethod_ = @Autowired)
+    private SpringFXConfigurationProperties properties;
 
     @FXML
     private void submit() {
         saveRunnable.run();
+    }
+
+    public void help() {
+        String url = properties.getGuidesUrl() + "configs.md";
+        new Thread(() -> {
+            try {
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    Desktop.getDesktop().browse(new URI(url));
+                }
+            } catch (IOException | URISyntaxException _) {
+                // Ignore
+            }
+        }).start();
     }
 
     @FXML

@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Postinstall script for Prolific
+# This script adds the Prolific application to the system PATH
+# and ensures the .desktop file is properly installed
+
+# Define the application executable path
+APP_PATH="/opt/prolificinstaller/bin/Prolific"
+SYMLINK_PATH="/usr/local/bin/prolific"
+DESKTOP_FILE="/opt/prolificinstaller/lib/prolificinstaller-Prolific.desktop"
+DESKTOP_TARGET="/usr/share/applications/Prolific.desktop"
+
+# Check alternative locations for the desktop file if the primary location doesn't exist
+if [ ! -f "$DESKTOP_FILE" ]; then
+    ALT_LOCATIONS=(
+        "/opt/prolificinstaller/Prolific.desktop"
+        "/opt/Prolific/lib/Prolific.desktop"
+        "/opt/Prolific/Prolific.desktop"
+        "/usr/share/applications/Prolific.desktop"
+    )
+
+    for alt_location in "${ALT_LOCATIONS[@]}"; do
+        if [ -f "$alt_location" ]; then
+            echo "Found desktop file at alternative location: $alt_location"
+            DESKTOP_FILE="$alt_location"
+            break
+        fi
+    done
+fi
+
+# Check if the application executable exists
+if [ -f "$APP_PATH" ]; then
+    echo "Adding Prolific to system PATH..."
+
+    # Remove existing symlink if it exists
+    if [ -L "$SYMLINK_PATH" ]; then
+        echo "Removing existing symlink..."
+        rm "$SYMLINK_PATH"
+    fi
+
+    # Create a symbolic link in /usr/local/bin/
+    ln -s "$APP_PATH" "$SYMLINK_PATH"
+
+    # Check if the symlink was created successfully
+    if [ -L "$SYMLINK_PATH" ]; then
+        echo "Prolific has been added to system PATH successfully."
+        echo "You can now run the application by typing 'prolific' in the terminal."
+    else
+        echo "Error: Failed to create symbolic link."
+        exit 1
+    fi
+
+    # Ensure the .desktop file is properly installed
+    if [ -f "$DESKTOP_FILE" ]; then
+        echo "Found desktop file at: $DESKTOP_FILE"
+
+        # Check if the desktop file already exists at the target location
+        if [ -f "$DESKTOP_TARGET" ]; then
+            echo "Desktop file already exists at $DESKTOP_TARGET"
+        else
+            echo "Installing desktop shortcut..."
+            cp "$DESKTOP_FILE" "$DESKTOP_TARGET"
+            chmod 644 "$DESKTOP_TARGET"
+            echo "Desktop shortcut installed successfully."
+        fi
+    else
+        echo "Warning: Desktop file not found at any of the expected locations"
+        # Continue execution even if desktop file is not found
+    fi
+else
+    echo "Error: Prolific executable not found at $APP_PATH"
+    exit 1
+fi
+
+# Update desktop database to ensure the shortcut is recognized
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database
+fi
+
+exit 0

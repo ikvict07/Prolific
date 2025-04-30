@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -195,18 +196,20 @@ public class LogsAndMetricsPanelController {
     }
 
     public void switchLogsButtonStyle(MouseEvent event) {
-        String label = "label";
+        String style = "selected";
         if (event.getSource() == logsButton) {
-            logsButton.getStyleClass().clear();
-            logsButton.getStyleClass().addAll(label, "logs-button-selected");
-            metricsButton.getStyleClass().clear();
-            metricsButton.getStyleClass().addAll(label, "logs-button");
+            ObservableList<String> styleClass = logsButton.getStyleClass();
+            if (!styleClass.contains(style)) {
+                logsButton.getStyleClass().add(style);
+            }
+            metricsButton.getStyleClass().remove(style);
             isLogsOpened = true;
         } else if (event.getSource() == metricsButton) {
-            metricsButton.getStyleClass().clear();
-            metricsButton.getStyleClass().addAll(label, "logs-button-selected");
-            logsButton.getStyleClass().clear();
-            logsButton.getStyleClass().addAll(label, "logs-button");
+            ObservableList<String> styleClass = metricsButton.getStyleClass();
+            if (!styleClass.contains(style)) {
+                metricsButton.getStyleClass().add(style);
+            }
+            logsButton.getStyleClass().remove(style);
             isLogsOpened = false;
         }
         if (currentProcess != null) {
@@ -232,21 +235,22 @@ public class LogsAndMetricsPanelController {
         placeForScrollPane.getChildren().clear();
         var processLogs = processLogsService.getLogs().getOrDefault(processWrapper, new ProcessLogs());
         var flux = processLogsService.subscribeToLogs(processWrapper);
-        if (isLogsOpened) {
-            var component = logsAndMetricsTextComponents.computeIfAbsent(processWrapper,
-                    _ -> {
-                        var componentProvider = new LogsAndMetricsTextComponent(processLogs, flux);
-                        componentProvider.init();
-                        return componentProvider;
-                    });
-            placeForScrollPane.getChildren().add(component.getComponent());
-        } else {
-            if (!permissionRegistry.getChecker(SeeMetricsAction.class).hasPermission(new SeeMetricsAction())) {
-                return;
-            }
-            var component = metricsComponents.computeIfAbsent(processWrapper,
+
+        var logComponent = logsAndMetricsTextComponents.computeIfAbsent(processWrapper,
+                _ -> {
+                    var componentProvider = new LogsAndMetricsTextComponent(processLogs, flux);
+                    componentProvider.init();
+                    return componentProvider;
+                });
+        if (permissionRegistry.getChecker(SeeMetricsAction.class).hasPermission(new SeeMetricsAction())) {
+            var metricsComponent = metricsComponents.computeIfAbsent(processWrapper,
                     _ -> new MetricsChartComponent(metricsService, processWrapper));
-            placeForScrollPane.getChildren().add(component);
+            if (!isLogsOpened) {
+                placeForScrollPane.getChildren().add(metricsComponent);
+            }
+        }
+        if (isLogsOpened) {
+            placeForScrollPane.getChildren().add(logComponent.getComponent());
         }
     }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.transform.Affine?>
+<?import javafx.scene.transform.Rotate?>
+<?import javafx.scene.shape.Circle?>
+<StackPane xmlns="http://javafx.com/javafx" styleClass="linux-window-button">
+    <Circle radius="10" styleClass="icon-button" fill="#F0F1F2" opacity="0.13"/>
+    <Group>
+        <Rectangle height="1" width="13" fill="#A8ADBD" x="0.757812" y="0.050293">
+            <transforms>
+                <Rotate angle="45" pivotX="0.757812" pivotY="0.050293"/>
+            </transforms>
+        </Rectangle>
+        <Rectangle height="1" width="13" fill="#A8ADBD">
+            <transforms>
+                <Affine mxx="-0.707107" mxy="0.707107"
+                        myx="0.707107" myy="0.707107"
+                        tx="9.24316" ty="0.050293"/>
+            </transforms>
+        </Rectangle>
+    </Group>
+</StackPane>

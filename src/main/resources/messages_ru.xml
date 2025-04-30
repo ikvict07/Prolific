@@ -89,4 +89,8 @@
     <entry key="config_error_empty_anaconda_env">Окружение Anaconda не должно быть пустым</entry>
     <entry key="no_metrics_user">Без метрик</entry>
     <entry key="dead">Мертвые процессы</entry>
+    <entry key="no_metrics_user">Без метрик</entry>
+    <entry key="dead">Мертвые процессы</entry>
+    <entry key="export">Экспортировать</entry>
+    <entry key="import_label">Импортировать</entry>
 </properties>
