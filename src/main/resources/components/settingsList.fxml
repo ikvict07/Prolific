@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
+
 <SplitPane dividerPositions="0.15" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsListController"
            xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/styles.css" styleClass="settings-split-pane"
            onMouseEntered="#handleMouseEntered">
@@ -37,7 +38,7 @@
 
             <columnConstraints>
                 <ColumnConstraints halignment="LEFT"/>
-                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints hgrow="ALWAYS"/>
             </columnConstraints>
 
         </GridPane>
