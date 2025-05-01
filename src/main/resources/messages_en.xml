@@ -97,4 +97,7 @@
     <entry key="filename">Filename:</entry>
     <entry key="select_import_file">Select Import File</entry>
     <entry key="description_xml_files">XML files</entry>
+    <entry key="open_project">Open project</entry>
+    <entry key="error">Error</entry>
+    <entry key="unknown_project_type">Unknown project type</entry>
 </properties>

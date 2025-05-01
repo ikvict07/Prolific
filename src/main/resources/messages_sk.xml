@@ -96,4 +96,7 @@
     <entry key="filename">Názov súboru:</entry>
     <entry key="select_import_file">Vyberte súbor na import</entry>
     <entry key="description_xml_files">XML súbory</entry>
+    <entry key="open_project">Otvoriť projekt</entry>
+    <entry key="error">Chyba</entry>
+    <entry key="unknown_project_type">Neznámy typ projektu</entry>
 </properties>

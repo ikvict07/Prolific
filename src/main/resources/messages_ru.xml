@@ -96,4 +96,7 @@
     <entry key="filename">Имя файла:</entry>
     <entry key="select_import_file">Выберите файл для импорта</entry>
     <entry key="description_xml_files">XML файлы</entry>
+    <entry key="open_project">Открыть проект</entry>
+    <entry key="error">Ошибка</entry>
+    <entry key="unknown_project_type">Неизвестный тип проекта</entry>
 </properties>
