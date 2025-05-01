@@ -312,7 +312,6 @@
 .popup {
     -fx-background-color: rgba(45, 45, 48, 0.85);
     -fx-background-radius: 6px;
-
 }
 
 .button {
@@ -526,7 +525,7 @@
     -fx-border-color: #3574F0;
     -fx-border-radius: 4;
     -fx-border-width: 1.5;
-    -fx-bacground-radius: 4;
+    -fx-background-radius: 4;
 }
 
 .project-logs-dropdown:hover {
@@ -929,6 +928,58 @@
     -fx-padding: 10px;
 }
 
+/* Dark theme for dialog */
+.dark-dialog {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+}
+
+.dark-dialog .content {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+}
+
+.dark-dialog .dark-text {
+    -fx-text-fill: white;
+}
+
+.dark-dialog .header-panel {
+    -fx-background-color: #333333;
+}
+
+.dark-dialog > *.button-bar > *.container {
+    -fx-background-color: #333333;
+}
+
+.dark-dialog > *.label.content {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.dark-button {
+    -fx-background-color: #4a6cd4;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.dark-button:hover {
+    -fx-background-color: #5a7ce4;
+}
+
+.dark-button-bar {
+    -fx-background-color: #333333;
+}
+
+
+/* Fix for potential white background in content area */
+.dialog-pane > .content.label {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+    -fx-text-alignment: left;
+}
 
 
 /** {*/

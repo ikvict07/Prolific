@@ -93,4 +93,9 @@
     <entry key="dead">Mrtve procesy</entry>
     <entry key="export">Exportovať</entry>
     <entry key="import_label">Importovať</entry>
+    <entry key="delete_confirm_title">Potvrdiť vymazanie</entry>
+    <entry key="delete_confirm_header">Vymazať projekt z počítača</entry>
+    <entry key="delete_confirm_content">Naozaj chcete vymazať tento projekt? Túto akciu nemožno vrátiť späť.</entry>
+    <entry key="yes">Áno</entry>
+    <entry key="no">Nie</entry>
 </properties>

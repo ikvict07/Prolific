@@ -2,7 +2,7 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
@@ -133,6 +133,27 @@ public class ProjectSettingDropdownController {
     }
 
     public void deleteProject() {
-        projectDeleteService.deleteProject(new DeleteProjectAction(project));
+        // Create a confirmation alert
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle(localizationProvider.delete_confirm_title().get());
+        confirmDialog.setHeaderText(localizationProvider.delete_confirm_header().get());
+        confirmDialog.getDialogPane().setContent(new Label(localizationProvider.delete_confirm_content().get()));
+        // Set button types
+        ButtonType buttonTypeYes = new ButtonType(localizationProvider.yes().get(), ButtonBar.ButtonData.YES);
+        ButtonType buttonTypeNo = new ButtonType(localizationProvider.no().get(), ButtonBar.ButtonData.NO);
+        confirmDialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+        // Apply CSS styling to the dialog
+        DialogPane dialogPane = confirmDialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+        dialogPane.getStyleClass().addAll("dark-dialog","settings-footer");
+        // Show dialog and process result
+        confirmDialog.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == buttonTypeYes) {
+                // Proceed with project deletion if user confirms
+                projectDeleteService.deleteProject(new DeleteProjectAction(project));
+            }
+            // If No is selected, do nothing
+        });
     }
 }
