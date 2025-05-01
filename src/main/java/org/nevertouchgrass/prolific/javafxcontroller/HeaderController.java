@@ -166,7 +166,7 @@ public class HeaderController extends AbstractHeaderController {
 
     public void projects() {
         DirectoryChooser fileChooser = new DirectoryChooser();
-        fileChooser.setTitle("Open Project");
+        fileChooser.setTitle(localizationProvider.open_project().get());
         try {
             String f = fileChooser.showDialog(stage).getPath();
             Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
@@ -179,9 +179,9 @@ public class HeaderController extends AbstractHeaderController {
 
     private void showAlert() {
         var alert = alertFactory.getObject();
-        alert.setTitle("Error");
+        alert.setTitle(localizationProvider.error().get());
         alert.setHeaderText(null);
-        alert.setContentText("Unknown project type");
+        alert.setContentText(localizationProvider.unknown_project_type().get());
         alert.showAndWait();
     }
 

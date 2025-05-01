@@ -71,9 +71,11 @@ access additional settings</li>
 </ul>
 <h2 id="building-from-source">Building from Source</h2>
 <h3 id="creating-a-native-installer">Creating a Native Installer</h3>
-<pre><code>./gradlew jpackage</code></pre>
-<p>This will create a native installer for your platform in the
-<code>build/jpackage</code> directory.</p>
+<pre><code>./gradlew jpackageLinux</code></pre>
+<pre><code>./gradlew jpackageMac</code></pre>
+<pre><code>./gradlew jpackageWindows</code></pre>
+<p>This will create a native installer for your host platform in the
+<code>build/image</code> directory. (You may need to install <a href="https://www.firegiant.com/wixtoolset/">Wix Toolset</a> to run <code>jpackageWindows</code> task).</p>
 <h1 id="run-configurations">
 Run configurations
 </h1>

@@ -1,24 +1,26 @@
 <!--suppress JavaFxEventHandler -->
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.nevertouchgrass.prolific.components.ArrayListHolder?>
-<SplitPane dividerPositions="0.15"
-           fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsListController"
+
+<SplitPane dividerPositions="0.15" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.SettingsListController"
            xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/styles.css" styleClass="settings-split-pane"
            onMouseEntered="#handleMouseEntered">
-    <VBox spacing="8">
+    <VBox>
         <padding>
             <Insets top="16" bottom="16" left="8" right="8"/>
         </padding>
-        <Label fx:id="general" id="general" userData="localization:settings_option_general" styleClass="settings-option"
-               onMouseClicked="#setSettingsList"/>
-        <Label fx:id="environment" id="environment" userData="localization:settings_option_environment"
-               styleClass="settings-option" onMouseClicked="#setSettingsList"/>
+        <ScrollPane fitToHeight="true" fitToWidth="true">
+            <VBox spacing="8">
+                <Label fx:id="general" id="general" userData="localization:settings_option_general" styleClass="settings-option"
+                       onMouseClicked="#setSettingsList"/>
+                <Label fx:id="environment" id="environment" userData="localization:settings_option_environment"
+                       styleClass="settings-option" onMouseClicked="#setSettingsList"/>
+            </VBox>
+        </ScrollPane>
 
         <fx:define>
             <ArrayListHolder fx:id="settingsLabels">
