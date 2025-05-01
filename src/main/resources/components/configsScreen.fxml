@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.ScrollPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigScreenController"
             stylesheets="@/css/styles.css" styleClass="settingsScreen">
@@ -11,12 +12,12 @@
     </top>
 
     <center>
-        <StackPane>
+        <ScrollPane>
             <padding>
                 <Insets right="8" left="8"/>
             </padding>
             <fx:include source="configsList.fxml"/>
-        </StackPane>
+        </ScrollPane>
     </center>
 
     <bottom>
