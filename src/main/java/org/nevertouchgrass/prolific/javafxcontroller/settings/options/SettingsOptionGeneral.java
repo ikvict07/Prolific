@@ -258,7 +258,7 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
             Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
             userSettingsService.loadSettingsFrom(p);
             applicationEventPublisher.publishEvent(new LocalizationChangeEvent(this, userSettingsHolder.getLocale()));
-            stage.close();
+            updateUIValues();
         } catch (Exception e) {
             log.error("Error importing settings", e);
         }}
