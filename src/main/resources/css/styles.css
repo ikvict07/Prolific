@@ -312,7 +312,6 @@
 .popup {
     -fx-background-color: rgba(45, 45, 48, 0.85);
     -fx-background-radius: 6px;
-
 }
 
 .button {
@@ -526,7 +525,7 @@
     -fx-border-color: #3574F0;
     -fx-border-radius: 4;
     -fx-border-width: 1.5;
-    -fx-bacground-radius: 4;
+    -fx-background-radius: 4;
 }
 
 .project-logs-dropdown:hover {
@@ -929,6 +928,25 @@
     -fx-padding: 10px;
 }
 
+.dialog-pane > .header-panel {
+    -fx-background-color: transparent;
+    -fx-padding: 16;
+}
+
+.dialog-pane > .content.label {
+    -fx-padding: 32;
+}
+
+.dialog-pane-text {
+    -fx-fill: #DFE1E5;
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 1.1em;
+}
+
+.dialog-pane > .button-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 8;
+}
 
 
 /** {*/

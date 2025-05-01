@@ -89,6 +89,8 @@
     <entry key="config_error_empty_anaconda_env">Prostredie Anaconda nesmie byť prázdne</entry>
     <entry key="no_metrics_user">Bez metric</entry>
     <entry key="dead">Mrtve procesy</entry>
+    <entry key="no_metrics_user">Bez metric</entry>
+    <entry key="dead">Mrtve procesy</entry>
     <entry key="export">Exportovať</entry>
     <entry key="import_label">Importovať</entry>
     <entry key="select_export_directory">Vyberte adresár na export</entry>
@@ -96,4 +98,10 @@
     <entry key="filename">Názov súboru:</entry>
     <entry key="select_import_file">Vyberte súbor na import</entry>
     <entry key="description_xml_files">XML súbory</entry>
+    <entry key="open_project">Otvoriť projekt</entry>
+    <entry key="error">Chyba</entry>
+    <entry key="unknown_project_type">Neznámy typ projektu</entry>
+    <entry key="delete_confirm_title">Potvrdiť vymazanie</entry>
+    <entry key="delete_confirm_header">Vymazať projekt z počítača?</entry>
+    <entry key="delete_confirm_content">Naozaj chcete vymazať tento projekt? Túto akciu nemožno vrátiť späť.</entry>
 </properties>

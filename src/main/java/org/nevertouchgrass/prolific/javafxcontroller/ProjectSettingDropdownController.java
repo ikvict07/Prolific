@@ -1,13 +1,19 @@
 package org.nevertouchgrass.prolific.javafxcontroller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import lombok.Data;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.constants.action.DeleteProjectAction;
@@ -25,6 +31,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 
 @StageComponent
 @Data
@@ -132,7 +139,42 @@ public class ProjectSettingDropdownController {
         projectExcluderService.excludeProject(new ExcludeProjectAction(project));
     }
 
+    @SneakyThrows
     public void deleteProject() {
-        projectDeleteService.deleteProject(new DeleteProjectAction(project));
+        Alert confirmDialog = new Alert(Alert.AlertType.NONE);
+        Pane graphic = new FXMLLoader(getClass().getResource("/icons/fxml/warning.fxml")).load();
+        confirmDialog.setGraphic(graphic);
+
+        confirmDialog.setTitle(localizationProvider.delete_confirm_title().get());
+        confirmDialog.setHeaderText(localizationProvider.delete_confirm_header().get());
+
+        ButtonType buttonTypeYes = new ButtonType(localizationProvider.settings_submit_button().get(), ButtonBar.ButtonData.YES);
+        ButtonType buttonTypeNo = new ButtonType(localizationProvider.settings_cancel_button().get(), ButtonBar.ButtonData.NO);
+        confirmDialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+        DialogPane dialogPane = confirmDialog.getDialogPane();
+        Text text = new Text(localizationProvider.delete_confirm_content().get());
+        text.getStyleClass().clear();
+        text.getStyleClass().add("dialog-pane-text");
+        text.wrappingWidthProperty().bind(dialogPane.widthProperty().subtract(40));
+
+        dialogPane.setContent(text);
+        dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
+
+        Button submitButton = (Button) dialogPane.lookupButton(buttonTypeYes);
+        submitButton.getStyleClass().clear();
+        submitButton.getStyleClass().add("settings-submit-button");
+        submitButton.setAlignment(Pos.CENTER);
+
+        Button cancelButton = (Button) dialogPane.lookupButton(buttonTypeNo);
+        cancelButton.getStyleClass().clear();
+        cancelButton.getStyleClass().add("settings-cancel-button");
+        cancelButton.setAlignment(Pos.CENTER);
+
+        confirmDialog.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == buttonTypeYes) {
+                projectDeleteService.deleteProject(new DeleteProjectAction(project));
+            }
+        });
     }
 }

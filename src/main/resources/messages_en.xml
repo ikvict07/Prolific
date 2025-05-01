@@ -97,4 +97,10 @@
     <entry key="filename">Filename:</entry>
     <entry key="select_import_file">Select Import File</entry>
     <entry key="description_xml_files">XML files</entry>
+    <entry key="open_project">Open project</entry>
+    <entry key="error">Error</entry>
+    <entry key="unknown_project_type">Unknown project type</entry>
+    <entry key="delete_confirm_title">Confirm Deletion</entry>
+    <entry key="delete_confirm_header">Delete the project from computer?</entry>
+    <entry key="delete_confirm_content">Are you sure you want to delete this project? This action cannot be undone.</entry>
 </properties>
