@@ -41,7 +41,6 @@ public class JavaFXApplication implements ApplicationRunner {
 
     private final UserSettingsService userSettingsService;
 
-
     private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
 
     @Setter(onMethod_ = @Autowired)
@@ -72,7 +71,6 @@ public class JavaFXApplication implements ApplicationRunner {
             primaryStage.getIcons().add(
                     new Image(Objects.requireNonNull(getClass().getResource("/icons/png/icon.png")).toExternalForm())
             );
-
             primaryStage.setScene(scene);
             scene.setFill(Color.TRANSPARENT);
             applicationEventPublisher.publishEvent(new StageInitializeEvent("primaryStage"));
