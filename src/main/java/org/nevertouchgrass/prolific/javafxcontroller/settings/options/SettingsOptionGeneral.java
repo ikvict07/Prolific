@@ -1,6 +1,7 @@
 package org.nevertouchgrass.prolific.javafxcontroller.settings.options;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
@@ -228,11 +229,14 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
         okButton.getStyleClass().clear();
         okButton.getStyleClass().add("settings-submit-button");
+        okButton.setAlignment(Pos.CENTER);
+        okButton.setText(localizationProvider.settings_submit_button().get());
 
         Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
         cancelButton.getStyleClass().clear();
         cancelButton.getStyleClass().add("settings-cancel-button");
-
+        cancelButton.setAlignment(Pos.CENTER);
+        cancelButton.setText(localizationProvider.settings_cancel_button().get());
 
         TextField textField = fileNameDialog.getEditor();
         textField.getStyleClass().add("log-text");

@@ -93,8 +93,6 @@
     <entry key="export">Export</entry>
     <entry key="import_label">Import</entry>
     <entry key="delete_confirm_title">Confirm Deletion</entry>
-    <entry key="delete_confirm_header">Delete project from computer</entry>
+    <entry key="delete_confirm_header">Delete the project from computer?</entry>
     <entry key="delete_confirm_content">Are you sure you want to delete this project? This action cannot be undone.</entry>
-    <entry key="yes">Yes</entry>
-    <entry key="no">No</entry>
 </properties>
