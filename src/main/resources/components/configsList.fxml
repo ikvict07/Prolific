@@ -8,40 +8,44 @@
 <SplitPane dividerPositions="0.15" fx:controller="org.nevertouchgrass.prolific.javafxcontroller.settings.RunConfigListController"
            xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/styles.css" styleClass="settings-split-pane"
            onMouseEntered="#handleMouseEntered">
-    <VBox spacing="24">
+    <VBox>
         <padding>
             <Insets top="16" bottom="16" left="8" right="8"/>
         </padding>
-        <Label fx:id="command" id="command" userData="localization:config_option_command" styleClass="configs-option"
-               onMouseClicked="#setSettingsList">
-            <graphic>
-                <fx:include source="/icons/fxml/console.fxml"/>
-            </graphic>
-        </Label>
-        <Label fx:id="gradle" id="gradle" userData="localization:config_option_gradle"
-               styleClass="configs-option" onMouseClicked="#setSettingsList">
-            <graphic>
-                <fx:include source="/icons/fxml/gradle.fxml"/>
-            </graphic>
-        </Label>
-        <Label fx:id="python" id="python" userData="localization:config_option_python"
-               styleClass="configs-option" onMouseClicked="#setSettingsList">
-            <graphic>
-                <fx:include source="/icons/fxml/python.fxml"/>
-            </graphic>
-        </Label>
-        <Label fx:id="anaconda" id="anaconda" userData="localization:config_option_anaconda"
-               styleClass="configs-option" onMouseClicked="#setSettingsList">
-            <graphic>
-                <fx:include source="/icons/fxml/anaconda.fxml"/>
-            </graphic>
-        </Label>
-        <Label fx:id="maven" id="maven" userData="localization:config_option_maven"
-               styleClass="configs-option" onMouseClicked="#setSettingsList">
-            <graphic>
-                <fx:include source="/icons/fxml/maven.fxml"/>
-            </graphic>
-        </Label>
+        <ScrollPane fitToHeight="true" fitToWidth="true">
+            <VBox spacing="24">
+                <Label fx:id="command" id="command" userData="localization:config_option_command" styleClass="configs-option"
+                       onMouseClicked="#setSettingsList">
+                    <graphic>
+                        <fx:include source="/icons/fxml/console.fxml"/>
+                    </graphic>
+                </Label>
+                <Label fx:id="gradle" id="gradle" userData="localization:config_option_gradle"
+                       styleClass="configs-option" onMouseClicked="#setSettingsList">
+                    <graphic>
+                        <fx:include source="/icons/fxml/gradle.fxml"/>
+                    </graphic>
+                </Label>
+                <Label fx:id="python" id="python" userData="localization:config_option_python"
+                       styleClass="configs-option" onMouseClicked="#setSettingsList">
+                    <graphic>
+                        <fx:include source="/icons/fxml/python.fxml"/>
+                    </graphic>
+                </Label>
+                <Label fx:id="anaconda" id="anaconda" userData="localization:config_option_anaconda"
+                       styleClass="configs-option" onMouseClicked="#setSettingsList">
+                    <graphic>
+                        <fx:include source="/icons/fxml/anaconda.fxml"/>
+                    </graphic>
+                </Label>
+                <Label fx:id="maven" id="maven" userData="localization:config_option_maven"
+                       styleClass="configs-option" onMouseClicked="#setSettingsList">
+                    <graphic>
+                        <fx:include source="/icons/fxml/maven.fxml"/>
+                    </graphic>
+                </Label>
+            </VBox>
+        </ScrollPane>
 
         <fx:define>
             <ArrayListHolder fx:id="settingsLabels">
@@ -54,16 +58,18 @@
         </fx:define>
     </VBox>
 
-    <GridPane fx:id="settingsList" hgap="24" vgap="32">
-        <padding>
-            <Insets top="32" right="16" bottom="16" left="16"/>
-        </padding>
+    <ScrollPane fitToWidth="true" fitToHeight="true">
+        <GridPane fx:id="settingsList" hgap="24" vgap="32">
+            <padding>
+                <Insets top="32" right="16" bottom="16" left="16"/>
+            </padding>
 
-        <columnConstraints>
-            <ColumnConstraints halignment="LEFT"/>
-            <ColumnConstraints hgrow="ALWAYS" />
-        </columnConstraints>
+            <columnConstraints>
+                <ColumnConstraints halignment="LEFT"/>
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
 
-    </GridPane>
+        </GridPane>
+    </ScrollPane>
 
 </SplitPane>

@@ -200,7 +200,7 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
 
     public void export() {
         DirectoryChooser fileChooser = new DirectoryChooser();
-        fileChooser.setTitle("Select Export Directory");
+        fileChooser.setTitle(localizationProvider.select_export_directory().get());
         fileChooser.setInitialDirectory(pathService.getProjectFilesPath().toFile());
         try {
             String f = fileChooser.showDialog(stage).getPath();
@@ -215,9 +215,9 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
 
     private String getFileName() {
         TextInputDialog fileNameDialog = new TextInputDialog(pathService.getSettingsName());
-        fileNameDialog.setTitle("Export Settings");
+        fileNameDialog.setTitle(localizationProvider.export_settings().get());
         fileNameDialog.setHeaderText(null);
-        fileNameDialog.setContentText("Filename:");
+        fileNameDialog.setContentText(localizationProvider.filename().get());
 
         DialogPane dialogPane = fileNameDialog.getDialogPane();
         dialogPane.setGraphic(null);
@@ -250,8 +250,8 @@ public class SettingsOptionGeneral extends AbstractSettingsOption {
 
     public void importSettings() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Import File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        fileChooser.setTitle(localizationProvider.select_import_file().get());
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(localizationProvider.description_xml_files().get(), "*.xml"));
         fileChooser.setInitialDirectory(pathService.getProjectFilesPath().toFile());
         try {
             String f = fileChooser.showOpenDialog(stage).getPath();

@@ -75,7 +75,7 @@ access additional settings</li>
 <pre><code>./gradlew jpackageMac</code></pre>
 <pre><code>./gradlew jpackageWindows</code></pre>
 <p>This will create a native installer for your host platform in the
-<code>build/image</code> directory. (You may need to install <a href="www.firegiant.com/wixtoolset/">Wix Toolset</a> to run <code>jpackageWindows</code> task).</p>
+<code>build/image</code> directory. (You may need to install <a href="https://www.firegiant.com/wixtoolset/">Wix Toolset</a> to run <code>jpackageWindows</code> task).</p>
 <h1 id="run-configurations">
 Run configurations
 </h1>

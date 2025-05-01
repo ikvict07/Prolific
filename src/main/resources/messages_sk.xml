@@ -89,8 +89,11 @@
     <entry key="config_error_empty_anaconda_env">Prostredie Anaconda nesmie byť prázdne</entry>
     <entry key="no_metrics_user">Bez metric</entry>
     <entry key="dead">Mrtve procesy</entry>
-    <entry key="no_metrics_user">Bez metric</entry>
-    <entry key="dead">Mrtve procesy</entry>
     <entry key="export">Exportovať</entry>
     <entry key="import_label">Importovať</entry>
+    <entry key="select_export_directory">Vyberte adresár na export</entry>
+    <entry key="export_settings">Exportovať nastavenia</entry>
+    <entry key="filename">Názov súboru:</entry>
+    <entry key="select_import_file">Vyberte súbor na import</entry>
+    <entry key="description_xml_files">XML súbory</entry>
 </properties>
