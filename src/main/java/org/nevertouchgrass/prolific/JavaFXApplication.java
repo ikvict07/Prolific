@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -68,6 +69,9 @@ public class JavaFXApplication implements ApplicationRunner {
             primaryStage.initStyle(StageStyle.TRANSPARENT);
             Scene scene = new Scene(mainScreenParent, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
+            primaryStage.getIcons().add(
+                    new Image(Objects.requireNonNull(getClass().getResource("/icons/png/icon.png")).toExternalForm())
+            );
 
             primaryStage.setScene(scene);
             scene.setFill(Color.TRANSPARENT);
