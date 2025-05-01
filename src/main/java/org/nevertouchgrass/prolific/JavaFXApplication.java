@@ -8,10 +8,12 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.Setter;
 import org.nevertouchgrass.prolific.events.JavaFxStartEvent;
 import org.nevertouchgrass.prolific.events.StageInitializeEvent;
 import org.nevertouchgrass.prolific.events.StageShowEvent;
 import org.nevertouchgrass.prolific.javafxcontroller.HeaderController;
+import org.nevertouchgrass.prolific.service.ProlificPreLoader;
 import org.nevertouchgrass.prolific.service.settings.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,6 +43,9 @@ public class JavaFXApplication implements ApplicationRunner {
 
     private final Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
 
+    @Setter(onMethod_ = @Autowired)
+    private ProlificPreLoader preLoader;
+
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public JavaFXApplication(@Qualifier("primaryStage") Stage primaryStage, Parent mainScreenParent, HeaderController headerController,
@@ -55,6 +60,10 @@ public class JavaFXApplication implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         Platform.runLater(() -> {
+            if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+                preLoader.start(new Stage());
+            }
+
             applicationEventPublisher.publishEvent(new JavaFxStartEvent(this));
             primaryStage.initStyle(StageStyle.TRANSPARENT);
             Scene scene = new Scene(mainScreenParent, visualBounds.getMaxX() / 1.5, visualBounds.getMaxY() / 1.5);

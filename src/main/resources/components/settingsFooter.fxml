@@ -12,7 +12,7 @@
     <fx:include source="/icons/fxml/help.fxml" AnchorPane.leftAnchor="24" AnchorPane.topAnchor="0"
                 onMouseClicked="#help" AnchorPane.bottomAnchor="0"/>
 
-    <HBox fx:id="content" AnchorPane.rightAnchor="16" spacing="8">
+    <HBox fx:id="content" AnchorPane.rightAnchor="16" spacing="8" alignment="CENTER">
         <padding>
             <Insets top="8" bottom="8"/>
         </padding>

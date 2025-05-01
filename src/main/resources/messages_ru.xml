@@ -87,4 +87,21 @@
     <entry key="config_error_empty_path">Путь не должен быть пустым</entry>
     <entry key="config_anaconda_env">Окружение Anaconda</entry>
     <entry key="config_error_empty_anaconda_env">Окружение Anaconda не должно быть пустым</entry>
+    <entry key="no_metrics_user">Без метрик</entry>
+    <entry key="dead">Мертвые процессы</entry>
+    <entry key="no_metrics_user">Без метрик</entry>
+    <entry key="dead">Мертвые процессы</entry>
+    <entry key="export">Экспортировать</entry>
+    <entry key="import_label">Импортировать</entry>
+    <entry key="select_export_directory">Выберите директорию для экспорта</entry>
+    <entry key="export_settings">Экспорт настроек</entry>
+    <entry key="filename">Имя файла:</entry>
+    <entry key="select_import_file">Выберите файл для импорта</entry>
+    <entry key="description_xml_files">XML файлы</entry>
+    <entry key="open_project">Открыть проект</entry>
+    <entry key="error">Ошибка</entry>
+    <entry key="unknown_project_type">Неизвестный тип проекта</entry>
+    <entry key="delete_confirm_title">Подтвердите удаление</entry>
+    <entry key="delete_confirm_header">Удалить проект с компьютера?</entry>
+    <entry key="delete_confirm_content">Вы уверены, что хотите удалить этот проект? Это действие нельзя отменить.</entry>
 </properties>

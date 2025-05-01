@@ -11,8 +11,6 @@ import org.nevertouchgrass.prolific.service.notification.NotificationService;
 import org.nevertouchgrass.prolific.service.process.ProcessAware;
 import org.nevertouchgrass.prolific.util.ProcessWrapper;
 import org.springframework.stereotype.Service;
-import oshi.software.os.OSProcess;
-import oshi.software.os.OperatingSystem;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -22,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.nevertouchgrass.prolific.util.ProcessUtl.receiveDescendants;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -38,7 +39,6 @@ public class MetricsService implements ProcessAware {
     private final Map<ProcessWrapper, ProcessMetrics> metrics = new ConcurrentHashMap<>();
     private final Map<ProcessWrapper, Sinks.Many<Metric>> metricSinks = new ConcurrentHashMap<>();
 
-    private final OperatingSystem os;
     private final AtomicBoolean observing = new AtomicBoolean(true);
 
     private final Map<ProcessWrapper, AtomicBoolean> processActiveFlags = new ConcurrentHashMap<>();
@@ -53,7 +53,7 @@ public class MetricsService implements ProcessAware {
     public void observeProcess(ProcessWrapper process) {
         metrics.computeIfAbsent(process, p -> {
             var newMetrics = new ProcessMetrics();
-            newMetrics.setStartTime(p.getOsProcess().getStartTime());
+            newMetrics.setStartTime(p.getProcess().toHandle().info().startInstant().orElse(Instant.now()).toEpochMilli());
             return newMetrics;
         });
 
@@ -88,20 +88,17 @@ public class MetricsService implements ProcessAware {
 
 
     private Mono<Metric> collectMetrics(ProcessWrapper process) {
-        return Mono.fromCallable(() -> {
-                    int pid = process.getPid();
-                    OSProcess osProcess = os.getProcess(pid);
-                    if (osProcess == null) {
-                        return null;
-                    }
+        return Mono.zip(
+                        Mono.fromCallable(() -> getCpuUsage(process)).subscribeOn(Schedulers.boundedElastic()),
+                        Mono.fromCallable(() -> getMemoryUsage(process)).subscribeOn(Schedulers.boundedElastic())
+                )
+                .map(tuple -> {
                     var metric = new Metric();
-                    metric.setCpuUsage(getCpuUsage(process));
-                    metric.setMemoryUsage(getMemoryUsage(process));
-                    metric.setThreadCount(osProcess.getThreadCount());
+                    metric.setCpuUsage(tuple.getT1());
+                    metric.setMemoryUsage(tuple.getT2());
                     metric.setTimeStamp(LocalDateTime.now());
                     return metric;
                 })
-                .subscribeOn(Schedulers.boundedElastic())
                 .filter(Objects::nonNull);
     }
 
@@ -128,7 +125,7 @@ public class MetricsService implements ProcessAware {
     private long getMemoryUsageForWindows(Set<ProcessHandle> descendants) {
         AtomicReference<Long> memoryUsage = new AtomicReference<>(0L);
         descendants.forEach(d -> {
-            var pb = new ProcessBuilder("wmic", "path", "Win32_PerfFormattedData_PerfProc_Process", "where", "IDProcess=" + d.pid(), "get", "WorkingSetSize");
+            var pb = new ProcessBuilder("wmic", "path", "Win32_PerfFormattedData_PerfProc_Process", "where", "IDProcess=" + d.pid(), "get", "WorkingSetPrivate");
             readMemoryUsage(memoryUsage, pb);
         });
         return memoryUsage.get();
@@ -171,7 +168,7 @@ public class MetricsService implements ProcessAware {
         var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(p).getInputStream()));
         String line;
         int i = 0;
-        while (i < 2) {
+        while (i < 4) {
             try {
                 if ((reader.ready() && (line = reader.readLine()) != null)) {
                     try {
@@ -200,7 +197,7 @@ public class MetricsService implements ProcessAware {
         var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(p).getInputStream()));
         String line;
         int i = 0;
-        while (i < 2) {
+        while (i < 4) {
             try {
                 if ((reader.ready() && (line = reader.readLine()) != null)) {
                     try {
@@ -217,18 +214,6 @@ public class MetricsService implements ProcessAware {
             }
         }
         return cpuUsage.get();
-    }
-
-    public void receiveDescendants(ProcessHandle process, Set<ProcessHandle> descendantsToReceive) {
-        var d = new HashSet<ProcessHandle>();
-        var children = process.children().toList();
-        var descendants = process.descendants().toList();
-        d.add(process);
-        d.addAll(children);
-        d.addAll(descendants);
-        descendantsToReceive.addAll(d);
-        children.forEach(c -> receiveDescendants(c, descendantsToReceive));
-        children.forEach(c -> receiveDescendants(c, descendantsToReceive));
     }
 
     public Flux<Metric> subscribeToMetrics(ProcessWrapper process) {

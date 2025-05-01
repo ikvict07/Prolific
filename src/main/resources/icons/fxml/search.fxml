@@ -3,17 +3,17 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.SVGPath?>
-<StackPane xmlns="http://javafx.com/javafx/17.0.12">
+<StackPane xmlns="http://javafx.com/javafx/17.0.12" styleClass="search-container">
     <Group>
         <!-- Circle -->
-        <SVGPath
+        <SVGPath styleClass="search-icon"
                 content="M7,2.5 A4.5,4.5 0 1,1 6.999,2.5 Z"
-                fill="TRANSPARENT" stroke="#6F737A" strokeWidth="1">
+                fill="TRANSPARENT" stroke="#6F737A">
         </SVGPath>
         <!-- Line -->
-        <SVGPath
+        <SVGPath styleClass="search-icon"
                 content="M10.1992 10.2002 L13.4992 13.4961"
-                fill="TRANSPARENT" stroke="#6F737A" strokeWidth="1" strokeLineCap="round">
+                fill="TRANSPARENT" stroke="#6F737A" strokeLineCap="round">
         </SVGPath>
     </Group>
 </StackPane>

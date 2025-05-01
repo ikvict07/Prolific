@@ -3,11 +3,11 @@ package org.nevertouchgrass.prolific.javafxcontroller;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import lombok.Setter;
@@ -15,9 +15,9 @@ import lombok.extern.log4j.Log4j2;
 import org.nevertouchgrass.prolific.annotation.Initialize;
 import org.nevertouchgrass.prolific.annotation.StageComponent;
 import org.nevertouchgrass.prolific.constants.profile.CommonUser;
+import org.nevertouchgrass.prolific.constants.profile.NoMetricsUser;
 import org.nevertouchgrass.prolific.constants.profile.PowerUser;
 import org.nevertouchgrass.prolific.model.UserSettingsHolder;
-import org.nevertouchgrass.prolific.service.FxmlProvider;
 import org.nevertouchgrass.prolific.service.ProjectsService;
 import org.nevertouchgrass.prolific.service.localization.LocalizationHolder;
 import org.nevertouchgrass.prolific.service.localization.LocalizationProvider;
@@ -40,9 +40,9 @@ public class HeaderController extends AbstractHeaderController {
     @FXML
     public StackPane settingsButton;
     @FXML
-    public Circle minimizeButton;
+    public Node minimizeButton;
     @FXML
-    public Circle maximizeButton;
+    public Node maximizeButton;
     @FXML
     public HBox gradientBox;
     @FXML
@@ -54,9 +54,7 @@ public class HeaderController extends AbstractHeaderController {
     @FXML
     private AnchorPane header;
     @FXML
-    private Circle closeButton;
-    @Setter(onMethod_ = @Autowired)
-    private FxmlProvider fxmlProvider;
+    private Node closeButton;
     @Setter(onMethod_ = @Autowired)
     private LocalizationProvider localizationProvider;
     @Setter(onMethod_ = @Autowired)
@@ -104,8 +102,9 @@ public class HeaderController extends AbstractHeaderController {
         userList.getStyleClass().add("combo-box-base");
         var powerUser = new ProfileItem(localizationHolder.getLocalization(PowerUser.PROFILE));
         var commonUser = new ProfileItem(localizationHolder.getLocalization(CommonUser.PROFILE));
+        var noMetricsUser = new ProfileItem(localizationHolder.getLocalization(NoMetricsUser.PROFILE));
 
-        userList.getItems().addAll(powerUser, commonUser);
+        userList.getItems().addAll(powerUser, commonUser, noMetricsUser);
 
         userList.setCellFactory(lv -> createProfileItemCell());
         userList.setButtonCell(createProfileItemCell());
@@ -115,6 +114,8 @@ public class HeaderController extends AbstractHeaderController {
                     userSettingsHolder.setUserRole(PowerUser.PROFILE);
                 } else if (newValue.equals(commonUser)) {
                     userSettingsHolder.setUserRole(CommonUser.PROFILE);
+                }  else if (newValue.equals(noMetricsUser)) {
+                    userSettingsHolder.setUserRole(NoMetricsUser.PROFILE);
                 }
                 userSettingsService.saveSettings();
             }
@@ -124,7 +125,11 @@ public class HeaderController extends AbstractHeaderController {
             userList.getSelectionModel().select(powerUser);
         } else if (currentUser instanceof CommonUser) {
             userList.getSelectionModel().select(commonUser);
+        } else if (currentUser instanceof NoMetricsUser) {
+            userList.getSelectionModel().select(noMetricsUser);
         }
+
+        setupMaximizeButton(maximizeButton);
     }
 
     private static ListCell<ProfileItem> createProfileItemCell() {
@@ -161,7 +166,7 @@ public class HeaderController extends AbstractHeaderController {
 
     public void projects() {
         DirectoryChooser fileChooser = new DirectoryChooser();
-        fileChooser.setTitle("Open Project");
+        fileChooser.setTitle(localizationProvider.open_project().get());
         try {
             String f = fileChooser.showDialog(stage).getPath();
             Path p = Path.of(f).toRealPath(LinkOption.NOFOLLOW_LINKS);
@@ -174,9 +179,9 @@ public class HeaderController extends AbstractHeaderController {
 
     private void showAlert() {
         var alert = alertFactory.getObject();
-        alert.setTitle("Error");
+        alert.setTitle(localizationProvider.error().get());
         alert.setHeaderText(null);
-        alert.setContentText("Unknown project type");
+        alert.setContentText(localizationProvider.unknown_project_type().get());
         alert.showAndWait();
     }
 
@@ -196,5 +201,4 @@ public class HeaderController extends AbstractHeaderController {
             return displayText.get();
         }
     }
-
 }

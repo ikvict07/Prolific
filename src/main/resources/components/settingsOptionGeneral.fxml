@@ -38,7 +38,25 @@
             <Spinner fx:id="rescanEveryHoursSetting" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
             <Label fx:id="language" userData="localization:setting_language" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+
             <ComboBox fx:id="languageSetting" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+            <HBox GridPane.rowIndex="5" GridPane.columnIndex="0" alignment="CENTER" styleClass="icon-button" spacing="4" onMouseClicked="#export">
+                <padding>
+                    <Insets left="6"/>
+                </padding>
+                <Label fx:id="exportLabel" userData="localization:export"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <fx:include source="/icons/fxml/export.fxml"/>
+            </HBox>
+            <HBox GridPane.rowIndex="6" GridPane.columnIndex="0" alignment="CENTER" styleClass="icon-button" spacing="4" onMouseClicked="#importSettings">
+                <padding>
+                    <Insets left="6"/>
+                </padding>
+                <Label fx:id="importLabel" userData="localization:import_label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <fx:include source="/icons/fxml/import.fxml"/>
+            </HBox>
         </ArrayListHolder>
     </fx:define>
 

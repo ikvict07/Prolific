@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Prolific
+Comment=Manager for your projects
+Exec=/opt/prolificinstaller/bin/Prolific
+Icon=/opt/prolificinstaller/lib/Prolific.png
+Terminal=false
+Type=Application
+Categories=Utility
+StartupWMClass=Prolific
