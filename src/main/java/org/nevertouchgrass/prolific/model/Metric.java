@@ -8,6 +8,5 @@ import java.time.LocalDateTime;
 public class Metric {
     private double cpuUsage;
     private double memoryUsage;
-    private double threadCount;
     private LocalDateTime timeStamp;
 }

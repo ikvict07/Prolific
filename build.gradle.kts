@@ -44,7 +44,6 @@ val mockitoAgent = configurations.create("mockitoAgent")
 
 dependencies {
     implementation(libs.bundles.spring)
-    implementation(libs.oshiCore)
     implementation(libs.logging)
     implementation(libs.log4j.core)
     implementation(libs.jacksonXml)
@@ -267,6 +266,27 @@ tasks.register<JPackageTask>("jpackageLinux") {
             "--linux-menu-group", "Utility",
             "--icon", "src/main/jpackage/linux/Prolific.png",
             "--resource-dir", "src/main/jpackage/linux"
+        )
+    }
+}
+
+tasks.register<JPackageTask>("jpackageWindows") {
+    group = "build"
+    description = "Create a Windows installer"
+    jpackageData.apply {
+        installerType = "msi"
+        imageOptions = listOf(
+            "--icon", "src/main/resources/icons/png/icon.ico"
+        )
+        application.applicationName = "Prolific"
+        installerOptions = listOf(
+            "--win-dir-chooser",
+            "--win-help-url", "https://github.com/ikvict07/prolific",
+            "--win-menu",
+            "--win-menu-group", "Utility",
+            "--win-shortcut-prompt",
+            "--icon", "src/main/resources/icons/png/icon.ico",
+            "--win-upgrade-uuid", "fb744216-ef8d-41ca-b965-352cefe39d90"
         )
     }
 }

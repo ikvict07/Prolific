@@ -12,7 +12,18 @@ public class GradleTasksManager {
     public List<String> getGradleTasks(Path projectPath) {
         var processBuilder = new ProcessBuilder();
         final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-        processBuilder.command(isWindows ? "gradlew.bat" : "./gradlew", "tasks", "--all");
+        if (isWindows) {
+            String cmdPath = System.getenv("SystemRoot");
+            if (cmdPath == null) {
+                cmdPath = "C:\\Windows\\System32\\cmd.exe";
+            } else {
+                cmdPath += "\\System32\\cmd.exe";
+            }
+
+            processBuilder.command(cmdPath, "/c", "gradlew.bat", "tasks", "--all");
+        } else {
+            processBuilder.command("./gradlew", "tasks", "--all");
+        }
         processBuilder.directory(projectPath.toFile());
         try {
             var process = processBuilder.start();

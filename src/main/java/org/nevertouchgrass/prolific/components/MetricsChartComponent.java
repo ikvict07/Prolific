@@ -50,6 +50,7 @@ public class MetricsChartComponent extends VBox {
         if (metricsService != null && process != null) {
             metricsService.subscribeToMetrics(process)
                     .publishOn(Schedulers.single())
+                    .subscribeOn(Schedulers.boundedElastic())
                     .subscribe(metric -> Platform.runLater(() -> metricEvents.push(metric)));
         }
     }
@@ -241,7 +242,7 @@ public class MetricsChartComponent extends VBox {
             allMemoryData.add(memoryData);
 
             boolean isAtEnd = (scrollBar.getValue() >= 95) ||
-                    (viewStartIndex >= allCpuData.size() - timeWindow - 2);
+                              (viewStartIndex >= allCpuData.size() - timeWindow - 2);
 
 
             if (isAtEnd) {

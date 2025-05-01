@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 import lombok.Getter;
 import org.nevertouchgrass.prolific.constants.profile.CommonUser;
+import org.nevertouchgrass.prolific.constants.profile.NoMetricsUser;
 import org.nevertouchgrass.prolific.constants.profile.PowerUser;
 import org.nevertouchgrass.prolific.constants.profile.User;
 import org.springframework.stereotype.Service;
@@ -45,10 +46,11 @@ public class UserSettingsHolder {
         if (userRole == null || userRole.isEmpty()) {
             return new CommonUser();
         }
-        if (userRole.equals(PowerUser.PROFILE)) {
-            return new PowerUser();
-        }
-        return new CommonUser();
+        return switch (userRole) {
+            case PowerUser.PROFILE -> new PowerUser();
+            case NoMetricsUser.PROFILE -> new NoMetricsUser();
+            default -> new CommonUser();
+        };
     }
 
     public void load(UserSettingsHolder userSettingsHolder) {

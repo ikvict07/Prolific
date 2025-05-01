@@ -122,7 +122,6 @@ public class ProcessLogsService implements ProcessAware {
 
         while (batch.size() < targetBatchSize &&
                System.currentTimeMillis() - startTime < maxWaitTime) {
-
             LogWrapper entry = queue.poll();
             if (entry == null) {
                 if (!isProcessing.get()) {
