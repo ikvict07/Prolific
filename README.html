@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prolific Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 2em;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 1.5em;
+        }
+
+        p, ul, ol, table {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            display: inline-block;
+            text-align: left;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #ddd;
+            margin: 20px auto;
+            max-width: 90%;
+            text-align: left;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px auto;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .toc {
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin: 20px auto;
+            max-width: 80%;
+        }
+
+        .toc ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .cover-image {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 30px;
+        }
+
+        .svg-icon {
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+
+            img {
+                max-width: 100%;
+                page-break-inside: avoid;
+            }
+
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+
+            pre, blockquote {
+                page-break-inside: avoid;
+            }
+
+            .toc {
+                page-break-before: always;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="static/prolific_cover.jpg" alt="Prolific Cover" class="cover-image">
+
+        <h1>Prolific</h1>
+
+        <p>Prolific is a project management tool designed to help developers manage their projects efficiently. It provides a
+        user-friendly interface and powerful features to streamline your workflow.</p>
+
+        <div class="page-break"></div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#prolific">Prolific</a>
+                    <ul>
+                        <li><a href="#features">Features</a>
+                            <ul>
+                                <li><a href="#project-scanning">Project scanning</a></li>
+                                <li><a href="#add-a-project-manually">Add a project manually</a></li>
+                                <li><a href="#filtering-and-searching">Filtering and searching</a></li>
+                                <li><a href="#configuration-importing">Configuration importing</a></li>
+                                <li><a href="#configuration-creation">Configuration creation</a></li>
+                                <li><a href="#run-and-monitor">Run and monitor</a></li>
+                                <li><a href="#terminated-processes-information">Terminated processes information</a></li>
+                                <li><a href="#notifications">Notifications</a></li>
+                                <li><a href="#manage-your-projects">Manage your projects</a></li>
+                                <li><a href="#settings">Settings</a>
+                                    <ul>
+                                        <li><a href="#general">General</a></li>
+                                        <li><a href="#environment">Environment</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#profiles">Profiles</a>
+                                    <ul>
+                                        <li><a href="#default-user">Default user</a></li>
+                                        <li><a href="#no-metrics">No Metrics</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#plugins">Plugins</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#project-related-files">Project related files</a></li>
+                        <li><a href="#architecture">Architecture</a></li>
+                        <li><a href="#5w">5W</a></li>
+                        <li><a href="#raci">RACI</a></li>
+                        <li><a href="#class-diagram">Class diagram</a></li>
+                        <li><a href="#run">Run</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <h2 id="features">Features</h2>
+
+        <h3 id="project-scanning">Project scanning</h3>
+
+        <img src="static/scanning.png" alt="scanning.png">
+
+        <p>Prolific automatically scans your projects and detects their types. It uses a set of predefined rules to identify
+        different project types based on the files and directories present in your project. This allows you to quickly add and
+        manage your projects without having to manually configure them.</p>
+
+        <h3 id="add-a-project-manually">Add a project manually</h3>
+
+        <img src="static/add_manually.png" alt="add_manually.png">
+
+        <p>You can add a project manually if it was not added automatically.</p>
+
+        <h3 id="filtering-and-searching">Filtering and searching</h3>
+
+        <img src="static/search.png" alt="search.png">
+
+        <p>Prolific provides powerful filtering and searching capabilities to help you find the projects you need quickly. You can
+        filter projects by their title, type, if they are running or whether they are starred. You can also search using Regex.
+        You can apply filters e.g. to show only starred projects or manually added projects.</p>
+
+        <h3 id="configuration-importing">Configuration importing</h3>
+
+        <img src="static/imported_configs.png" alt="imported_configs.png">
+
+        <p>Prolific can import existing run configuration from JetBrains IDEs. Currently supports Gradle tasks, Maven goals, Python and Flusk</p>
+
+        <h3 id="configuration-creation">Configuration creation</h3>
+
+        <p>You can create your own run configurations.</p>
+
+        <img src="guides/assets/configs/create_new.png" alt="create_new.png">
+        <img src="guides/assets/configs/command.png" alt="command.png">
+
+        <p>This window allows you to declare how the app should run your project. You can choose from several options:</p>
+
+        <ul>
+            <li><strong>Command</strong>: This is the most common option. You can specify any command that you want to run. You can use this option
+            to run any script or program that you want.</li>
+            <li><strong>Gradle</strong>
+                <img src="guides/assets/configs/gradle.png" alt="gradle.png">
+                <p>This option allows you to run a Gradle task. You can specify the task name and any additional arguments that you want
+                to pass to the task. You can use this option to run any Gradle task that your project's build.gradle file supports.</p>
+            </li>
+            <li><strong>Python</strong>
+                <img src="guides/assets/configs/python.png" alt="python.png">
+                <p>This option allows you to run a Python script.
+                You can specify the script name and any additional arguments that you want to pass to the script.
+                You can use both absolute and relative paths.</p>
+            </li>
+            <li><strong>Anaconda</strong>
+                <img src="guides/assets/configs/anaconda.png" alt="anaconda.png">
+                <p>Config name, arguments and path to script are the same as in Python run config. The only difference is that you can
+                specify conda environment name. This will activate the conda environment before running the script. To use this option
+                you need to configure <strong><em>Anaconda path in settings!</em></strong></p>
+            </li>
+            <li><strong>Maven</strong>
+                <img src="guides/assets/configs/maven.png" alt="maven.png">
+                <p>This option allows you to run a Maven task. You can specify the task name and any additional arguments that you want
+                to pass to the task.</p>
+            </li>
+        </ul>
+
+        <h3 id="run-and-monitor">Run and monitor</h3>
+
+        <img src="static/run.png" alt="run.png">
+
+        <p>You can run your project by clicking the play button. This will start the project and show the output in the console.</p>
+
+        <p>You can also stop the project by clicking the stop button.</p>
+
+        <img src="static/metrics.png" alt="metrics.png">
+
+        <p>You can monitor CPU and memory usage of your project. This will show you the current CPU and memory usage of your project in real time.</p>
+
+        <h3 id="terminated-processes-information">Terminated processes information</h3>
+
+        <img src="static/terminated.png" alt="terminated.png">
+
+        <p>You can also see logs and metrics of terminated processes. Currently, you will see only 3 last terminated processes for each project.</p>
+
+        <h3 id="notifications">Notifications</h3>
+
+        <img src="static/notification1.png" alt="notification1.png">
+        <img src="static/notification2.png" alt="notification2.png">
+
+        <p>Receive the most important notifications in real-time.</p>
+
+        <h3 id="manage-your-projects">Manage your projects</h3>
+
+        <img src="static/manage.png" alt="manage.png">
+
+        <p>You can star your projects to mark them as favorites. This will make it easier to find them later. You can also remove a project, delete it or open it in the file explorer.</p>
+
+        <h3 id="settings">Settings</h3>
+
+        <img src="guides/assets/settings/general/settings.png" alt="settings.png">
+
+        <p>The Settings screen is where you can configure a variety of options for the app. The settings are divided into several
+        categories:</p>
+
+        <h4 id="general">General</h4>
+
+        <ul>
+            <li><strong>Root path to scan</strong>: This is one of the most important settings. It defines the root path where the app will scan
+            for files. The app will look for files in this directory and its subdirectories. You can set this to any directory on
+            your system. You can use
+            a <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon"><path d="M3.25 3.25H7.6377C7.6817 3.25 7.72498 3.2615 7.7627 3.2832L7.79785 3.30762L10.5195 5.57617L10.7285 5.75H17C17.6904 5.75 18.25 6.30964 18.25 7V15.167C18.2498 16.0672 17.5529 16.75 16.75 16.75H3.25C2.44714 16.75 1.75017 16.0672 1.75 15.167V4.83301C1.75017 3.93278 2.44715 3.25 3.25 3.25Z" stroke="#CED0D6" stroke-width="1.5"/></svg>
+            button to select the directory.</li>
+            <li><strong>Excluded dirs</strong>: This setting allows you to specify directories that should be excluded from the scan. You can add
+            multiple directories, and they will be ignored during the scan process. You should use a semicolon (;) to separate
+            multiple directories. For example: <code>dir1;dir2;dir3</code>. The app will not scan these directories or any of their
+            subdirectories. This field also supports a glob pattern, so you can use wildcards to exclude multiple directories that
+            match a certain pattern. For example: <code>dir*;dir2*</code> will exclude all directories that start with <code>dir</code> or <code>dir2</code>.</li>
+            <li><strong>Max scan depth</strong>: This setting allows you to specify the maximum depth of subdirectories to scan. For example, if
+            you set this to 2, the app will scan the root directory and its immediate subdirectories, but not any subdirectories
+            of those subdirectories. This can be useful if you have a large directory structure and want to limit the scan to a
+            certain level.</li>
+            <li><strong>Rescan every hours</strong>: App automatically rescan the root path every X hours. This is useful if you want to keep the
+            app up to date with the latest changes in your files. You can set this to any number of hours. Keep in mind that
+            rescanning will be performed only if the app restarts. If you want to rescan the root path immediately, you can use
+            the "Run scanning" button in the app.</li>
+            <li><strong>Language</strong>: We currently support English, Slovak and Russian. You can select the language from the dropdown menu. No
+            restart is required</li>
+        </ul>
+
+        <h4 id="environment">Environment</h4>
+
+        <img src="guides/assets/settings/environment/environment.png" alt="environment.png">
+
+        <p>This section allows you to configure the environment settings for the app.
+        But for common use, you don't need to change anything here.</p>
+
+        <ul>
+            <li><strong>Python path</strong>: <em>Default value is python from PATH.</em> If you want to use some python binary (different from one that
+            is in PATH) you can configure this
+            here. This is useful if you have multiple versions of Python installed on your system or if you want to use a specific
+            version of Python for the app. You can set this to any valid path to a Python binary. You can use
+            a <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon"><path d="M3.25 3.25H7.6377C7.6817 3.25 7.72498 3.2615 7.7627 3.2832L7.79785 3.30762L10.5195 5.57617L10.7285 5.75H17C17.6904 5.75 18.25 6.30964 18.25 7V15.167C18.2498 16.0672 17.5529 16.75 16.75 16.75H3.25C2.44714 16.75 1.75017 16.0672 1.75 15.167V4.83301C1.75017 3.93278 2.44715 3.25 3.25 3.25Z" stroke="#CED0D6" stroke-width="1.5"/></svg></li>
+            <li><strong>Gradle</strong>: By default run configs will try to use project's Gradle wrapper (gradlew). If you want to use some other
+            Gradle binary, you can configure this here.</li>
+            <li><strong>Maven path</strong>: By default run configs will try to use project's Maven (mvn). If you want to use some other
+            Maven binary, you can configure this here.</li>
+            <li><strong>JDK path</strong>: By default run configs won't explicitly set JDK path. If you think, that you need to use some concrete
+            JDK
+            version, you can set it here. (For gradle tasks will be specified <code>-Dorg.gradle.java.home=&lt;path&gt;</code> and for maven tasks)
+            <code>-Djava.home=&lt;path&gt;</code>)</li>
+            <li><strong>Anaconda path</strong>: <em>You must provide this path in order to work with anaconda run configs</em> This path is the path to
+            directory where all your conda environments are stored. Usually it is something like <code>/Users/user/miniconda3/</code> (you
+            mustn't specify <code>/envs/</code> part)</li>
+        </ul>
+
+        <h3 id="profiles">Profiles</h3>
+
+        <p>Prolific supports multiple profiles. They are used to manipulate with permissions</p>
+
+        <img src="guides/assets/main/profiles/profiles.png" alt="profiles.png">
+
+        <hr>
+
+        <img src="guides/assets/main/profiles/power_user.png" alt="power_user.png">
+
+        <p>Power user can:</p>
+
+        <ul>
+            <li>Exclude projects from scanning (will also delete a project from the list)</li>
+            <li>Delete project from PC</li>
+        </ul>
+
+        <h4 id="default-user">Default user</h4>
+
+        <img src="guides/assets/main/profiles/default_user.png" alt="default_user.png">
+
+        <p>Default user can't exclude dirs or delete projects.</p>
+
+        <p>This system was designed to prevent users from deleting projects or excluding dirs from scanning unintentionally.</p>
+
+        <h4 id="no-metrics">No Metrics</h4>
+
+        <p>This profile is used when you don't need metrics. This will all metrics collection and increase performance of the app.</p>
+
+        <h3 id="plugins">Plugins</h3>
+
+        <img src="static/plugins.png" alt="plugins.png">
+
+        <p>Prolific supports plugins. You can teach prolific how to determine a project type.
+        You will need to add new .xml file.
+        This file should have the next structure:</p>
+
+        <pre><code>&lt;projects&gt;
+  &lt;project&gt;
+    &lt;name&gt;Your project type&lt;/name&gt;
+    &lt;identifiers&gt;
+      &lt;file&gt;Some file name that will determine your project&lt;/file&gt;
+      &lt;folder&gt;Some folder name/pattern that will determine your project&lt;/folder&gt;
+    &lt;/identifiers&gt;
+  &lt;/project&gt;
+&lt;/projects&gt;</code></pre>
+
+        <p>You can use any combination of file and folder names. You can also use wildcards in the folder name. For example: <code>dir*</code> will match any
+        directory that starts with <code>dir</code>. You can also use <code>*</code> to match any directory. For example: <code>*</code> will match any directory.</p>
+
+        <h2 id="project-related-files">Project related files</h2>
+
+        <p>For unix systems Prolific creates <code>.prolific</code> directory in your user's home directory. This directory contains all
+        project related files as database, settings, plugins, run configs, and so on.</p>
+
+        <p>For windows systems Prolific creates <code>Prolific</code> directory in AppData folder.</p>
+
+        <h2 id="architecture">Architecture</h2>
+
+        <img src="static/Business_Ogranization_Viewpoint.png" alt="Business_Ogranization_Viewpoint.png">
+        <img src="static/Application_Cooperation_Viewpoint.png" alt="Application_Cooperation_Viewpoint.png">
+        <img src="static/Product_Viewpoint.png" alt="Product_Viewpoint.png">
+        <img src="static/Cooperation_Viewpoint.png" alt="Cooperation_Viewpoint.png">
+        <img src="static/Technology_Viewpoint.png" alt="Technology_Viewpoint.png">
+        <img src="static/Layered_Viewpoint.png" alt="Layered_Viewpoint.png">
+
+        <h2 id="5w">5W</h2>
+
+        <h4>1. Who?</h4>
+
+        <ul>
+            <li><strong>Primary Users:</strong> Developers (individuals and teams)</li>
+            <li><strong>Corporate Users:</strong> Companies needing project management for development teams</li>
+            <li><strong>Integration Partners:</strong> JetBrains (potential future integration)</li>
+            <li><strong>Investors/Owners:</strong> Project maintainers and contributors</li>
+        </ul>
+
+        <h4>2. What? (Project Purpose)</h4>
+
+        <ul>
+            <li>Vision Prolific is an application that allows developers to <strong>discover, launch, and manage their projects</strong> from a single interface.</li>
+            <li>It includes <strong>automated project scanning, log viewing, launch configurations, and plugin support</strong>.</li>
+            <li>The project is monetized via <strong>corporate pricing plans</strong>, while remaining <strong>free for individual developers</strong>.</li>
+        </ul>
+
+        <h4>3. Where? (Usage Environment)</h4>
+
+        <ul>
+            <li><strong>Platforms:</strong> Primarily desktop applications (cross-platform support expected).</li>
+            <li><strong>Development Environments:</strong> JetBrains products (future integration planned), standalone use possible.</li>
+        </ul>
+
+        <h4>4. When?</h4>
+
+        <ul>
+            <li>When a <strong>developer starts their workday</strong> and needs to quickly access their projects.</li>
+            <li>When switching between multiple projects during development.</li>
+            <li>When needing to <strong>restart, debug, or monitor logs</strong> efficiently.</li>
+        </ul>
+
+        <h4>5. Why? (Business & User Needs)</h4>
+
+        <ul>
+            <li>Developers often struggle with <strong>managing multiple projects</strong> effectively.</li>
+            <li>Existing solutions lack a <strong>unified interface</strong> for handling multiple projects.</li>
+            <li>The tool simplifies <strong>project discovery, launching, and monitoring</strong>, boosting efficiency.</li>
+            <li>Monetization supports <strong>ongoing development and corporate adoption</strong>.</li>
+        </ul>
+
+        <h4>6. How?</h4>
+
+        <ul>
+            <li><strong>Auto-detection</strong>: The app scans the system and lists all available projects.</li>
+            <li><strong>Quick Launch</strong>: Start your project with one click.</li>
+            <li><strong>Metrics Monitoring</strong>: View and analyze metrics in real-time.</li>
+            <li><strong>Log Monitoring</strong>: View and analyze logs in real-time.</li>
+            <li><strong>Customization</strong>: Configure startup scripts, environment variables</li>
+        </ul>
+
+        <h4>7. How Much? (Cost & Revenue)</h4>
+
+        <ul>
+            <li><strong>Pricing Strategy:</strong>
+                <ul>
+                    <li>Free for individual developers.</li>
+                    <li>Paid plans for companies based on <strong>team size and feature needs</strong>.</li>
+                    <li>Potential enterprise licensing deals.</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2 id="raci">RACI</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Phase</th>
+                    <th>Task / Responsibility</th>
+                    <th>Project Manager<br />(Dzmitry Petukhou, Anton Horobets)</th>
+                    <th>Developers<br />(Anton Horobets, Dzmitry Petukhou)</th>
+                    <th>UI/UX Designers(Dzmitry Petukhou, Anton Horobets, Popovych Andrii, Nematullah Hasani)</th>
+                    <th>QA Engineers(<br />Savelii Shaposhnyk)</th>
+                    <th>IT-architect<br/>(Nikita Kirilenko)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Proposal Phase</strong></td>
+                    <td>Research Competitors</td>
+                    <td>A</td>
+                    <td>C</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Define Target Audience</td>
+                    <td>A</td>
+                    <td>C</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td><strong>Investigation Phase</strong></td>
+                    <td>Technical Feasibility Study</td>
+                    <td>A</td>
+                    <td>R</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>User Interviews</td>
+                    <td>A</td>
+                    <td>R</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td><strong>Charter Phase</strong></td>
+                    <td>Create Initial Product Backlog</td>
+                    <td>A</td>
+                    <td>R</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Develop Project Charter</td>
+                    <td>A</td>
+                    <td>R</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td><strong>Planning Phase</strong></td>
+                    <td>Design User Interface Mockups</td>
+                    <td>A</td>
+                    <td>C</td>
+                    <td>R</td>
+                    <td>I</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Plan Development Sprints</td>
+                    <td>A</td>
+                    <td>R</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>IT-architecture</td>
+                    <td>A</td>
+                    <td>C</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>R</td>
+                </tr>
+                <tr>
+                    <td><strong>Implementation Phase</strong></td>
+                    <td>Develop Core Features</td>
+                    <td>A</td>
+                    <td>R</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>I</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Conduct Integration Tests</td>
+                    <td>A</td>
+                    <td>R</td>
+                    <td>C</td>
+                    <td>R</td>
+                    <td>I</td>
+                </tr>
+                <tr>
+                    <td><strong>Project Close Phase</strong></td>
+                    <td>Collect User Feedback</td>
+                    <td>A</td>
+                    <td>C</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>R</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Document Lessons Learned</td>
+                    <td>A</td>
+                    <td>R</td>
+                    <td>C</td>
+                    <td>I</td>
+                    <td>I</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="class-diagram">Class diagram</h2>
+
+        <img src="static/src.png" alt="src.png">
+
+        <h2 id="run">Run</h2>
+
+        <p>You can install a configured installer for your platform from <code>Releases</code> or you can run using <code>jar</code> file.
+        If you want to run the app using a jar file, use this command</p>
+
+        <pre><code>java -jar &lt;path_to_jar_file&gt;</code></pre>
+    </div>
+</body>
+</html>
