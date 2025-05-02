@@ -5,6 +5,42 @@
 Prolific is a project management tool designed to help developers manage their projects efficiently. It provides a
 user-friendly interface and powerful features to streamline your workflow.
 
+
+<!-- TOC -->
+* [Prolific](#prolific)
+  * [Features](#features)
+    * [Project scanning](#project-scanning)
+    * [Add a project manually](#add-a-project-manually)
+    * [Filtering and searching](#filtering-and-searching)
+    * [Configuration importing](#configuration-importing)
+    * [Configuration creation](#configuration-creation)
+    * [Run and monitor](#run-and-monitor)
+    * [Terminated processes information](#terminated-processes-information)
+    * [Notifications](#notifications)
+    * [Manage your projects](#manage-your-projects)
+    * [Settings](#settings)
+      * [General](#general)
+      * [Environment](#environment)
+    * [Profiles](#profiles)
+      * [Default user](#default-user)
+      * [No Metrics](#no-metrics)
+    * [Plugins](#plugins)
+  * [Project related files](#project-related-files)
+  * [Architecture](#architecture)
+  * [5W](#5w)
+      * [**1\. Who?**](#1-who)
+      * [**2\. What?** (Project Purpose)](#2-what-project-purpose)
+      * [**3\. Where?** (Usage Environment)](#3-where-usage-environment)
+      * [**4\. When?**](#4-when)
+      * [**5\. Why?** (Business & User Needs)](#5-why-business--user-needs)
+      * [**6\. How?**](#6-how)
+      * [**7\. How Much?** (Cost & Revenue)](#7-how-much-cost--revenue)
+  * [RACI](#raci)
+  * [Class diagram](#class-diagram)
+  * [Run](#run)
+<!-- TOC -->
+
+
 ## Features
 
 ### Project scanning
@@ -207,6 +243,12 @@ You can use any combination of file and folder names. You can also use wildcards
 directory that starts with `dir`. You can also use `*` to match any directory. For example: `*` will match any directory.
 
 
+## Project related files
+For unix systems Prolific creates `.prolific` directory in your user's home directory. This directory contains all
+project related files as database, settings, plugins, run configs, and so on.
+
+For windows systems Prolific creates `Prolific` directory in AppData folder.
+
 ## Architecture
 
 ![Business_Ogranization_Viewpoint.png](static/Business_Ogranization_Viewpoint.png)
@@ -216,12 +258,76 @@ directory that starts with `dir`. You can also use `*` to match any directory. F
 ![Technology_Viewpoint.png](static/Technology_Viewpoint.png)
 ![Layered_Viewpoint.png](static/Layered_Viewpoint.png)
 
+## 5W
+#### **1\. Who?**
 
-## Project related files
-For unix systems Prolific creates `.prolific` directory in your user's home directory. This directory contains all
-project related files as database, settings, plugins, run configs, and so on.
+* **Primary Users:** Developers (individuals and teams)
+* **Corporate Users:** Companies needing project management for development teams
+* **Integration Partners:** JetBrains (potential future integration)
+* **Investors/Owners:** Project maintainers and contributors
 
-For windows systems Prolific creates `Prolific` directory in AppData folder.
+#### **2\. What?** (Project Purpose)
+
+* Vision Prolific is an application that allows developers to **discover, launch, and manage their projects** from a single interface.
+* It includes **automated project scanning, log viewing, launch configurations, and plugin support**.
+* The project is monetized via **corporate pricing plans**, while remaining **free for individual developers**.
+
+#### **3\. Where?** (Usage Environment)
+
+* **Platforms:** Primarily desktop applications (cross-platform support expected).
+* **Development Environments:** JetBrains products (future integration planned), standalone use possible.
+
+#### **4\. When?**
+
+* When a **developer starts their workday** and needs to quickly access their projects.
+* When switching between multiple projects during development.
+* When needing to **restart, debug, or monitor logs** efficiently.
+
+#### **5\. Why?** (Business & User Needs)
+
+* Developers often struggle with **managing multiple projects** effectively.
+* Existing solutions lack a **unified interface** for handling multiple projects.
+* The tool simplifies **project discovery, launching, and monitoring**, boosting efficiency.
+* Monetization supports **ongoing development and corporate adoption**.
+
+#### **6\. How?**
+
+* **Auto-detection**: The app scans the system and lists all available projects.
+* **Quick Launch**: Start your project with one click.
+* **Metrics Monitoring**: View and analyze metrics in real-time.
+* **Log Monitoring**: View and analyze logs in real-time.
+* **Customization**: Configure startup scripts, environment variables
+
+#### **7\. How Much?** (Cost & Revenue)
+
+* **Pricing Strategy:**
+  * Free for individual developers.
+  * Paid plans for companies based on **team size and feature needs**.
+  * Potential enterprise licensing deals.
+
+
+## RACI
+
+| Phase                    | Task / Responsibility          | Project Manager<br />(Dzmitry Petukhou, Anton Horobets) | Developers<br />(Anton Horobets, Dzmitry Petukhou) | UI/UX Designers(Dzmitry Petukhou, Anton Horobets, Popovych Andrii, Nematullah Hasani) | QA Engineers(<br />Savelii Shaposhnyk) | IT-architect<br/>(Nikita Kirilenko) |
+|--------------------------|--------------------------------|---------------------------------------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------|----------------------------------------|-------------------------------------|
+| **Proposal Phase**       | Research Competitors           | A                                                       | C                                                  | C                                                                                     | I                                      | C                                   |
+|                          | Define Target Audience         | A                                                       | C                                                  | C                                                                                     | I                                      | C                                   | 
+| **Investigation Phase**  | Technical Feasibility Study    | A                                                       | R                                                  | C                                                                                     | I                                      | C                                   | 
+|                          | User Interviews                | A                                                       | R                                                  | C                                                                                     | I                                      | C                                   | 
+| **Charter Phase**        | Create Initial Product Backlog | A                                                       | R                                                  | C                                                                                     | I                                      | C                                   | 
+|                          | Develop Project Charter        | A                                                       | R                                                  | C                                                                                     | I                                      | C                                   | 
+| **Planning Phase**       | Design User Interface Mockups  | A                                                       | C                                                  | R                                                                                     | I                                      | C                                   |  
+|                          | Plan Development Sprints       | A                                                       | R                                                  | C                                                                                     | I                                      | C                                   |  
+|                          | IT-architecture                | A                                                       | C                                                  | C                                                                                     | I                                      | R                                   |  
+| **Implementation Phase** | Develop Core Features          | A                                                       | R                                                  | C                                                                                     | I                                      | I                                   |  
+|                          | Conduct Integration Tests      | A                                                       | R                                                  | C                                                                                     | R                                      | I                                   |
+| **Project Close Phase**  | Collect User Feedback          | A                                                       | C                                                  | C                                                                                     | I                                      | R                                   |
+|                          | Document Lessons Learned       | A                                                       | R                                                  | C                                                                                     | I                                      | I                                   |  
+
+
+## Class diagram
+
+![src.png](static/src.png)
 
 ## Run
 
