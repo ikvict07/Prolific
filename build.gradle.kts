@@ -103,6 +103,7 @@ tasks.register<Exec>("runLinux") {
     environment("GDK_BACKEND", "x11")
     commandLine(
         "java",
+        "--add-exports", "javafx.graphics/com.sun.glass.ui=ALL-UNNAMED",
         "-Dprism.order=sw",
         "-jar",
         "${tasks.bootJar.get().archiveFile.get().asFile}")
@@ -116,6 +117,7 @@ tasks.register<Exec>("runWindows") {
     commandLine(
         "java",
         "-Dprism.order=sw",
+        "--add-exports", "javafx.graphics/com.sun.glass.ui=ALL-UNNAMED",
         "-jar",
         "${tasks.bootJar.get().archiveFile.get().asFile}"
     )
@@ -129,6 +131,7 @@ tasks.register<Exec>("runMac") {
     commandLine(
         "java",
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports", "javafx.graphics/com.sun.glass.ui=ALL-UNNAMED",
         "-jar",
         "${tasks.bootJar.get().archiveFile.get().asFile}"
     )
